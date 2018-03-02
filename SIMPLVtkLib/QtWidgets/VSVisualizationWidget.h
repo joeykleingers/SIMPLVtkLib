@@ -137,6 +137,18 @@ public slots:
   */
   virtual void clearRenderWindow();
 
+  /**
+  * @brief Returns the renderer
+  * @return
+  */
+  VTK_PTR(vtkRenderer) getRenderer();
+
+  /**
+   * @brief Sets whether or not the visualization widget can be rendered
+   * @param renderable
+   */
+  void setRenderable(bool renderable);
+
 protected:
   /**
   * @brief Sets up the GUI as well as initializes the Renderer and Axes
@@ -163,6 +175,7 @@ protected:
 private:
   VTK_PTR(vtkOrientationMarkerWidget) m_OrientationWidget = nullptr;
   VTK_PTR(vtkRenderer) m_Renderer = nullptr;
+  bool m_Renderable = true;
 
   unsigned int m_NumRenderLayers;
 };

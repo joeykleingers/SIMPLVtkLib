@@ -106,6 +106,12 @@ public:
   void setController(VSController* controller);
 
   /**
+   * @brief Sets whether or not the view can be rendered
+   * @param renderable
+   */
+  void setRenderable(bool renderable);
+
+  /**
    * @brief setActive
    * @param active
    */

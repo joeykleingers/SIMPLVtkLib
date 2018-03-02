@@ -620,6 +620,18 @@ void VSAbstractViewWidget::setActive(bool active)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
+void VSAbstractViewWidget::setRenderable(bool renderable)
+{
+  VSVisualizationWidget* visualizationWidget = getVisualizationWidget();
+  if(visualizationWidget)
+  {
+    visualizationWidget->setRenderable(renderable);
+  }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void VSAbstractViewWidget::setController(VSController* controller)
 {
   if(m_Controller)
