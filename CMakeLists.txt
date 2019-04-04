@@ -197,6 +197,9 @@ set(Project_SRCS
   ${${PROJECT_NAME}_Visualization_Controllers_HDRS}
   ${${PROJECT_NAME}_Visualization_Controllers_SRCS}
 
+  ${${PROJECT_NAME}_Viz_FilterHandlers_HDRS}
+  ${${PROJECT_NAME}_Viz_FilterHandlers_SRCS}
+
   ${${PROJECT_NAME}_QtWidgets_HDRS}
   ${${PROJECT_NAME}_QtWidgets_SRCS}
   ${${PROJECT_NAME}_QtWidgets_Generated_UI_HDRS}
