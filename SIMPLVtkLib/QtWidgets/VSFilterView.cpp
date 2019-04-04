@@ -39,8 +39,42 @@
 
 #include "SIMPLVtkLib/QtWidgets/VSFilterViewDelegate.h"
 #include "SIMPLVtkLib/Visualization/Controllers/VSFilterViewModel.h"
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSAbstractDataFilter.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSFileNameFilter.h"
+
+/**
+ * @brief This message handler is used by FilterPipeline to re-emit filter progress messages as pipeline progress messages
+ */
+class ContextMenuFilterHandler : public AbstractFilterHandler
+{
+public:
+  explicit ContextMenuFilterHandler(VSFilterView* filterView)
+  : m_FilterView(filterView)
+  {
+  }
+
+  /**
+   * @brief Converts filter progress messages into pipeline progress messages.  This enables the overall pipeline
+   * progress to update along with the filter's progress updates
+   */
+  void processMessage(const VSFileNameFilter* filter) const override
+  {
+    QMenu menu;
+
+    addDeleteButton(filter, &menu);
+  }
+
+private:
+  VSFilterView* m_FilterView = nullptr;
+
+  void addDeleteButton(VSAbstractFilter* filter, QMenu* menu)
+  {
+    QAction* deleteAction = new QAction("Delete");
+    QObject::connect(deleteAction, &QAction::triggered, [=] { emit m_FilterView->deleteFilterRequested(filter); });
+    menu->addAction(deleteAction);
+  }
+};
 
 // -----------------------------------------------------------------------------
 //
@@ -139,6 +173,7 @@ void VSFilterView::requestContextMenu(const QPoint& pos)
   if(index.isValid())
   {
     VSAbstractFilter* filter = getFilterFromIndex(index);
+    filter->visit();
     if(filter != nullptr)
     {
       VSAbstractDataFilter* dataFilter = dynamic_cast<VSAbstractDataFilter*>(filter);

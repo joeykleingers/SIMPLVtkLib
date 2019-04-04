@@ -127,6 +127,12 @@ public:
    */
   void apply();
 
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) override;
+
 private:
   FilterPipeline::Pointer m_FilterPipeline;
   DataContainerArray::Pointer m_Dca;

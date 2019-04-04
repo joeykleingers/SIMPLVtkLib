@@ -42,6 +42,7 @@
 #include <QtWidgets/QMessageBox>
 
 #include "SIMPLVtkLib/Visualization/Controllers/VSFilterModel.h"
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -116,4 +117,12 @@ VSAbstractFilterValues* VSRootFilter::getValues()
 VSAbstractFilter::FilterType VSRootFilter::getFilterType() const
 {
   return FilterType::Placeholder;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSRootFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

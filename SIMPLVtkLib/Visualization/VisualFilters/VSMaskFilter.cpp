@@ -42,6 +42,8 @@
 #include <vtkImageData.h>
 #include <vtkUnstructuredGrid.h>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
@@ -295,4 +297,12 @@ bool VSMaskFilter::CompatibleWithParents(VSAbstractFilter::FilterListType filter
 VSAbstractFilterValues* VSMaskFilter::getValues()
 {
   return m_MaskValues;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSMaskFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

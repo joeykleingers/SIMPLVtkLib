@@ -177,6 +177,12 @@ public:
    */
   double* getTransformBounds() override;
 
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) override;
+
 public slots:
   /**
    * @brief Wrap the entire DataContainer

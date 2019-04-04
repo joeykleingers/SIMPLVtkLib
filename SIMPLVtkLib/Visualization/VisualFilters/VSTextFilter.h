@@ -159,6 +159,12 @@ public:
    */
   VSAbstractFilterValues* getValues() override;
 
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) override;
+
 protected:
   /**
    * @brief createFilter() not required by VSTextFilter

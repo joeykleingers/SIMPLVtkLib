@@ -52,6 +52,7 @@
 #include "SIMPLib/Utilities/SIMPLH5DataReaderRequirements.h"
 
 #include "SIMPLVtkLib/SIMPLBridge/SIMPLVtkBridge.h"
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSFileNameFilter.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSPipelineFilter.h"
 
@@ -512,4 +513,12 @@ double* VSSIMPLDataContainerFilter::getTransformBounds()
 	trans->ReleaseDataFlagOn();
 	trans->Update();
 	return trans->GetOutput()->GetBounds();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSSIMPLDataContainerFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

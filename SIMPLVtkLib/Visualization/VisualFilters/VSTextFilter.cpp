@@ -39,6 +39,8 @@
 
 #include <vtkAlgorithmOutput.h>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
@@ -251,4 +253,12 @@ void VSTextFilter::updateAlgorithmInput(VSAbstractFilter* filter)
 VSAbstractFilter::FilterType VSTextFilter::getFilterType() const
 {
   return FilterType::Placeholder;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSTextFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

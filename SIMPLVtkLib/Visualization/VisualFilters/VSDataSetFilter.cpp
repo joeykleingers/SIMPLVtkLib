@@ -55,6 +55,7 @@
 #include <vtkTIFFReader.h>
 #include <vtkUnstructuredGridReader.h>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSFileNameFilter.h"
 
 // -----------------------------------------------------------------------------
@@ -433,4 +434,12 @@ bool VSDataSetFilter::CompatibleWithParent(VSAbstractFilter* filter)
   }
 
   return false;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSDataSetFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

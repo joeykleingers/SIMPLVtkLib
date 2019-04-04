@@ -46,6 +46,8 @@
 #include <vtkThreshold.h>
 #include <vtkUnstructuredGrid.h>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
@@ -308,4 +310,12 @@ bool VSThresholdFilter::CompatibleWithParents(VSAbstractFilter::FilterListType f
 VSAbstractFilterValues* VSThresholdFilter::getValues()
 {
   return m_ThresholdValues;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSThresholdFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

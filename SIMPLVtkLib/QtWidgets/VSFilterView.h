@@ -42,6 +42,8 @@
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
 
+class ContextMenuFilterHandler;
+
 /**
  * @class VSFilterView VSFilterView.h SIMPLVtkLib/QtWidgets/VSFilterView.h
  * @brief This class is used for viewing a VSController's VSFilterModel in a
@@ -62,6 +64,8 @@ public:
    * @brief Deconstructor
    */
   virtual ~VSFilterView() = default;
+
+  friend class ContextMenuFilterHandler;
 
 signals:
   void filterClicked(VSAbstractFilter* filter);

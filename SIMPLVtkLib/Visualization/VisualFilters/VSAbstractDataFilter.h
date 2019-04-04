@@ -84,6 +84,12 @@ public:
    */
   FilterType getFilterType() const override;
 
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) = 0;
+
 signals:
   void dataReloaded();
   void filterReloaded(VSAbstractFilter* filter);

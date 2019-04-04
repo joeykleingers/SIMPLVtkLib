@@ -120,6 +120,12 @@ public:
    */
   static bool CompatibleWithParent(VSAbstractFilter* filter);
 
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) override;
+
 private:
   QString m_FilePath;
   VSFileNameValues* m_FileNameValues = nullptr;

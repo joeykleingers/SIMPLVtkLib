@@ -41,6 +41,7 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSSIMPLDataContainerFilter.h"
 
 QString fetchPipelineName(FilterPipeline::Pointer pipeline)
@@ -185,4 +186,12 @@ VSAbstractFilter::FilterType VSPipelineFilter::getFilterType() const
 VSAbstractFilterValues* VSPipelineFilter::getValues()
 {
   return m_PipelineValues;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSPipelineFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

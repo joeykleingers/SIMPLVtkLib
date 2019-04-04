@@ -41,6 +41,8 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
@@ -175,4 +177,12 @@ bool VSFileNameFilter::CompatibleWithParent(VSAbstractFilter* filter)
   }
 
   return false;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSFileNameFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

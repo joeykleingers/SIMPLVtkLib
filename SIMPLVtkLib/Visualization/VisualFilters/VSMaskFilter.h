@@ -175,6 +175,12 @@ public:
    */
   static QUuid GetUuid();
 
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) override;
+
 protected:
   /**
    * @brief Initializes the algorithm and connects it to the vtkMapper

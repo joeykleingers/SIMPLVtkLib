@@ -40,6 +40,7 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QUuid>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSSIMPLDataContainerFilter.h"
 #include <vtkExtractVOI.h>
 
@@ -312,4 +313,12 @@ bool VSCropFilter::CompatibleWithParents(VSAbstractFilter::FilterListType filter
 VSAbstractFilterValues* VSCropFilter::getValues()
 {
   return m_CropValues;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSCropFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

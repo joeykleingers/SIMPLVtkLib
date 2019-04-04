@@ -67,6 +67,7 @@
 class VSAbstractFilterValues;
 class VSAbstractDataFilter;
 class VSFilterModel;
+class AbstractFilterHandler;
 
 /**
  * @class VSAbstractFilter VSAbstractFilter.h
@@ -416,6 +417,12 @@ public:
   void setFont(QFont font);
 
   virtual VSAbstractFilterValues* getValues() = 0;
+
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(AbstractFilterHandler* handler) = 0;
 
   //////////////////
   // Filter Lists //

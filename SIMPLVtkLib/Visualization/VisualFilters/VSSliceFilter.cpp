@@ -43,6 +43,8 @@
 #include <vtkDataSet.h>
 #include <vtkUnstructuredGrid.h>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
@@ -319,4 +321,12 @@ bool VSSliceFilter::CompatibleWithParents(VSAbstractFilter::FilterListType filte
 VSAbstractFilterValues* VSSliceFilter::getValues()
 {
   return m_SliceValues;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSSliceFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }

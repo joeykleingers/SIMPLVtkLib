@@ -44,6 +44,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkUnstructuredGrid.h>
 
+#include "SIMPLVtkLib/Visualization/FilterHandlers/AbstractFilterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSClipValues.h"
 
 // -----------------------------------------------------------------------------
@@ -540,4 +541,12 @@ QStringList VSClipFilter::getClipTypes()
   clipTypes.push_back("Box");
 
   return clipTypes;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSClipFilter::visit(AbstractFilterHandler* handler)
+{
+  handler->processMessage(this);
 }
