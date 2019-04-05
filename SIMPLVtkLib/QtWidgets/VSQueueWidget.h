@@ -68,10 +68,9 @@ public:
 
   /**
    * @brief addDataImporter
-   * @param name
    * @param importer
    */
-  void addDataImporter(const QString &name, VSAbstractImporter::Pointer importer);
+  void addDataImporter(VSAbstractImporter::Pointer importer);
 
   /**
    * @brief insertDataImporter

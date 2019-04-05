@@ -54,8 +54,6 @@
 #include "SIMPLib/Utilities/SIMPLH5DataReader.h"
 #include "SIMPLib/Utilities/SIMPLH5DataReaderRequirements.h"
 
-#include "SIMPLVtkLib/Dialogs/LoadHDF5FileDialog.h"
-
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSClipFilter.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSCropFilter.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSDataSetFilter.h"
@@ -451,35 +449,6 @@ void VSMainWidgetBase::filterAdded(VSAbstractFilter* filter, bool currentFilter)
 // -----------------------------------------------------------------------------
 void VSMainWidgetBase::filterRemoved(VSAbstractFilter* filter)
 {
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void VSMainWidgetBase::launchHDF5SelectionDialog(const QString& filePath)
-{
-  QSharedPointer<LoadHDF5FileDialog> dialog = QSharedPointer<LoadHDF5FileDialog>(new LoadHDF5FileDialog());
-  dialog->setHDF5FilePath(filePath);
-  int ret = dialog->exec();
-
-  if(ret == QDialog::Accepted)
-  {
-    SIMPLH5DataReader reader;
-
-    bool success = reader.openFile(filePath);
-    if(success)
-    {
-      connect(&reader, SIGNAL(errorGenerated(const QString&, const QString&, const int&)), this, SLOT(generateError(const QString&, const QString&, const int&)));
-
-      DataContainerArrayProxy dcaProxy = dialog->getDataStructureProxy();
-      DataContainerArray::Pointer dca = reader.readSIMPLDataUsingProxy(dcaProxy, false);
-      if(dca.get() == nullptr)
-      {
-        return;
-      }
-      m_Controller->importDataContainerArray(filePath, dca);
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------

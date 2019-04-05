@@ -103,6 +103,12 @@ public:
   QString getFilterName() const override;
 
   /**
+   * @brief Returns the stored file path
+   * @return
+   */
+  QString getFilePath();
+
+  /**
    * @brief Returns the tooltip to use for the filter
    * @return
    */

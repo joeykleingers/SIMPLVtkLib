@@ -59,14 +59,19 @@ public:
 
   virtual void reset() override;
 
+  virtual void visit(VSAbstractImporterHandler* handler) const override;
+
+  VSFileNameFilter* getFileNameFilter() const;
+
+  VSDataSetFilter* getDataSetFilter() const;
+
+  virtual VSAbstractImporter::Pointer deepCopy() const override;
+
 protected:
   VSDatasetImporter(VSFileNameFilter* textFilter, VSDataSetFilter* filter);
-
-signals:
-  void resultReady(VSFileNameFilter* textFilter, VSDataSetFilter* filter);
 
 private:
   QString m_FilePath;
   VSFileNameFilter* m_TextFilter = nullptr;
-  VSDataSetFilter* m_DatasetFilter = nullptr;;
+  VSDataSetFilter* m_DatasetFilter = nullptr;
 };

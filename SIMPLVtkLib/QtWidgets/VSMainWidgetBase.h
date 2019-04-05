@@ -269,12 +269,6 @@ public slots:
    */
   void selectFilters(VSAbstractFilter::FilterListType filters);
 
-  /**
-   * @brief launchHDF5SelectionDialog
-   * @param proxy
-   */
-  void launchHDF5SelectionDialog(const QString& filePath);
-
 signals:
   void changedActiveView(VSAbstractViewWidget* viewWidget);
   void proxyFromFilePathGenerated(DataContainerArrayProxy proxy, const QString& filePath);

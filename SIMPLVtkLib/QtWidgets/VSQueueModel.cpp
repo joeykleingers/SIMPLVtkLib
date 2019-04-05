@@ -140,12 +140,6 @@ QVariant VSQueueModel::data(const QModelIndex& index, int role) const
   {
     return item->getName();
   }
-  if(role == static_cast<int>(Roles::ImporterRole))
-  {
-    QVariant var;
-    var.setValue(item->getImporter());
-    return var;
-  }
   else if(role == Qt::ForegroundRole)
   {
 //    if(item->getHasErrors())
@@ -277,10 +271,27 @@ bool VSQueueModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
   VSQueueItem* parentItem = getItem(parent);
   bool success = true;
+  std::list<VSAbstractImporter::Pointer> importers;
+  for(int i = position; i < position + rows; i++)
+  {
+    VSQueueItem* child = parentItem->child(i);
+    importers.push_back(child->getImporter());
+  }
 
   beginRemoveRows(parent, position, position + rows - 1);
   success = parentItem->removeChildren(position, rows);
   endRemoveRows();
+
+  if(success)
+  {
+    for(VSAbstractImporter::Pointer importer : importers)
+    {
+      disconnect(importer.get(), &VSAbstractImporter::stateChanged, 0, 0);
+      disconnect(importer.get(), &VSAbstractImporter::notifyStatusMessage, this, &VSQueueModel::notifyStatusMessage);
+      disconnect(importer.get(), &VSAbstractImporter::notifyErrorMessage, this, &VSQueueModel::notifyErrorMessage);
+      disconnect(importer.get(), &VSAbstractImporter::notifyProgressMessage, this, &VSQueueModel::notifyProgressUpdate);
+    }
+  }
 
   return success;
 }
@@ -352,23 +363,6 @@ bool VSQueueModel::setData(const QModelIndex& index, const QVariant& value, int 
   {
     item->setName(value.toString());
   }
-  else if(role == static_cast<int>(Roles::ImporterRole))
-  {
-    VSAbstractImporter::Pointer oldImporter = item->getImporter();
-    if (oldImporter)
-    {
-      disconnect(oldImporter.get(), &VSAbstractImporter::notifyStatusMessage, this, &VSQueueModel::notifyStatusMessage);
-      disconnect(oldImporter.get(), &VSAbstractImporter::notifyErrorMessage, this, &VSQueueModel::notifyErrorMessage);
-      disconnect(oldImporter.get(), &VSAbstractImporter::notifyProgressMessage, this, &VSQueueModel::notifyProgressUpdate);
-    }
-
-    VSAbstractImporter::Pointer importer = value.value<VSAbstractImporter::Pointer>();
-    connect(importer.get(), &VSAbstractImporter::stateChanged, this, &VSQueueModel::importerStateChanged);
-    connect(importer.get(), &VSAbstractImporter::notifyStatusMessage, this, &VSQueueModel::notifyStatusMessage);
-    connect(importer.get(), &VSAbstractImporter::notifyErrorMessage, this, &VSQueueModel::notifyErrorMessage);
-    connect(importer.get(), &VSAbstractImporter::notifyProgressMessage, this, &VSQueueModel::notifyProgressUpdate);
-    item->setImporter(importer);
-  }
   else if(role == Qt::ToolTipRole)
   {
     item->setItemTooltip(value.toString());
@@ -386,32 +380,25 @@ bool VSQueueModel::setData(const QModelIndex& index, const QVariant& value, int 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSQueueModel::addImporter(const QString &name, VSAbstractImporter::Pointer importer, QIcon icon)
+void VSQueueModel::addImporter(VSAbstractImporter::Pointer importer, QIcon icon)
 {
   int row = rowCount();
-  insertImporter(row, name, importer, icon);
+  insertImporter(row, importer, icon);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSQueueModel::insertImporter(int row, const QString &name, VSAbstractImporter::Pointer importer, QIcon icon)
+void VSQueueModel::insertImporter(int row, VSAbstractImporter::Pointer importer, QIcon icon)
 {
   insertRow(row);
   QModelIndex index = this->index(row, VSQueueItem::ItemData::Contents);
 
-  setData(index, name, Qt::DisplayRole);
+  setData(index, importer->getName(), Qt::DisplayRole);
 
-  QVariant var;
-  var.setValue(importer);
-  setData(index, var, VSQueueModel::Roles::ImporterRole);
+  setImporter(index, importer);
 
   setData(index, QIcon(":/SIMPL/icons/images/bullet_ball_blue.png"), Qt::DecorationRole);
-
-  connect(importer.get(), &VSAbstractImporter::stateChanged, this, [=] {
-    QModelIndex newIndex = indexOfImporter(importer);
-    emit dataChanged(newIndex, newIndex, QVector<int>(1, VSQueueModel::Roles::ImporterRole));
- });
 }
 
 // -----------------------------------------------------------------------------
@@ -422,13 +409,48 @@ void VSQueueModel::removeImporter(VSAbstractImporter::Pointer importer)
   for (int i = 0; i < rowCount(); i++)
   {
     QModelIndex index = this->index(i, VSQueueItem::ItemData::Contents);
-    VSAbstractImporter::Pointer internalImporter = data(index, Roles::ImporterRole).value<VSAbstractImporter::Pointer>();
+    VSAbstractImporter::Pointer internalImporter = getImporter(index);
     if (internalImporter == importer)
     {
-      disconnect(importer.get(), &VSAbstractImporter::stateChanged, 0, 0);
       removeRow(i);
       return;
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+VSAbstractImporter::Pointer VSQueueModel::getImporter(const QModelIndex& index)
+{
+  VSQueueItem* item = getItem(index);
+  if(item)
+  {
+    return item->getImporter();
+  }
+
+  return VSAbstractImporter::NullPointer();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSQueueModel::setImporter(const QModelIndex& index, const VSAbstractImporter::Pointer& importer)
+{
+  VSQueueItem* item = getItem(index);
+  if(item)
+  {
+    connect(importer.get(), &VSAbstractImporter::stateChanged, this, &VSQueueModel::importerStateChanged);
+    connect(importer.get(), &VSAbstractImporter::notifyStatusMessage, this, &VSQueueModel::notifyStatusMessage);
+    connect(importer.get(), &VSAbstractImporter::notifyErrorMessage, this, &VSQueueModel::notifyErrorMessage);
+    connect(importer.get(), &VSAbstractImporter::notifyProgressMessage, this, &VSQueueModel::notifyProgressUpdate);
+
+    connect(importer.get(), &VSAbstractImporter::stateChanged, this, [=] {
+      QModelIndex newIndex = indexOfImporter(importer);
+      emit dataChanged(newIndex, newIndex, QVector<int>(1, Qt::DecorationRole));
+    });
+
+    item->setImporter(importer);
   }
 }
 
@@ -459,7 +481,7 @@ QModelIndex VSQueueModel::indexOfImporter(VSAbstractImporter::Pointer importer)
   for (int i = 0; i < rowCount(); i++)
   {
     QModelIndex index = this->index(i, VSQueueItem::ItemData::Contents);
-    VSAbstractImporter::Pointer internalImporter = data(index, Roles::ImporterRole).value<VSAbstractImporter::Pointer>();
+    VSAbstractImporter::Pointer internalImporter = getImporter(index);
     if (internalImporter == importer)
     {
       return index;

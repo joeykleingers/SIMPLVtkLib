@@ -33,165 +33,137 @@
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-#include "VSMontageImporter.h"
+#include "VSRecentImportersList.h"
 
-#include "SIMPLVtkLib/QtWidgets/VSAbstractImporterHandler.h"
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtWidgets/QMenu>
+
+VSRecentImportersList* VSRecentImportersList::self = nullptr;
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline)
-: VSAbstractImporter()
-, m_Pipeline(pipeline)
+VSRecentImportersList::VSRecentImportersList(int maxListSize, QObject* parent)
+: QObject(parent)
+, m_MaxListSize(maxListSize)
 {
-  pipeline->addMessageReceiver(this);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline,
-  DataContainerArray::Pointer dataContainerArray)
-  : VSAbstractImporter()
-  , m_Pipeline(pipeline)
-  , m_DataContainerArray(dataContainerArray)
+VSRecentImportersList::~VSRecentImportersList()
 {
-  pipeline->addMessageReceiver(this);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::~VSMontageImporter() = default;
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-VSMontageImporter::Pointer VSMontageImporter::New(FilterPipeline::Pointer pipeline)
+VSRecentImportersList* VSRecentImportersList::Instance(int maxListSize, QObject* parent)
 {
-  VSMontageImporter::Pointer sharedPtr(new VSMontageImporter(pipeline));
-  return sharedPtr;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-VSMontageImporter::Pointer VSMontageImporter::New(FilterPipeline::Pointer pipeline,
-  DataContainerArray::Pointer dataContainerArray)
-{
-  VSMontageImporter::Pointer sharedPtr(new VSMontageImporter(pipeline, 
-	dataContainerArray));
-  return sharedPtr;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void VSMontageImporter::processPipelineMessage(const PipelineMessage& pipelineMsg)
-{
-  if(pipelineMsg.getType() == PipelineMessage::MessageType::StatusMessage)
+  if(self == nullptr)
   {
-    QString str = pipelineMsg.generateStatusString();
-    emit notifyStatusMessage(str);
+    self = new VSRecentImportersList(maxListSize, parent);
   }
-  else if (pipelineMsg.getType() == PipelineMessage::MessageType::Error)
-  {
-    emit notifyErrorMessage(pipelineMsg.generateErrorString(), pipelineMsg.getCode());
-  }
-  else if(pipelineMsg.getType() == PipelineMessage::MessageType::ProgressValue)
-  {
-    emit notifyProgressMessage(this, pipelineMsg.getProgressValue());
-  }
+  return self;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString VSMontageImporter::getName()
+bool VSRecentImportersList::contains(const VSAbstractImporter::Pointer& importer)
 {
-  return m_Pipeline->getName();
+  return (std::find(recentImporters.begin(), recentImporters.end(), importer) != recentImporters.end());
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSMontageImporter::execute()
+void VSRecentImportersList::addImporter(const VSAbstractImporter::Pointer& importer, AddType type)
 {
-  setState(State::Executing);
-  if(m_DataContainerArray != nullptr)
+  if(contains(importer))
   {
-    m_Pipeline->execute(m_DataContainerArray);
+    // Remove the file from wherever it is in the list
+    removeImporter(importer);
+  }
+
+  if(recentImporters.size() == m_MaxListSize)
+  {
+    recentImporters.pop_back();
+  }
+
+  if(type == APPEND)
+  {
+    this->recentImporters.emplace_back(importer);
   }
   else
   {
-	m_Pipeline->execute();
+    this->recentImporters.emplace(recentImporters.begin(), importer);
   }
 
-//  qInfo() << "Pipeline err condition: " << err;
-//  // For now, quit after an error condition
-//  // However, may want to consider returning
-//  // list of errors associated with each pipeline
-//  if(err < 0)
-//  {
-//    break;
-//  }
+  emit importerListChanged(importer); // Emit the signal so all the menus can update their contents
+}
 
-  if (m_Resetting)
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+std::list<VSAbstractImporter::Pointer> VSRecentImportersList::importerList()
+{
+  return this->recentImporters;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSRecentImportersList::removeImporter(const VSAbstractImporter::Pointer& importer)
+{
+  std::list<VSAbstractImporter::Pointer>::iterator findIter = find(recentImporters.begin(), recentImporters.end(), importer);
+
+  if(findIter != recentImporters.end())
   {
-    setState(State::Ready);
-    m_Resetting = false;
-  }
-  else if (m_Pipeline->getExecutionResult() == FilterPipeline::ExecutionResult::Canceled)
-  {
-    setState(State::Canceled);
-  }
-  else
-  {
-    setState(State::Finished);
+    this->recentImporters.erase(findIter);
+
+    emit importerListChanged(importer); // Emit the signal so all the menus can update their contents
   }
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSMontageImporter::cancel()
+void VSRecentImportersList::clear()
 {
-  if (m_Pipeline->getState() == FilterPipeline::State::Executing)
-  {
-    m_Pipeline->cancel();
-  }
+  this->recentImporters.clear();
+
+  emit importerListChanged(VSAbstractImporter::NullPointer());
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSMontageImporter::reset()
+void VSRecentImportersList::writeList(QtSSettings* prefs)
 {
-  if (m_Pipeline->getState() == FilterPipeline::State::Executing)
-  {
-    m_Resetting = true;
-    m_Pipeline->cancel();
-  }
-  else
-  {
-    setState(State::Ready);
-  }
+  //  prefs->setValue("Recent Importers", this->importerList());
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSAbstractImporter::Pointer VSMontageImporter::deepCopy() const
+void VSRecentImportersList::readList(QtSSettings* prefs)
 {
-  FilterPipeline::Pointer pipeline = m_Pipeline->deepCopy();
-  VSMontageImporter::Pointer montageImporter = VSMontageImporter::New(pipeline, m_DataContainerArray);
-  return montageImporter;
-}
+  this->clear();
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void VSMontageImporter::visit(VSAbstractImporterHandler* handler) const
-{
-  handler->processImporter(this);
+  QStringList list = prefs->value("Recent Files", QStringList());
+
+  for(int i = 0; i < list.size(); i++)
+  {
+    QString filePath = list[i];
+    QFile file(filePath);
+    if(file.exists())
+    {
+      //      this->addImporter(filePath, APPEND);
+    }
+  }
 }

@@ -51,11 +51,6 @@ class SIMPLVtkLib_EXPORT VSQueueModel : public QAbstractItemModel
   public:
     SIMPL_TYPE_MACRO(VSQueueModel)
 
-    enum Roles
-    {
-      ImporterRole = Qt::UserRole + 1
-    };
-
     enum class QueueState : unsigned int
     {
       Idle,
@@ -72,10 +67,12 @@ class SIMPLVtkLib_EXPORT VSQueueModel : public QAbstractItemModel
     void startQueue();
     void cancelQueue();
 
-    void addImporter(const QString &name, VSAbstractImporter::Pointer importer, QIcon icon);
-    void insertImporter(int row, const QString &name, VSAbstractImporter::Pointer importer, QIcon icon);
+    void addImporter(VSAbstractImporter::Pointer importer, QIcon icon);
+    void insertImporter(int row, VSAbstractImporter::Pointer importer, QIcon icon);
 
     void removeImporter(VSAbstractImporter::Pointer importer);
+
+    VSAbstractImporter::Pointer getImporter(const QModelIndex& index);
 
     void clearAll();
 
@@ -112,7 +109,7 @@ class SIMPLVtkLib_EXPORT VSQueueModel : public QAbstractItemModel
     void handleDataQueueFinished();
 
   signals:
-    void importerStateChanged(VSAbstractImporter* importer, VSAbstractImporter::State state);
+    void importerStateChanged(const VSAbstractImporter* importer, VSAbstractImporter::State state);
     void queueStateChanged(VSQueueModel::QueueState queueState);
     void queueFinished();
     void notifyStatusMessage(const QString &msg);
@@ -128,9 +125,25 @@ class SIMPLVtkLib_EXPORT VSQueueModel : public QAbstractItemModel
     ImporterWorker* m_ImportDataWorker = nullptr;
     QueueState m_QueueState = QueueState::Idle;
 
+    /**
+     * @brief getItem
+     * @param index
+     * @return
+     */
     VSQueueItem* getItem(const QModelIndex& index) const;
 
+    /**
+     * @brief setQueueState
+     * @param queueState
+     */
     void setQueueState(QueueState queueState);
+
+    /**
+     * @brief setImporter
+     * @param index
+     * @param importer
+     */
+    void setImporter(const QModelIndex& index, const VSAbstractImporter::Pointer& importer);
 
   public:
     VSQueueModel(const VSQueueModel&) = delete;            // Copy Constructor Not Implemented

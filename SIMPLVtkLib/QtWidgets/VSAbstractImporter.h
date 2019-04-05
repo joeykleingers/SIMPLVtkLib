@@ -41,6 +41,8 @@
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
 
+class VSAbstractImporterHandler;
+
 class SIMPLVtkLib_EXPORT VSAbstractImporter : public QObject
 {
 	Q_OBJECT
@@ -87,8 +89,20 @@ public:
    */
   virtual void reset() = 0;
 
+  /**
+   * @brief deepCopy
+   * @return
+   */
+  virtual VSAbstractImporter::Pointer deepCopy() const = 0;
+
+  /**
+   * @brief visit
+   * @param handler
+   */
+  virtual void visit(VSAbstractImporterHandler* handler) const = 0;
+
 signals:
-  void stateChanged(VSAbstractImporter* importer, VSAbstractImporter::State state);
+  void stateChanged(const VSAbstractImporter* importer, VSAbstractImporter::State state);
   void notifyProgressMessage(VSAbstractImporter* importer, int progress);
   void notifyErrorMessage(const QString &msg, int code);
   void notifyStatusMessage(const QString &msg);

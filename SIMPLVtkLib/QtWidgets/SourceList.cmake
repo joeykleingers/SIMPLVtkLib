@@ -1,6 +1,7 @@
 
 set(${PROJECT_NAME}_QtWidgets_HDRS
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAbstractImporter.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAbstractImporterHandler.h
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAbstractViewWidget.h
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAdvancedVisibilitySettingsWidget.h
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSColorButton.h
@@ -30,6 +31,7 @@ set(${PROJECT_NAME}_QtWidgets_HDRS
 
 set(${PROJECT_NAME}_QtWidgets_SRCS
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAbstractImporter.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAbstractImporterHandler.cpp
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAbstractViewWidget.cpp
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSAdvancedVisibilitySettingsWidget.cpp
   ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/VSColorButton.cpp

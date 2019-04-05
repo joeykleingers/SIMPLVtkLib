@@ -141,7 +141,7 @@ void VSQueueListView::clearCompletedImports()
   for(int row = 0; row < model->rowCount(); row++)
   {
     QPersistentModelIndex index = model->index(row, VSQueueItem::ItemData::Contents);
-    VSAbstractImporter::Pointer importer = model->data(index, VSQueueModel::Roles::ImporterRole).value<VSAbstractImporter::Pointer>();
+    VSAbstractImporter::Pointer importer = model->getImporter(index);
     if(importer->getState() == VSAbstractImporter::State::Finished)
     {
       model->removeImporter(importer);
@@ -181,7 +181,7 @@ bool VSQueueListView::clearImporter(const QModelIndex &index)
 {
   VSQueueModel* model = getQueueModel();
 
-  VSAbstractImporter::Pointer importer = model->data(index, VSQueueModel::Roles::ImporterRole).value<VSAbstractImporter::Pointer>();
+  VSAbstractImporter::Pointer importer = model->getImporter(index);
   if(importer->getState() == VSAbstractImporter::State::Executing)
   {
     QString name = model->data(index, Qt::DisplayRole).toString();
@@ -206,7 +206,7 @@ void VSQueueListView::stopImporter(const QModelIndex &index)
 {
   VSQueueModel* model = getQueueModel();
 
-  VSAbstractImporter::Pointer importer = model->data(index, VSQueueModel::Roles::ImporterRole).value<VSAbstractImporter::Pointer>();
+  VSAbstractImporter::Pointer importer = model->getImporter(index);
   if(importer->getState() == VSAbstractImporter::State::Executing)
   {
 //    QString name = model->data(index, Qt::DisplayRole).toString();
@@ -228,7 +228,7 @@ void VSQueueListView::resetImporter(const QModelIndex &index)
 {
   VSQueueModel* model = getQueueModel();
 
-  VSAbstractImporter::Pointer importer = model->data(index, VSQueueModel::Roles::ImporterRole).value<VSAbstractImporter::Pointer>();
+  VSAbstractImporter::Pointer importer = model->getImporter(index);
   if(importer->getState() == VSAbstractImporter::State::Executing)
   {
     QString name = model->data(index, Qt::DisplayRole).toString();

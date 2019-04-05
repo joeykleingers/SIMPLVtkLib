@@ -48,6 +48,8 @@ public:
 
   ~VSMontageImporter();
 
+  SIMPL_GET_PROPERTY(FilterPipeline::Pointer, Pipeline)
+
   static Pointer New(FilterPipeline::Pointer pipeline);
   static Pointer New(FilterPipeline::Pointer pipeline,
 	DataContainerArray::Pointer dataContainerArray);
@@ -60,6 +62,10 @@ public:
 
   virtual void reset() override;
 
+  virtual void visit(VSAbstractImporterHandler* handler) const override;
+
+  virtual VSAbstractImporter::Pointer deepCopy() const override;
+
 protected:
   VSMontageImporter(FilterPipeline::Pointer pipeline);
   VSMontageImporter(FilterPipeline::Pointer pipeline,
@@ -71,9 +77,6 @@ protected slots:
    * @param pipelineMsg
    */
   void processPipelineMessage(const PipelineMessage& pipelineMsg);
-
-signals:
-  void resultReady(FilterPipeline::Pointer pipeline, int err);
 
 private:
   FilterPipeline::Pointer m_Pipeline;

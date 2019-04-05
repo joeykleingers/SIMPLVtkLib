@@ -37,6 +37,7 @@
 
 #include <QtCore/QFileInfo>
 
+#include "SIMPLVtkLib/QtWidgets/VSAbstractImporterHandler.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSDataSetFilter.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSFileNameFilter.h"
 
@@ -88,7 +89,6 @@ void VSDatasetImporter::execute()
   }
 
   setState(State::Finished);
-  emit resultReady(m_TextFilter, m_DatasetFilter);
 }
 
 // -----------------------------------------------------------------------------
@@ -107,4 +107,40 @@ void VSDatasetImporter::reset()
 {
   // Cancel
   setState(State::Ready);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+VSAbstractImporter::Pointer VSDatasetImporter::deepCopy() const
+{
+  VSFileNameFilter* textFilter = new VSFileNameFilter(m_TextFilter->getFilePath(), m_TextFilter->getParentFilter());
+  VSDataSetFilter* datasetFilter = new VSDataSetFilter(m_DatasetFilter->getFilePath(), m_DatasetFilter->getParentFilter());
+
+  VSDatasetImporter::Pointer datasetImporter = VSDatasetImporter::New(textFilter, datasetFilter);
+  return datasetImporter;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSDatasetImporter::visit(VSAbstractImporterHandler* handler) const
+{
+  handler->processImporter(this);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+VSFileNameFilter* VSDatasetImporter::getFileNameFilter() const
+{
+  return m_TextFilter;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+VSDataSetFilter* VSDatasetImporter::getDataSetFilter() const
+{
+  return m_DatasetFilter;
 }
