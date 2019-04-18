@@ -1152,23 +1152,18 @@ void VSFilterViewSettings::setupActors(bool outline)
     return;
   }
 
-  if(isFlatImage() && hasSinglePointArray())
+  if(isFlatImage())
   {
     setupImageActors();
+    setScalarBarSetting(ScalarBarSetting::Never);
   }
   else
   {
     setupDataSetActors();
 
-    if(isFlatImage())
-    {
-      setScalarBarSetting(ScalarBarSetting::Never);
-    }
-    else
-    {
-      // Refresh ScalarBarSetting
-      setScalarBarSetting(m_ScalarBarSetting);
-    }
+    // Refresh ScalarBarSetting
+    setScalarBarSetting(m_ScalarBarSetting);
+
   }
 
   setupCubeAxesActor();
@@ -1210,13 +1205,6 @@ bool VSFilterViewSettings::isFlatImage()
     {
       return true;
     }
-  }
-
-  // Check bounds of image data
-  double* bounds = imageData->GetBounds();
-  if(bounds[4] == 0 && (bounds[5] == 0 || bounds[5] == 1))
-  {
-    return true;
   }
 
   return false;
