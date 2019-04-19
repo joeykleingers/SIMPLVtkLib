@@ -605,11 +605,11 @@ vtkActor* VSFilterViewSettings::getDataSetActor() const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-vtkImageSliceMapper* VSFilterViewSettings::getImageMapper() const
+vtkDataSetMapper* VSFilterViewSettings::getImageMapper() const
 {
   if(ActorType::Image2D == m_ActorType && isValid())
   {
-    return dynamic_cast<vtkImageSliceMapper*>(m_Mapper.Get());
+    return dynamic_cast<vtkDataSetMapper*>(m_Mapper.Get());
   }
 
   return nullptr;
@@ -618,11 +618,11 @@ vtkImageSliceMapper* VSFilterViewSettings::getImageMapper() const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-vtkImageSlice* VSFilterViewSettings::getImageSliceActor() const
+vtkActor* VSFilterViewSettings::getImageActor() const
 {
   if(ActorType::Image2D == m_ActorType && isValid())
   {
-    return dynamic_cast<vtkImageSlice*>(m_Actor.Get());
+    return dynamic_cast<vtkActor*>(m_Actor.Get());
   }
 
   return nullptr;
@@ -1035,13 +1035,13 @@ void VSFilterViewSettings::updateDataSetAlpha()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::updateImageAlpha()
 {
-  vtkImageSlice* actor = getImageSliceActor();
+  vtkActor* actor = getImageActor();
   if(nullptr == actor)
   {
     return;
   }
 
-  vtkImageProperty* property = actor->GetProperty();
+  vtkProperty* property = actor->GetProperty();
   property->SetOpacity(m_Alpha);
   actor->SetProperty(property);
 }
