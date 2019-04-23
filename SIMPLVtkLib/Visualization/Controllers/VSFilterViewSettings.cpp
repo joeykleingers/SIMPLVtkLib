@@ -1266,6 +1266,24 @@ void VSFilterViewSettings::setupImageActors()
   m_Actor = actor;
   m_Plane = plane;
 
+  vtkImageData* imageData = dynamic_cast<vtkImageData*>(outputData.Get());
+
+  double spacing[3];
+  imageData->GetSpacing(spacing);
+
+  // Get transform vectors
+  VSTransform* transform = m_Filter->getTransform();
+
+  double scaling[3] = {spacing[0], spacing[1], spacing[2]};
+
+  transform->setLocalScale(scaling);
+
+  // Save the initial transform
+  VSTransform* defaultTransform = getDefaultTransform();
+  defaultTransform->setLocalPosition(m_Filter->getTransform()->getLocalPosition());
+  defaultTransform->setLocalRotation(m_Filter->getTransform()->getLocalRotation());
+  defaultTransform->setLocalScale(m_Filter->getTransform()->getLocalScale());
+
   m_ActorType = ActorType::Image2D;
   updateTexture();
   updateTransform();
@@ -1324,13 +1342,9 @@ void VSFilterViewSettings::setupDataSetActors()
   {
     mapper->SetInputConnection(m_OutlineFilter->GetOutputPort());
   }
-  else if(!isFlatImage())
-  {
-    mapper->SetInputConnection(m_DataSetFilter->GetOutputPort());
-  }
   else
   {
-    mapper->SetInputConnection(plane->GetOutputPort());
+    mapper->SetInputConnection(m_DataSetFilter->GetOutputPort());
   }
   actor->SetMapper(mapper);
 
@@ -1377,26 +1391,7 @@ void VSFilterViewSettings::setupDataSetActors()
   m_Plane = plane;
 
   m_ActorType = ActorType::DataSet;
-  if(isFlatImage())
-  {
-    vtkImageData* imageData = dynamic_cast<vtkImageData*>(outputData.Get());
 
-    double spacing[3];
-    imageData->GetSpacing(spacing);
-
-    // Get transform vectors
-    VSTransform* transform = m_Filter->getTransform();
-
-    double scaling[3] = {spacing[0], spacing[1], spacing[2]};
-
-    transform->setLocalScale(scaling);
-
-    // Save the initial transform
-    VSTransform* defaultTransform = getDefaultTransform();
-    defaultTransform->setLocalPosition(m_Filter->getTransform()->getLocalPosition());
-    defaultTransform->setLocalRotation(m_Filter->getTransform()->getLocalRotation());
-    defaultTransform->setLocalScale(m_Filter->getTransform()->getLocalScale());
-  }
   updateTransform();
 }
 
