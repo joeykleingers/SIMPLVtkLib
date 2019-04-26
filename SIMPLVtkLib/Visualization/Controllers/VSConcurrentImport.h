@@ -60,14 +60,6 @@ class SIMPLVtkLib_EXPORT VSConcurrentImport : public QObject
   Q_OBJECT
 
 public:
-  enum class LoadType : unsigned int
-  {
-    Import,
-    Reload,
-    Geometry,
-    SemiReload
-  };
-
   using DcaGenericPair = std::pair<VSTextFilter*, DataContainerArray::Pointer>;
 
   /**
@@ -115,12 +107,6 @@ public:
    * be slower to import than a single large file if the amount of data is the same.
    */
   void run();
-
-  /**
-   * @brief setLoadType
-   * @param type
-   */
-  void setLoadType(LoadType type);
 
 signals:
   void importedFilter(VSAbstractFilter* filter, bool currentFilter = false);
@@ -171,7 +157,7 @@ private:
   std::vector<VSSIMPLDataContainerFilter*> m_AppliedDataFilters;
 
   DataContainerArray::Container m_ImportDataContainerQueue;
-  QMap<DataContainer::Pointer, int> m_ImportDataContainerIndexMap;
+  QMap<DataContainer::Pointer, int> m_DataContainerIndexMap;
   QSemaphore m_ImportDataContainerOrderLock;
   QSemaphore m_UnappliedDataFilterLock;
   QSemaphore m_AppliedDataFilterLock;
@@ -185,6 +171,4 @@ private:
   int m_ThreadCount;
   int m_ThreadsRemaining = 0;
   int m_AppliedFilterCount = 0;
-
-  LoadType m_LoadType = LoadType::Import;
 };
