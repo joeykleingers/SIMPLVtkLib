@@ -306,7 +306,12 @@ void VSConcurrentImport::applyDataFiltersThreadFinished()
 
     for (VSSIMPLDataContainerFilter* filter : m_AppliedDataFilters)
     {
-      m_Controller->getFilterModel()->addFilter(filter, false);
+      auto currentFilters = m_Controller->getFilterModel()->getAllFilters();
+      bool filterFound = (std::find(currentFilters.begin(), currentFilters.end(), m_DataParentFilter) != currentFilters.end());
+      if (!filterFound)
+      {
+        m_Controller->getFilterModel()->addFilter(filter, false);
+      }
     }
 
     m_AppliedDataFilters.clear();
