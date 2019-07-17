@@ -448,7 +448,7 @@ QVector<QString> RobometListWidget::generateFileList(int sliceNumber, int montag
         filename.append(QString("%1_").arg(filePrefix));
       }
 
-      filename.append(QString("%1_%2_%3").arg(QString::number(sliceNumber), k_SlicePadding, '0').arg(QString::number(row), k_RowColPadding, '0').arg(QString::number(col), k_RowColPadding, '0'));
+      filename.append(QString("%1_%2_%3").arg(QString::number(sliceNumber), k_SlicePadding, '0').arg(QString::number(col), k_RowColPadding, '0').arg(QString::number(row), k_RowColPadding, '0'));
 
       filename.append(QString(".%5").arg(fileExtension));
 
@@ -552,14 +552,14 @@ void RobometListWidget::findNumberOfRowsAndColumns()
   QFileInfoList fiList = dir.entryInfoList();
   int maxRow = 0;
   int maxCol = 0;
-  for(QFileInfo fi : fiList)
+  for(const auto& fi : fiList)
   {
     QString fileBaseName = fi.baseName();
     QStringList tokens = fileBaseName.split("_");
     if(tokens.size() > 1) // Only get the rows and columns if they exist in the file name
     {
-      int col = tokens[tokens.size() - 1].toInt();
-      int row = tokens[tokens.size() - 2].toInt();
+      int col = tokens[tokens.size() - 2].toInt();
+      int row = tokens[tokens.size() - 1].toInt();
 
       if(row > maxRow)
       {
@@ -572,7 +572,12 @@ void RobometListWidget::findNumberOfRowsAndColumns()
       }
     }
   }
-  
+
+  QString montageInfo;
+  QTextStream ss(&montageInfo);
+  ss << "Max Column: " << maxCol - 1 << "  Max Row: " << maxRow - 1 << "  Image Count: " << (maxCol + 1) * (maxRow + 1);
+  m_Ui->montageInfoLabel->setText(montageInfo);
+
   m_Ui->montageStartCol->setValue(0);
   m_Ui->montageStartRow->setValue(0);
   m_Ui->montageEndCol->setValue(maxCol);
@@ -599,6 +604,12 @@ RobometListInfo_t RobometListWidget::getRobometListInfo()
   data.ImageExtension = m_Ui->fileExt->text();
 
   return data;
+}
+
+// -----------------------------------------------------------------------------
+QString RobometListWidget::getMontagePrefix()
+{
+  return m_Ui->filePrefix->text();
 }
 
 // -----------------------------------------------------------------------------

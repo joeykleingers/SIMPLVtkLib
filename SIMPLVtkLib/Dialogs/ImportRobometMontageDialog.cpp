@@ -144,6 +144,8 @@ void ImportRobometMontageDialog::disconnectSignalsSlots()
 void ImportRobometMontageDialog::robometListWidgetChanged()
 {
   RobometListInfo_t robometListInfo = m_Ui->robometListWidget->getRobometListInfo();
+  m_Ui->montageNameLE->setText(m_Ui->robometListWidget->getMontagePrefix());
+
   setRobometListInfo(robometListInfo);
 
   checkComplete();

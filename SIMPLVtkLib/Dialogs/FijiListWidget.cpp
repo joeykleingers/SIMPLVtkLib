@@ -35,6 +35,9 @@
 
 #include "FijiListWidget.h"
 
+#include <map>
+#include <vector>
+
 //-- Qt Includes
 #include <QtCore/QDir>
 #include <QtGui/QKeyEvent>
@@ -56,6 +59,197 @@
 
 // Initialize private static member variable
 QString FijiListWidget::m_OpenDialogLastFilePath = "";
+
+namespace
+{
+
+using BoundsType = struct
+{
+  QString Filename;
+  SizeVec3Type Dims;
+  FloatVec3Type Origin;
+  FloatVec3Type Spacing;
+  int32_t Row;
+  int32_t Col;
+  IDataArray::Pointer ImageDataProxy;
+};
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+std::map<int32_t, std::vector<size_t>> Burn(int32_t tolerance, std::vector<int32_t>& input)
+{
+  int32_t halfTol = tolerance / 2;
+  size_t count = input.size();
+  int32_t seed = input[0];
+  std::vector<bool> visited(input.size(), false);
+  std::map<int32_t, std::vector<size_t>> avg_indices;
+
+  bool completed = false;
+  while(!completed)
+  {
+    std::vector<size_t> values;
+    for(size_t i = 0; i < count; i++)
+    {
+      // const BoundsType& bound = bounds.at(i);
+      if(input[i] < seed + halfTol && input[i] > seed - halfTol)
+      {
+        values.push_back(i);
+        visited[i] = true;
+      }
+    }
+
+    int32_t avg = 0;
+    for(const auto& v : values)
+    {
+      avg = avg + input.at(v);
+    }
+    avg = avg / values.size();
+    avg_indices[avg] = values;
+    seed = 0;
+    completed = true;
+    for(size_t i = 0; i < count; i++)
+    {
+      if(!visited[i])
+      {
+        seed = input[i];
+        completed = false;
+        break;
+      }
+    }
+  }
+  return avg_indices;
+}
+
+// -----------------------------------------------------------------------------
+std::array<int32_t, 2> findTileIndices(int32_t tolerance, std::vector<BoundsType>& bounds)
+{
+  std::vector<int32_t> xValues(bounds.size());
+  std::vector<int32_t> yValues(bounds.size());
+
+  for(size_t i = 0; i < bounds.size(); i++)
+  {
+    xValues[i] = bounds.at(i).Origin[0];
+    yValues[i] = bounds.at(i).Origin[1];
+  }
+
+  std::map<int32_t, std::vector<size_t>> avg_indices = Burn(tolerance, xValues);
+  int32_t index = 0;
+  for(auto& iter : avg_indices)
+  {
+    const std::vector<size_t>& indices = iter.second;
+    for(const auto& i : indices)
+    {
+      bounds.at(i).Col = index;
+    }
+    index++;
+  }
+  int32_t colCount = index;
+
+  avg_indices = Burn(tolerance, yValues);
+  index = 0;
+  for(auto& iter : avg_indices)
+  {
+    const std::vector<size_t>& indices = iter.second;
+    for(const auto& i : indices)
+    {
+      bounds.at(i).Row = index;
+    }
+    index++;
+  }
+  int rowCount = index;
+
+  return {colCount, rowCount};
+}
+
+// -----------------------------------------------------------------------------
+QString parseConfigFile(const QString& filePath)
+{
+  QString contents;
+
+  // Read the Source File
+  QFile source(filePath);
+  source.open(QFile::ReadOnly);
+  contents = source.readAll();
+  source.close();
+
+  QStringList list = contents.split(QRegExp("\\n"));
+  QStringListIterator sourceLines(list);
+  bool dimFound = false;
+  bool dataFound = false;
+
+  while(sourceLines.hasNext())
+  {
+    QString line = sourceLines.next().trimmed();
+
+    if(line.startsWith("dim =")) // found the dimensions
+    {
+      dimFound = true;
+      // Should check that the value = 2
+    }
+    if(line.startsWith("# Define the image coordinates"))
+    {
+      // Found the start of the data
+      dataFound = true;
+      break;
+    }
+    if(line.startsWith("#")) // comment line
+    {
+      continue;
+    }
+  }
+
+  std::vector<BoundsType> bounds;
+  if(!dimFound || !dataFound)
+  {
+    return QString("");
+  }
+
+  // slice_12.tif; ; (471.2965233276666, -0.522608066434236)
+  while(sourceLines.hasNext())
+  {
+    QString line = sourceLines.next().trimmed();
+    if(line.isEmpty())
+    {
+      continue;
+    }
+    QStringList tokens = line.split(";");
+    if(tokens.count() != 3)
+    {
+      continue;
+    }
+    BoundsType bound;
+    bound.Filename = tokens.at(0);
+
+    QString coords = tokens.at(2).trimmed();
+    coords = coords.replace("(", "");
+    coords = coords.replace(")", "");
+    tokens = coords.split(",");
+    if(tokens.count() != 2)
+    {
+      continue;
+    }
+    float x = tokens.at(0).toFloat();
+    float y = tokens.at(1).toFloat();
+    bound.Origin = FloatVec3Type(x, y, 0.0f);
+    bound.Spacing = FloatVec3Type(1.0f, 1.0f, 1.0f);
+    bounds.push_back(bound);
+  }
+  int32_t tolerance = 100;
+  std::array<int32_t, 2> maxColRow = findTileIndices(tolerance, bounds);
+
+  QString montageInfo;
+  QTextStream ss(&montageInfo);
+  ss << "Max Column: " << maxColRow[0] - 1 << "  Max Row: " << maxColRow[1] - 1 << "  Image Count: " << (maxColRow[0] * maxColRow[1]);
+
+  return montageInfo;
+}
+
+QString generateMontageInfo(const QString& filePath)
+{
+  return parseConfigFile(filePath);
+}
+} // namespace
 
 // -----------------------------------------------------------------------------
 //
@@ -271,6 +465,8 @@ void FijiListWidget::inputDir_textChanged(const QString& text)
     m_Ui->inputDir->blockSignals(true);
     m_Ui->inputDir->setText(QDir::toNativeSeparators(m_Ui->inputDir->text()));
     m_Ui->inputDir->blockSignals(false);
+
+    m_Ui->montageInfoLabel->setText(::generateMontageInfo(text));
   }
   else
   {
@@ -284,7 +480,7 @@ void FijiListWidget::inputDir_textChanged(const QString& text)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void FijiListWidget::generateExampleInputFile(QStringList filenameList)
+void FijiListWidget::generateExampleInputFile(const QStringList& filenameList)
 {
   QFileInfo fi(m_Ui->inputDir->text());
   bool hasMissingFiles = false;
@@ -373,6 +569,11 @@ QVector<QString> FijiListWidget::generateFileList(QStringList filenameList, bool
 // -----------------------------------------------------------------------------
 QStringList FijiListWidget::readFijiConfigFile()
 {
+
+  QFileInfo fi(m_Ui->inputDir->text());
+  QFileInfo dirInfo(fi.absoluteDir().dirName());
+  m_MontagePrefix = dirInfo.baseName();
+
   QFile file(m_Ui->inputDir->text());
   if(!file.open(QIODevice::ReadOnly))
   {
@@ -412,6 +613,12 @@ FijiListInfo_t FijiListWidget::getFijiListInfo()
 }
 
 // -----------------------------------------------------------------------------
+QString FijiListWidget::getMontagePrefix()
+{
+  return m_MontagePrefix;
+}
+
+// -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 bool FijiListWidget::isComplete() const
@@ -443,7 +650,7 @@ bool FijiListWidget::isComplete() const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void FijiListWidget::setInputDirectory(QString val)
+void FijiListWidget::setInputDirectory(const QString& val)
 {
   m_Ui->inputDir->setText(val);
 }

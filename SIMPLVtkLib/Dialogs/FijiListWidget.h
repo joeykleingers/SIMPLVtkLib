@@ -119,6 +119,12 @@ public:
   FijiListInfo_t getFijiListInfo();
 
   /**
+   * @brief getMontagePrefix
+   * @return
+   */
+  QString getMontagePrefix();
+
+  /**
    * @brief getCurrentNumberOfTiles
    * @return
    */
@@ -131,7 +137,7 @@ protected slots:
   void inputDir_textChanged(const QString& text);
 
 protected:
-  void setInputDirectory(QString val);
+  void setInputDirectory(const QString& val);
   QString getInputDirectory();
 
   static void setOpenDialogLastFilePath(QString val)
@@ -163,7 +169,7 @@ protected:
    * @brief generateExampleInputFile
    * @param filenameList
    */
-  void generateExampleInputFile(QStringList filenameList);
+  void generateExampleInputFile(const QStringList& filenameList);
 
   /**
    * @brief
@@ -192,6 +198,7 @@ private:
   QAction* m_ShowFileAction = nullptr;
   QString m_CurrentText = "";
   bool m_DidCausePreflight = false;
+  QString m_MontagePrefix = "";
 
   const int k_SlicePadding = 6;
 

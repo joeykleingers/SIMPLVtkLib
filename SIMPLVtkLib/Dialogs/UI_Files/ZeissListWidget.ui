@@ -46,7 +46,7 @@ font-size: 11px;
 }</string>
        </property>
        <property name="text">
-        <string>Zeiss Config File Path:</string>
+        <string>AxioVision Config File Path:</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -154,6 +154,16 @@ font-size: 11px;
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="montageInfoLabel">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="errorMessage">

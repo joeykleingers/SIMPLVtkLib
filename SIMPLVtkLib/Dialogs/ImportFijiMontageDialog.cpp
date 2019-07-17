@@ -152,6 +152,8 @@ void ImportFijiMontageDialog::fijiListWidgetChanged()
   FijiListInfo_t fijiListInfo = m_Ui->fijiListWidget->getFijiListInfo();
   setFijiListInfo(fijiListInfo);
 
+  m_Ui->montageNameLE->setText(m_Ui->fijiListWidget->getMontagePrefix());
+
   checkComplete();
 }
 

@@ -143,6 +143,12 @@ public:
    */
   RobometListInfo_t getRobometListInfo();
 
+  /**
+   * @brief getMontagePrefix
+   * @return
+   */
+  QString getMontagePrefix();
+
 protected slots:
 
   // Slots to catch signals emitted by the various ui widgets

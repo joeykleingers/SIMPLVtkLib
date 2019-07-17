@@ -395,6 +395,10 @@ QStringList ZeissZenListWidget::readZeissConfigFile()
       }
 
       importZeissMontageFilter->preflight();
+
+      QString montageInfo = importZeissMontageFilter->property("MontageInformation").toString();
+      m_Ui->montageInfoLabel->setText(montageInfo);
+
       fileNameList = importZeissMontageFilter->property("FilenameList").toStringList();
     }
   }
