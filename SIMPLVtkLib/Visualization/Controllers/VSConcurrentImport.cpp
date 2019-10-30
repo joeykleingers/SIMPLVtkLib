@@ -1,4 +1,10 @@
 /* ============================================================================
+
+#include "SIMPLib/DataContainers/DataContainer.h"
+#include "SIMPLib/DataContainers/DataContainerArray.h"
+
+
+
  * Copyright (c) 2009-2015 BlueQuartz Software, LLC
  *
  * Redistribution and use in source and binary forms, with or without modification,

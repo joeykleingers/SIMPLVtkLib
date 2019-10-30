@@ -52,7 +52,7 @@ class VSFilterViewDelegate : public QStyledItemDelegate
   Q_OBJECT
 
 public:
-  explicit VSFilterViewDelegate(QObject* parent = 0);
+  explicit VSFilterViewDelegate(QObject* parent = nullptr);
   virtual ~VSFilterViewDelegate() = default;
 
 protected:

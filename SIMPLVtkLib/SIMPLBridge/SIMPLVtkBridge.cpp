@@ -1,4 +1,10 @@
 /* ============================================================================
+
+#include "SIMPLib/DataContainers/DataContainer.h"
+#include "SIMPLib/DataContainers/DataContainerArray.h"
+
+
+
  * Copyright (c) 2009-2015 BlueQuartz Software, LLC
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -429,7 +435,7 @@ bool SIMPLVtkBridge::WrapAttrMatrixData(AttributeMatrix::Pointer attrMat, Wrappe
 
   std::vector<size_t> tupleDims = attrMat->getTupleDimensions();
 
-  size_t numTuples = std::accumulate(tupleDims.begin(), tupleDims.end(), 1, std::multiplies<>());
+  size_t numTuples = std::accumulate(tupleDims.begin(), tupleDims.end(), static_cast<size_t>(1)), std::multiplies<>());
 
   if(tuplesReq == numTuples)
   {

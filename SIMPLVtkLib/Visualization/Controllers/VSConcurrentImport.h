@@ -42,7 +42,6 @@
 #include <QtCore/QSemaphore>
 #include <QtCore/QThread>
 
-#include "SIMPLib/DataContainers/DataContainerArray.h"
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSFileNameFilter.h"
@@ -62,6 +61,15 @@ class SIMPLVtkLib_EXPORT VSConcurrentImport : public QObject
 public:
   using DcaGenericPair = std::pair<VSTextFilter*, DataContainerArray::Pointer>;
 
+  enum class LoadType : unsigned int
+  {
+    Import,
+    Reload,
+    Geometry,
+    SemiReload
+  };
+
+
   /**
    * @brief Constructor
    * @param parent
@@ -78,28 +86,28 @@ public:
    * @param pipeline
    * @param dca
    */
-  void addDataContainerArray(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
+  void addDataContainerArray(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dca);
 
   /**
    * @brief Add a DataContainerArray with the given pipeline filter to the list of items to import
    * @param pipelineFilter
    * @param dca
    */
-  void addDataContainerArray(VSPipelineFilter* pipelineFilter, DataContainerArray::Pointer dca);
+  void addDataContainerArray(VSPipelineFilter* pipelineFilter, DataContainerArrayShPtrType dca);
 
   /**
    * @brief Add a DataContainerArray with the given file path to the list items to import
    * @param filePath
    * @param dca
    */
-  void addDataContainerArray(QString filePath, DataContainerArray::Pointer dca);
+  void addDataContainerArray(QString filePath, DataContainerArrayShPtrType dca);
 
   /**
    * @brief Add a DataContainerArray with the given file filter to the list items to import
    * @param fileFilter
    * @param dca
    */
-  void addDataContainerArray(VSFileNameFilter* fileFilter, DataContainerArray::Pointer dca);
+  void addDataContainerArray(VSFileNameFilter* fileFilter, DataContainerArrayShPtrType dca);
 
   /**
    * @brief Performs the import process on as many threads as are available.

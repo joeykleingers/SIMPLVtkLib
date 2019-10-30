@@ -99,7 +99,6 @@ public:
     ANY_DATA_SET,
     INVALID_DATA
   };
-
   enum class FilterType : unsigned char
   {
     Placeholder = 0,
@@ -108,17 +107,23 @@ public:
     File,
     Pipeline
   };
-
   using FilterListType = std::list<VSAbstractFilter*>;
+    /**
+    * @brief Setter property for LoadingObject
+    */
+    void setLoadingObject(const QJsonObject& value); 
+    /**
+    * @brief Getter property for LoadingObject
+    * @return Value of LoadingObject
+    */
+    QJsonObject getLoadingObject() const;
 
-  SIMPL_INSTANCE_PROPERTY(QJsonObject, LoadingObject)
-  SIMPL_BOOL_PROPERTY(Initialized)
-
+  void setInitialized(bool value);
+  bool getInitialized() const;
   /**
    * @brief Deconstructor
    */
   virtual ~VSAbstractFilter() = default;
-
   /**
    * @brief Deletes the item and removes it from the model
    */
@@ -557,6 +562,8 @@ protected:
   void setEditable(bool editable);
 
 private:
+    QJsonObject m_LoadingObject = {};
+
   /**
    * @brief Adds a child VSAbstractFilter
    * @param child
@@ -581,6 +588,7 @@ private:
   QFont m_Font;
   Qt::ItemFlags m_Flags;
   QString m_DisplayText;
+  bool m_Initialized = false;
 };
 
 #ifdef __clang__

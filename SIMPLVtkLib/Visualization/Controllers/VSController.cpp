@@ -45,6 +45,10 @@
 
 #include "SIMPLib/Utilities/SIMPLH5DataReader.h"
 #include "SIMPLib/Utilities/SIMPLH5DataReaderRequirements.h"
+#include "SIMPLib/DataContainers/DataContainerArray.h"
+#include "SIMPLib/DataContainers/DataContainer.h"
+
+
 
 #include "SIMPLVtkLib/Dialogs/FijiListWidget.h"
 #include "SIMPLVtkLib/Dialogs/Utilities/TileConfigFileGenerator.h"

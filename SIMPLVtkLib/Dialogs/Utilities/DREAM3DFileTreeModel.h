@@ -39,7 +39,7 @@
 #include <QtCore/QModelIndex>
 #include <QtCore/QVariant>
 
-#include "SIMPLib/Common/SIMPLibSetGetMacros.h"
+
 #include "SIMPLib/DataContainers/DataContainerArrayProxy.h"
 
 #include "SIMPLVtkLib/Dialogs/Utilities/DREAM3DFileItem.h"
@@ -51,7 +51,7 @@ class DREAM3DFileTreeModel : public QAbstractItemModel
 public:
   SIMPL_TYPE_MACRO(DREAM3DFileTreeModel)
 
-  DREAM3DFileTreeModel(QObject* parent = 0);
+  DREAM3DFileTreeModel(QObject* parent = nullptr);
   ~DREAM3DFileTreeModel();
 
   QVariant data(const QModelIndex& index, int role) const Q_DECL_OVERRIDE;

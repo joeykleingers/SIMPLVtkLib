@@ -44,7 +44,7 @@ class DREAM3DFileItemDelegate : public QStyledItemDelegate
   Q_OBJECT
 
 public:
-  explicit DREAM3DFileItemDelegate(QObject* parent = 0);
+  explicit DREAM3DFileItemDelegate(QObject* parent = nullptr);
 
   virtual ~DREAM3DFileItemDelegate();
 

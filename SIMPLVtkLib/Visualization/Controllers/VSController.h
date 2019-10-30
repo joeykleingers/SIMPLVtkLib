@@ -39,8 +39,10 @@
 #include <QtCore/QObject>
 #include <QtCore/QVector>
 
-#include "SIMPLib/DataContainers/DataContainerArray.h"
 #include "SIMPLib/Filtering/FilterPipeline.h"
+class DataContainerArray;
+using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
+
 
 #include "SIMPLVtkLib/QtWidgets/VSAbstractImporter.h"
 #include "SIMPLVtkLib/SIMPLBridge/SIMPLVtkBridge.h"

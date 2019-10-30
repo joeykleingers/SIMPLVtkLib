@@ -41,7 +41,7 @@
 
 #include <QtGui/QIcon>
 
-#include "SIMPLib/Common/SIMPLibSetGetMacros.h"
+
 
 class DREAM3DFileItem
 {
@@ -62,10 +62,46 @@ public:
     DataArray,
   };
 
-  SIMPL_INSTANCE_PROPERTY(Qt::CheckState, CheckState)
-  SIMPL_INSTANCE_PROPERTY(DREAM3DFileItem::ItemType, ItemType)
-  SIMPL_INSTANCE_PROPERTY(QIcon, Icon)
-  SIMPL_INSTANCE_PROPERTY(QString, ItemTooltip)
+    /**
+    * @brief Setter property for CheckState
+    */
+    void setCheckState(const Qt::CheckState& value); 
+    /**
+    * @brief Getter property for CheckState
+    * @return Value of CheckState
+    */
+    Qt::CheckState getCheckState() const;
+
+    /**
+    * @brief Setter property for ItemType
+    */
+    void setItemType(const DREAM3DFileItem::ItemType& value); 
+    /**
+    * @brief Getter property for ItemType
+    * @return Value of ItemType
+    */
+    DREAM3DFileItem::ItemType getItemType() const;
+
+    /**
+    * @brief Setter property for Icon
+    */
+    void setIcon(const QIcon& value); 
+    /**
+    * @brief Getter property for Icon
+    * @return Value of Icon
+    */
+    QIcon getIcon() const;
+
+    /**
+    * @brief Setter property for ItemTooltip
+    */
+    void setItemTooltip(const QString& value); 
+    /**
+    * @brief Getter property for ItemTooltip
+    * @return Value of ItemTooltip
+    */
+    QString getItemTooltip() const;
+
 
   DREAM3DFileItem* child(int number);
   DREAM3DFileItem* parent();
@@ -89,6 +125,11 @@ public:
   void setParent(DREAM3DFileItem* parent);
 
 private:
+    Qt::CheckState m_CheckState = {};
+    DREAM3DFileItem::ItemType m_ItemType = {};
+    QIcon m_Icon = {};
+    QString m_ItemTooltip = {};
+
   QList<DREAM3DFileItem*> m_ChildItems;
   QVector<QVariant> m_ItemData;
   DREAM3DFileItem* m_ParentItem;

@@ -53,6 +53,8 @@
 #include "SIMPLib/DataContainers/DataContainerArrayProxy.h"
 #include "SIMPLib/Utilities/SIMPLH5DataReader.h"
 #include "SIMPLib/Utilities/SIMPLH5DataReaderRequirements.h"
+#include "SIMPLib/DataContainers/DataContainerArray.h"
+
 
 #include "SIMPLVtkLib/Dialogs/LoadHDF5FileDialog.h"
 

@@ -44,7 +44,7 @@ class VSQueueItemDelegate : public QStyledItemDelegate
   Q_OBJECT
 
 public:
-  explicit VSQueueItemDelegate(QObject* parent = 0);
+  explicit VSQueueItemDelegate(QObject* parent = nullptr);
 
   ~VSQueueItemDelegate() override;
 

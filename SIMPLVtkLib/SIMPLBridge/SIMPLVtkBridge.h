@@ -45,7 +45,6 @@
 #include <vtkDataSet.h>
 
 #include "SIMPLib/DataArrays/DataArray.hpp"
-#include "SIMPLib/DataContainers/DataContainerArray.h"
 #include "SIMPLib/Geometry/EdgeGeom.h"
 #include "SIMPLib/Geometry/ImageGeom.h"
 #include "SIMPLib/Geometry/QuadGeom.h"
@@ -53,6 +52,15 @@
 #include "SIMPLib/Geometry/TetrahedralGeom.h"
 #include "SIMPLib/Geometry/TriangleGeom.h"
 #include "SIMPLib/Geometry/VertexGeom.h"
+#include "SIMPLib/DataContainers/AttributeMatrix.h"
+
+
+class IDataArray;
+using IDataArrayShPtrType = std::shared_ptr<IDataArray>;
+
+class DataContainerArray;
+using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
+
 
 #include "SIMPLVtkLib/SIMPLBridge/VtkMacros.h"
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
@@ -75,7 +83,7 @@ public:
   {
     QString m_ArrayName;
     AttributeMatrix::Pointer m_AttributeMatrix = nullptr;
-    IDataArray::Pointer m_SIMPLArray = nullptr;
+    IDataArrayShPtrType m_SIMPLArray = nullptr;
     VTK_PTR(vtkDataArray) m_VtkArray = nullptr;
   };
 
@@ -110,7 +118,7 @@ public:
    * @param dca
    * @return
    */
-  static WrappedDataContainerPtrCollection WrapDataContainerArrayAsStruct(DataContainerArray::Pointer dca);
+  static WrappedDataContainerPtrCollection WrapDataContainerArrayAsStruct(DataContainerArrayShPtrType dca);
 
   /**
    * @brief Wraps a DataContainer from SIMPLib in a vtkDataSet if applicable and returns a WrappedDataContainerPtr
@@ -156,7 +164,7 @@ public:
    * @param da
    * @return
    */
-  static WrappedDataArrayPtr WrapIDataArrayAsStruct(IDataArray::Pointer da);
+  static WrappedDataArrayPtr WrapIDataArrayAsStruct(IDataArrayShPtrType da);
 
   /**
    * @brief Creates and returns DataArrayImportSettings for the given array names
@@ -247,9 +255,9 @@ public:
    * @param array
    * @return
    */
-  static VTK_PTR(vtkDataArray) WrapIDataArray(IDataArray::Pointer array);
+  static VTK_PTR(vtkDataArray) WrapIDataArray(IDataArrayShPtrType array);
 
-  template <typename T> static VTK_PTR(T) WrapIDataArrayTemplate(IDataArray::Pointer array)
+  template <typename T> static VTK_PTR(T) WrapIDataArrayTemplate(IDataArrayShPtrType array)
   {
     VTK_NEW(T, vtkArray);
     vtkArray->SetNumberOfComponents(array->getNumberOfComponents());
@@ -328,7 +336,7 @@ protected:
    * @param array
    * @return
    */
-  static bool CanWrapDataArray(IDataArray::Pointer array);
+  static bool CanWrapDataArray(IDataArrayShPtrType array);
 
 public:
   SIMPLVtkBridge(const SIMPLVtkBridge&) = delete;            // Copy Constructor Not Implemented

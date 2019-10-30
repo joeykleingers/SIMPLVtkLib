@@ -234,3 +234,53 @@ void DREAM3DFileItem::setParent(DREAM3DFileItem* parent)
 {
   m_ParentItem = parent;
 }
+
+// -----------------------------------------------------------------------------
+void DREAM3DFileItem::setCheckState(const Qt::CheckState& value)
+{
+  m_CheckState = value;
+}
+
+// -----------------------------------------------------------------------------
+Qt::CheckState DREAM3DFileItem::getCheckState() const
+{
+  return m_CheckState;
+}
+
+// -----------------------------------------------------------------------------
+void DREAM3DFileItem::setItemType(const DREAM3DFileItem::ItemType& value)
+{
+  m_ItemType = value;
+}
+
+// -----------------------------------------------------------------------------
+DREAM3DFileItem::ItemType DREAM3DFileItem::getItemType() const
+{
+  return m_ItemType;
+}
+
+// -----------------------------------------------------------------------------
+void DREAM3DFileItem::setIcon(const QIcon& value)
+{
+  m_Icon = value;
+}
+
+// -----------------------------------------------------------------------------
+QIcon DREAM3DFileItem::getIcon() const
+{
+  return m_Icon;
+}
+
+// -----------------------------------------------------------------------------
+void DREAM3DFileItem::setItemTooltip(const QString& value)
+{
+  m_ItemTooltip = value;
+}
+
+// -----------------------------------------------------------------------------
+QString DREAM3DFileItem::getItemTooltip() const
+{
+  return m_ItemTooltip;
+}
+
+

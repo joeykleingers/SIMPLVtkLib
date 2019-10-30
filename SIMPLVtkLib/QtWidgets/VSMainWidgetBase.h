@@ -1,4 +1,7 @@
 /* ============================================================================
+class DataContainerArray;
+using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
+
  * Copyright (c) 2009-2017 BlueQuartz Software, LLC
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -209,7 +212,7 @@ public:
    * @param pipeline
    * @param dca
    */
-  void importFilterPipeline(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
+  void importFilterPipeline(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dca);
 
 public slots:
   /**
