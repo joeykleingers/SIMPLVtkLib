@@ -59,7 +59,7 @@ ConstructorInitializerIndentWidth: 0
 # KeepEmptyLinesAtTheStartOfBlocks: true
 # MacroBlockBegin: ''
 # MacroBlockEnd:   ''
-MaxEmptyLinesToKeep: 0
+# MaxEmptyLinesToKeep: 1
 # NamespaceIndentation: None
 # ObjCBlockIndentWidth: 2
 # ObjCSpaceAfterProperty: false
