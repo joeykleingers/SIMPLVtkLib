@@ -44,15 +44,18 @@
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
 
+class DataContainerArray;
+using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
+
 class SIMPLVtkLib_EXPORT PipelineWorker : public QObject
 {
   Q_OBJECT
 
 public:
   PipelineWorker();
-  ~PipelineWorker();
+  ~PipelineWorker() override;
 
-  void addPipeline(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
+  void addPipeline(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dca);
 
 signals:
   void finished();
@@ -64,5 +67,5 @@ public slots:
 
 private:
   FilterPipeline::Pointer m_Pipeline;
-  DataContainerArray::Pointer m_DataContainerArray;
+  DataContainerArrayShPtrType m_DataContainerArray;
 };

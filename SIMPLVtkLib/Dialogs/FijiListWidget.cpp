@@ -46,6 +46,7 @@
 #include <QtWidgets/QMenu>
 
 #include "SIMPLib/Common/Constants.h"
+#include "SIMPLib/Common/SIMPLArray.hpp"
 #include "SIMPLib/Filtering/AbstractFilter.h"
 #include "SIMPLib/Utilities/FilePathGenerator.h"
 #include "SIMPLib/Utilities/SIMPLDataPathValidator.h"

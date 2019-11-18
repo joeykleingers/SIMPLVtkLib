@@ -33,9 +33,10 @@
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 
+#include <sstream>
 #include <fstream>
 #include <iostream>
 
@@ -64,13 +65,13 @@ TileConfigFileGenerator::TileConfigFileGenerator()
 TileConfigFileGenerator::TileConfigFileGenerator(FileListInfo_t fileListInfo, MontageSettings::MontageType montageType, MontageSettings::MontageOrder montageOrder, int gridSizeX, int gridSizeY,
                                                  double tileOverlap, QString outputFilename)
 {
-  m_fileListInfo = fileListInfo;
+  m_fileListInfo = std::move(fileListInfo);
   m_montageType = montageType;
   m_montageOrder = montageOrder;
   m_gridSizeX = gridSizeX;
   m_gridSizeY = gridSizeY;
   m_tileOverlap = tileOverlap;
-  m_outputFilename = outputFilename;
+  m_outputFilename = std::move(outputFilename);
 }
 
 // -----------------------------------------------------------------------------
@@ -117,9 +118,8 @@ void TileConfigFileGenerator::generateTileConfigFile() const
   float image_width = 100.0;
   float image_height = 100.0;
   bool image_dimensions_determined = false;
-  for(QVector<QString>::iterator filepath = fileList.begin(); filepath != fileList.end(); ++filepath)
+  for(const QString& imageFName : fileList)
   {
-    QString imageFName = *filepath;
     QFileInfo fi(imageFName);
     if(fi.exists())
     {
@@ -164,7 +164,7 @@ void TileConfigFileGenerator::generateTileConfigFile() const
     int j = isRight ? m_fileListInfo.StartIndex : m_gridSizeX - 1; // X
 
     // Increment values
-    int delta_i = 1;
+    //    int delta_i = 1;
     int delta_j = 1;
 
     for(int y = 0; y < m_gridSizeY; y++)
@@ -218,7 +218,7 @@ void TileConfigFileGenerator::generateTileConfigFile() const
 
     // Increment values
     int delta_i = 1;
-    int delta_j = 1;
+    //    int delta_j = 1;
 
     for(int x = 0; x < m_gridSizeX; x++)
     {

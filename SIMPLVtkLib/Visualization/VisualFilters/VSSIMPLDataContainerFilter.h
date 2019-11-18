@@ -50,6 +50,9 @@
 
 class SIMPLH5DataReader;
 
+class DataContainer;
+using DataContainerShPtrType = std::shared_ptr<DataContainer>;
+
 /**
  * @class VSSIMPLDataContainerFilter VSSIMPLDataContainerFilter.h
  * SIMPLVtkLib/Visualization/VisualFilters/VSSIMPLDataContainerFilter.h
@@ -72,7 +75,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSSIMPLDataContainerFilter();
+  ~VSSIMPLDataContainerFilter() override;
 
   /**
    * @brief Returns true if data set is a 2D image.  Returns false otherwise.
@@ -90,7 +93,7 @@ public:
    * @brief Returns the output port for the filter
    * @return
    */
-  virtual vtkAlgorithmOutput* getOutputPort() override;
+  vtkAlgorithmOutput* getOutputPort() override;
 
   /**
    * @brief Returns the output data for the filter
@@ -107,7 +110,7 @@ public:
    * @brief Returns the tooltip to use for the filter
    * @return
    */
-  virtual QString getToolTip() const override;
+  QString getToolTip() const override;
 
   /**
    * @brief getUuid
@@ -155,7 +158,7 @@ public:
    * @brief reloadData
    * @param dc
    */
-  void reloadData(DataContainer::Pointer dc);
+  void reloadData(DataContainerShPtrType dc);
 
   /**
    * @brief Returns true if the data has been fully wrapped and loaded into a vtkDataSet. Returns false otherwise.

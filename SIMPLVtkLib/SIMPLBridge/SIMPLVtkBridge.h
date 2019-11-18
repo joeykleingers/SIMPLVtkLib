@@ -54,13 +54,14 @@
 #include "SIMPLib/Geometry/VertexGeom.h"
 #include "SIMPLib/DataContainers/AttributeMatrix.h"
 
-
 class IDataArray;
 using IDataArrayShPtrType = std::shared_ptr<IDataArray>;
 
 class DataContainerArray;
 using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
 
+class DataContainer;
+using DataContainerShPtrType = std::shared_ptr<DataContainer>;
 
 #include "SIMPLVtkLib/SIMPLBridge/VtkMacros.h"
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
@@ -97,7 +98,7 @@ public:
     WrappedDataArrayPtrCollection m_CellData;
     WrappedDataArrayPtrCollection m_PointData;
     QString m_Name;
-    DataContainer::Pointer m_DataContainer = nullptr;
+    DataContainerShPtrType m_DataContainer = nullptr;
     double m_Origin[3] = {0.0, 0.0, 0.0};
     DataArrayImportSettings m_ImportCellArrays;
     DataArrayImportSettings m_ImportPointArrays;
@@ -118,7 +119,7 @@ public:
    * @param dca
    * @return
    */
-  static WrappedDataContainerPtrCollection WrapDataContainerArrayAsStruct(DataContainerArrayShPtrType dca);
+  static WrappedDataContainerPtrCollection WrapDataContainerArrayAsStruct(const DataContainerArrayShPtrType& dca);
 
   /**
    * @brief Wraps a DataContainer from SIMPLib in a vtkDataSet if applicable and returns a WrappedDataContainerPtr
@@ -129,7 +130,7 @@ public:
    * @param types
    * @return
    */
-  static WrappedDataContainerPtr WrapDataContainerAsStruct(DataContainer::Pointer dc);
+  static WrappedDataContainerPtr WrapDataContainerAsStruct(const DataContainerShPtrType& dc);
 
   /**
    * @brief Wraps a DataContainer geometry from SIMPLib in a vtkDataSet if applicable and returns a WrappeddataContainerPtr
@@ -138,14 +139,14 @@ public:
    * @param types
    * @return
    */
-  static WrappedDataContainerPtr WrapGeometryPtr(DataContainer::Pointer dc);
+  static WrappedDataContainerPtr WrapGeometryPtr(const DataContainerShPtrType& dc);
 
   /**
    * @brief Finish wrapping the given DataContainer.
    * This should never be called outside the main thread.
    * @param wrappedDc
    */
-  static void FinishWrappingDataContainerStruct(WrappedDataContainerPtr wrappedDc);
+  static void FinishWrappingDataContainerStruct(const WrappedDataContainerPtr& wrappedDc);
 
   /**
    * @brief Wraps the DataArrays contained within SIMPLib's AttributeMatrix in vtkDataArrays for use in VTK
@@ -154,7 +155,7 @@ public:
    * @param importList
    * @return
    */
-  static WrappedDataArrayPtrCollection WrapAttributeMatrixAsStructs(AttributeMatrix::Pointer am, DataArrayImportSettings importList = DataArrayImportSettings());
+  static WrappedDataArrayPtrCollection WrapAttributeMatrixAsStructs(const AttributeMatrix::Pointer& am, DataArrayImportSettings importList = DataArrayImportSettings());
 
   /**
    * @brief Wraps a DataArray from SIMPLib in a vtkDataArray and returns a struct containing the wrapped
@@ -164,100 +165,101 @@ public:
    * @param da
    * @return
    */
-  static WrappedDataArrayPtr WrapIDataArrayAsStruct(IDataArrayShPtrType da);
+  static WrappedDataArrayPtr WrapIDataArrayAsStruct(const IDataArrayShPtrType& da);
 
   /**
    * @brief Creates and returns DataArrayImportSettings for the given array names
    * @param arrayNames
    * @return
    */
-  static DataArrayImportSettings CreateImportSettings(QStringList arrayNames);
+  static DataArrayImportSettings CreateImportSettings(const QStringList& arrayNames);
 
   /**
    * @brief Returns a QStringList of all cell array names
    * @param wrappedDc
    * @return
    */
-  static QStringList GetCellArrayNames(WrappedDataContainerPtr wrappedDc);
+  static QStringList GetCellArrayNames(const WrappedDataContainerPtr& wrappedDc);
 
   /**
    * @brief Returns a QStringList of all point array names
    * @param wrappedDc
    * @return
    */
-  static QStringList GetPointArrayNames(WrappedDataContainerPtr wrappedDc);
+  static QStringList GetPointArrayNames(const WrappedDataContainerPtr& wrappedDc);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's EdgeGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(EdgeGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const EdgeGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's ImageGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(ImageGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const ImageGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's QuadGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(QuadGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const QuadGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's RectGridGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(RectGridGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const RectGridGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's TetrahedralGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(TetrahedralGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const TetrahedralGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's TriangleGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(TriangleGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const TriangleGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's VertexGeom
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(VertexGeom::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const VertexGeom::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataSet from SIMPLib's IGeometry
    * @param geom
    * @return
    */
-  static VTK_PTR(vtkDataSet) WrapGeometry(IGeometry::Pointer geom);
+  static VTK_PTR(vtkDataSet) WrapGeometry(const IGeometry::Pointer& geom);
 
   /**
    * @brief Creates and returns a vtkDataArray from SIMPLib's SharedVertexList
    * @param vertexArray
    * @return
    */
-  static VTK_PTR(vtkDataArray) WrapVertices(SharedVertexList::Pointer vertexArray);
+  static VTK_PTR(vtkDataArray) WrapVertices(const SharedVertexList::Pointer& vertexArray);
 
   /**
    * @brief Creates and returns a vtkDataArray from SIMPLib's IDataArray
    * @param array
    * @return
    */
-  static VTK_PTR(vtkDataArray) WrapIDataArray(IDataArrayShPtrType array);
+  static VTK_PTR(vtkDataArray) WrapIDataArray(const IDataArrayShPtrType& array);
 
-  template <typename T> static VTK_PTR(T) WrapIDataArrayTemplate(IDataArrayShPtrType array)
+  template <typename T>
+  static VTK_PTR(T) WrapIDataArrayTemplate(const IDataArrayShPtrType& array)
   {
     VTK_NEW(T, vtkArray);
     vtkArray->SetNumberOfComponents(array->getNumberOfComponents());
@@ -329,14 +331,14 @@ protected:
    * @param tuplesReq
    * @param importList
    */
-  static bool WrapAttrMatrixData(AttributeMatrix::Pointer am, WrappedDataArrayPtrCollection& wrappedCollection, const int tuplesReq, DataArrayImportSettings importList);
+  static bool WrapAttrMatrixData(const AttributeMatrix::Pointer& am, WrappedDataArrayPtrCollection& wrappedCollection, int tuplesReq, const DataArrayImportSettings &importList);
 
   /**
    * @brief Returns true if the given IDataArray can be wrapped. Returns false otherwise.
    * @param array
    * @return
    */
-  static bool CanWrapDataArray(IDataArrayShPtrType array);
+  static bool CanWrapDataArray(const IDataArrayShPtrType& array);
 
 public:
   SIMPLVtkBridge(const SIMPLVtkBridge&) = delete;            // Copy Constructor Not Implemented

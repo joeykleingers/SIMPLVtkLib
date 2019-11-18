@@ -36,9 +36,15 @@
 #pragma once
 
 #include "QtWidgets/VSAbstractImporter.h"
-
+#include "SIMPLib/DataContainers/DataContainerArray.h"
 #include "SIMPLib/Filtering/FilterPipeline.h"
 
+class DataContainerArray;
+using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
+
+/**
+ * @brief The VSMontageImporter class
+ */
 class SIMPLVtkLib_EXPORT VSMontageImporter : public VSAbstractImporter
 {
   Q_OBJECT
@@ -49,10 +55,8 @@ public:
   ~VSMontageImporter();
 
   static Pointer New(FilterPipeline::Pointer pipeline);
-  static Pointer New(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray);
-
+  static Pointer New(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dataContainerArray);
   virtual QString getName() override;
-
   virtual void execute() override;
 
   virtual void cancel() override;

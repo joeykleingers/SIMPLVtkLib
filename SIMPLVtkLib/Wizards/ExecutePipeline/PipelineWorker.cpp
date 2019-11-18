@@ -35,27 +35,25 @@
 
 #include "PipelineWorker.h"
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-PipelineWorker::PipelineWorker()
-{
-}
+#include "SIMPLib/DataContainers/DataContainerArray.h"
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-PipelineWorker::~PipelineWorker()
-{
-}
+PipelineWorker::PipelineWorker() = default;
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+PipelineWorker::~PipelineWorker() = default;
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void PipelineWorker::addPipeline(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca)
 {
-  m_Pipeline = pipeline;
-  m_DataContainerArray = dca;
+  m_Pipeline = std::move(pipeline);
+  m_DataContainerArray = std::move(dca);
 }
 
 // -----------------------------------------------------------------------------

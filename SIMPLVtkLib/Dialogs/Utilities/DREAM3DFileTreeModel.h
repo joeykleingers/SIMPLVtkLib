@@ -39,7 +39,6 @@
 #include <QtCore/QModelIndex>
 #include <QtCore/QVariant>
 
-
 #include "SIMPLib/DataContainers/DataContainerArrayProxy.h"
 
 #include "SIMPLVtkLib/Dialogs/Utilities/DREAM3DFileItem.h"
@@ -49,10 +48,21 @@ class DREAM3DFileTreeModel : public QAbstractItemModel
   Q_OBJECT
 
 public:
-  SIMPL_TYPE_MACRO(DREAM3DFileTreeModel)
+  virtual QString getNameOfClass() const
+  {
+    return QString("DREAM3DFileTreeModel");
+  }
+  static int IsTypeOf(const char* type)
+  {
+    if(strcmp("DREAM3DFileTreeModel", type) == 0)
+    {
+      return 1;
+    }
+    return 0;
+  }
 
   DREAM3DFileTreeModel(QObject* parent = nullptr);
-  ~DREAM3DFileTreeModel();
+  ~DREAM3DFileTreeModel() override;
 
   QVariant data(const QModelIndex& index, int role) const Q_DECL_OVERRIDE;
   QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;

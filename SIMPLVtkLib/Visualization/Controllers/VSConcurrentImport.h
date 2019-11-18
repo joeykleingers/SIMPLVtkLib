@@ -42,6 +42,7 @@
 #include <QtCore/QSemaphore>
 #include <QtCore/QThread>
 
+#include "SIMPLib/DataContainers/DataContainerArray.h"
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSFileNameFilter.h"
@@ -59,7 +60,7 @@ class SIMPLVtkLib_EXPORT VSConcurrentImport : public QObject
   Q_OBJECT
 
 public:
-  using DcaGenericPair = std::pair<VSTextFilter*, DataContainerArray::Pointer>;
+  using DcaGenericPair = std::pair<VSTextFilter*, DataContainerArrayShPtrType>;
 
   enum class LoadType : unsigned int
   {
@@ -79,7 +80,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSConcurrentImport() = default;
+  ~VSConcurrentImport() override = default;
 
   /**
    * @brief Add a DataContainerArray from the given FilterPipeline to the list of items to import

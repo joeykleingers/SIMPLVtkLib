@@ -39,9 +39,9 @@
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSTextFilter.h"
 
 #include "SIMPLib/Filtering/FilterPipeline.h"
+
 class DataContainerArray;
 using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
-
 
 /**
  * @class VSPipelineFilter VSPipelineFilter.h
