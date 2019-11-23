@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include "SIMPLVtkLib/Database/DREAM3DMontageMetadata.h"
 #include "SIMPLVtkLib/Dialogs/AbstractImportMontageDialog.h"
 
 #include "SIMPLib/Common/SIMPLArray.hpp"
@@ -72,57 +73,15 @@ public:
   void checkComplete() const override;
 
   /**
-   * @brief getMontageName
-   * @return
-   */
-  QString getMontageName();
-
-  /**
-   * @brief getMontageStart
-   * @return
-   */
-  IntVec2Type getMontageStart();
-
-  /**
-   * @brief getMontageEnd
-   * @return
-   */
-  IntVec2Type getMontageEnd();
-
-  /**
-   * @brief getMontageSize
-   * @return
-   */
-  IntVec3Type getMontageSize();
-
-  /**
-   * @brief getDataFilePath
-   * @return
-   */
-  QString getDataFilePath();
-
-  /**
-   * @brief getAttributeMatrixName
-   * @return
-   */
-  QString getAttributeMatrixName();
-
-  /**
-   * @brief getDataArrayName
-   * @return
-   */
-  QString getDataArrayName();
-
-  /**
-   * @brief getDataContainerPrefix
-   * @return
-   */
-  QString getDataContainerPrefix() const;
-
-  /**
    * @brief initializePage
    */
   void initializePage();
+
+  /**
+   * @brief getMetadata
+   * @return
+   */
+  DREAM3DMontageMetadata getMetadata() const;
 
 protected:
   /**

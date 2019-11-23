@@ -194,18 +194,10 @@ public:
 
   /**
    * @brief importPipelineOutput
-   * @param pipeline
-   * @param dca
-   * @return
-   */
-  bool importPipelineOutput(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
-
-  /**
-   * @brief importPipelineOutput
    * @param pipelines
    * @return
    */
-  bool importPipelineOutput(std::vector<FilterPipeline::Pointer> pipelines);
+  bool importPipelinesOutput(std::vector<FilterPipeline::Pointer> pipelines);
 
   /**
    * @brief Imports or reloads the given DataContainerArray from the FilterPipeline
@@ -215,6 +207,14 @@ public:
   void importFilterPipeline(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dca);
 
 public slots:
+  /**
+   * @brief importPipelineOutput
+   * @param pipeline
+   * @param dca
+   * @return
+   */
+  bool importPipelineOutput(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
+
   /**
    * @brief Create a clip filter and set the given filter as its parent.  If no filter is provided,
    * the current filter is used instead.

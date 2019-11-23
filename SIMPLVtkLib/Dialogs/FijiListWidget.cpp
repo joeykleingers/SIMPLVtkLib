@@ -600,20 +600,6 @@ QStringList FijiListWidget::readFijiConfigFile()
 }
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-FijiListInfo_t FijiListWidget::getFijiListInfo()
-{
-  SIMPLDataPathValidator* validator = SIMPLDataPathValidator::Instance();
-  QString inputPath = validator->convertToAbsolutePath(m_Ui->inputDir->text());
-
-  FijiListInfo_t data;
-  data.FijiFilePath = inputPath;
-
-  return data;
-}
-
-// -----------------------------------------------------------------------------
 QString FijiListWidget::getMontagePrefix()
 {
   return m_MontagePrefix;
@@ -674,4 +660,12 @@ QString FijiListWidget::getInputDirectory()
 int FijiListWidget::getCurrentNumberOfTiles()
 {
   return m_Ui->fileListView->count();
+}
+
+// -----------------------------------------------------------------------------
+FijiMontageMetadata FijiListWidget::getMetadata() const
+{
+  FijiMontageMetadata metadata;
+  metadata.setConfigFilePath(m_Ui->inputDir->text());
+  return metadata;
 }

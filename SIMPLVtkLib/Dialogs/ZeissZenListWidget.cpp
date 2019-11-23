@@ -477,3 +477,11 @@ int ZeissZenListWidget::getCurrentNumberOfTiles()
 {
   return m_Ui->fileListView->count();
 }
+
+// -----------------------------------------------------------------------------
+ZeissZenMontageMetadata ZeissZenListWidget::getMetadata() const
+{
+  ZeissZenMontageMetadata metadata;
+  metadata.setConfigFilePath(m_Ui->inputDir->text());
+  return metadata;
+}

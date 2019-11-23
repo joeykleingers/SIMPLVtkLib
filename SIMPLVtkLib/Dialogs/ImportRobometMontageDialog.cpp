@@ -68,7 +68,6 @@ ImportRobometMontageDialog::ImportRobometMontageDialog(QWidget* parent)
 // -----------------------------------------------------------------------------
 ImportRobometMontageDialog::~ImportRobometMontageDialog()
 {
-  disconnectSignalsSlots();
 }
 
 // -----------------------------------------------------------------------------
@@ -95,8 +94,6 @@ void ImportRobometMontageDialog::setupGui()
 
   connectSignalsSlots();
 
-  setDisplayType(AbstractImportMontageDialog::DisplayType::Outline);
-
   checkComplete();
 }
 
@@ -105,20 +102,18 @@ void ImportRobometMontageDialog::setupGui()
 // -----------------------------------------------------------------------------
 void ImportRobometMontageDialog::connectSignalsSlots()
 {
-  connect(m_Ui->dataDisplayTypeCB, qOverload<int>(&QComboBox::currentIndexChanged), [=](int index) { setDisplayType(static_cast<AbstractImportMontageDialog::DisplayType>(index)); });
-
-  connect(m_Ui->robometListWidget, &RobometListWidget::inputDirectoryChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::filePrefixChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::fileSuffixChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::fileExtensionChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::sliceMinChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::sliceMaxChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::montageStartColChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::montageStartRowChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::montageEndColChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::montageEndRowChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::slicePaddingChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
-  connect(m_Ui->robometListWidget, &RobometListWidget::rowColPaddingChanged, this, &ImportRobometMontageDialog::robometListWidgetChanged);
+  connect(m_Ui->robometListWidget, &RobometListWidget::inputDirectoryChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::filePrefixChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::fileSuffixChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::fileExtensionChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::sliceMinChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::sliceMaxChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::montageStartColChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::montageStartRowChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::montageEndColChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::montageEndRowChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::slicePaddingChanged, [=] { checkComplete(); });
+  connect(m_Ui->robometListWidget, &RobometListWidget::rowColPaddingChanged, [=] { checkComplete(); });
 
   connect(m_Ui->changeOriginCB, &QCheckBox::stateChanged, this, &ImportRobometMontageDialog::changeOrigin_stateChanged);
   connect(m_Ui->originX, &QLineEdit::textChanged, [=] { checkComplete(); });
@@ -129,26 +124,6 @@ void ImportRobometMontageDialog::connectSignalsSlots()
   connect(m_Ui->spacingX, &QLineEdit::textChanged, [=] { checkComplete(); });
   connect(m_Ui->spacingY, &QLineEdit::textChanged, [=] { checkComplete(); });
   connect(m_Ui->spacingZ, &QLineEdit::textChanged, [=] { checkComplete(); });
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void ImportRobometMontageDialog::disconnectSignalsSlots()
-{
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void ImportRobometMontageDialog::robometListWidgetChanged()
-{
-  RobometListInfo_t robometListInfo = m_Ui->robometListWidget->getRobometListInfo();
-  m_Ui->montageNameLE->setText(m_Ui->robometListWidget->getMontagePrefix());
-
-  setRobometListInfo(robometListInfo);
-
-  checkComplete();
 }
 
 // -----------------------------------------------------------------------------
@@ -268,57 +243,23 @@ void ImportRobometMontageDialog::checkComplete() const
 }
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportRobometMontageDialog::getMontageName()
+RobometMontageMetadata ImportRobometMontageDialog::getMetadata() const
 {
-  return m_Ui->montageNameLE->text();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-bool ImportRobometMontageDialog::getOverrideSpacing()
-{
-  return m_Ui->changeSpacingCB->isChecked();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-FloatVec3Type ImportRobometMontageDialog::getSpacing()
-{
-  float spacingX = m_Ui->spacingX->text().toFloat();
-  float spacingY = m_Ui->spacingY->text().toFloat();
-  float spacingZ = m_Ui->spacingZ->text().toFloat();
-  FloatVec3Type spacing = {spacingX, spacingY, spacingZ};
-  return spacing;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-bool ImportRobometMontageDialog::getOverrideOrigin()
-{
-  return m_Ui->changeOriginCB->isChecked();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-FloatVec3Type ImportRobometMontageDialog::getOrigin()
-{
+  RobometMontageMetadata metadata = m_Ui->robometListWidget->getMetadata();
+  metadata.setMontageName(m_Ui->montageNameLE->text());
+  metadata.setDataDisplayType(static_cast<MontageMetadata::DisplayType>(m_Ui->dataDisplayTypeCB->currentIndex()));
+  metadata.setChangeOrigin(m_Ui->changeOriginCB->isChecked());
   float originX = m_Ui->originX->text().toFloat();
   float originY = m_Ui->originY->text().toFloat();
   float originZ = m_Ui->originZ->text().toFloat();
   FloatVec3Type origin = {originX, originY, originZ};
-  return origin;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-int32_t ImportRobometMontageDialog::getLengthUnit()
-{
-  return m_Ui->unitsCB->currentIndex();
+  metadata.setOrigin(origin);
+  metadata.setChangeSpacing(m_Ui->changeSpacingCB->isChecked());
+  float spacingX = m_Ui->spacingX->text().toFloat();
+  float spacingY = m_Ui->spacingY->text().toFloat();
+  float spacingZ = m_Ui->spacingZ->text().toFloat();
+  FloatVec3Type spacing = {spacingX, spacingY, spacingZ};
+  metadata.setSpacing(spacing);
+  metadata.setLengthUnitsIdx(m_Ui->unitsCB->currentIndex());
+  return metadata;
 }

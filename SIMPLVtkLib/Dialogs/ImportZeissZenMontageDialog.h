@@ -72,46 +72,10 @@ public:
   void checkComplete() const override;
 
   /**
-   * @brief getMontageName
+   * @brief getMetadata
    * @return
    */
-  QString getMontageName();
-
-  /**
-   * @brief getOverrideOrigin
-   * @return
-   */
-  bool getOverrideOrigin();
-
-  /**
-   * @brief getOrigin
-   * @return
-   */
-  FloatVec3Type getOrigin();
-
-  /**
-   * @brief getConvertToGrayscale
-   * @return
-   */
-  bool getConvertToGrayscale();
-
-  /**
-   * @brief getColorWeighting
-   * @return
-   */
-  FloatVec3Type getColorWeighting();
-
-  /**
-   * @brief getMontageStart
-   * @return
-   */
-  IntVec2Type getMontageStart();
-
-  /**
-   * @brief getMontageEnd
-   * @return
-   */
-  IntVec2Type getMontageEnd();
+  ZeissZenMontageMetadata getMetadata() const;
 
 protected:
   /**

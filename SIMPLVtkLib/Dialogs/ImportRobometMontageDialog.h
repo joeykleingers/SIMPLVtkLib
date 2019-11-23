@@ -66,46 +66,10 @@ public:
   virtual void setupGui();
 
   /**
-   * @brief checkComplete
+   * @brief getMetadata
    * @return
    */
-  void checkComplete() const override;
-
-  /**
-   * @brief getMontageName
-   * @return
-   */
-  QString getMontageName();
-
-  /**
-   * @brief getOverrideSpacing
-   * @return
-   */
-  bool getOverrideSpacing();
-
-  /**
-   * @brief getSpacing
-   * @return
-   */
-  FloatVec3Type getSpacing();
-
-  /**
-   * @brief getOverrideOrigin
-   * @return
-   */
-  bool getOverrideOrigin();
-
-  /**
-   * @brief getOrigin
-   * @return
-   */
-  FloatVec3Type getOrigin();
-
-  /**
-   * @brief getLengthUnit
-   * @return
-   */
-  int32_t getLengthUnit();
+  RobometMontageMetadata getMetadata() const;
 
 protected:
   /**
@@ -116,10 +80,15 @@ protected:
    */
   ImportRobometMontageDialog(QWidget* parent = nullptr);
 
+  /**
+   * @brief checkComplete
+   * @return
+   */
+  void checkComplete() const override;
+
 protected slots:
   void changeOrigin_stateChanged(int state);
   void changeSpacing_stateChanged(int state);
-  void robometListWidgetChanged();
 
 protected:
   static void setOpenDialogLastFilePath(QString val)
@@ -147,11 +116,6 @@ private:
    * @brief connectSignalsSlots
    */
   void connectSignalsSlots();
-
-  /**
-   * @brief disconnectSignalsSlots
-   */
-  void disconnectSignalsSlots();
 
 public:
   ImportRobometMontageDialog(const ImportRobometMontageDialog&) = delete;            // Copy Constructor Not Implemented

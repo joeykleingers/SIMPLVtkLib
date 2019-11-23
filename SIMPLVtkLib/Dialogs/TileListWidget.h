@@ -94,7 +94,7 @@ public:
    * @brief getFileListInfo
    * @return
    */
-  FileListInfo_t getFileListInfo();
+  StackFileListInfo getFileListInfo();
 
   /**
    * @brief getCurrentNumberOfTiles

@@ -27,7 +27,7 @@
     <number>6</number>
    </property>
    <item row="2" column="2">
-    <widget class="QLineEdit" name="montageStartY">
+    <widget class="QLineEdit" name="colEnd">
      <property name="text">
       <string>0</string>
      </property>
@@ -85,7 +85,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Montage End (Col, Row) [Inclusive, Zero Based]</string>
+      <string>Montage Row Start/End [Inclusive, Zero Based]</string>
      </property>
     </widget>
    </item>
@@ -146,7 +146,7 @@
     <widget class="ZeissListWidget" name="zeissListWidget" native="true"/>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="montageEndX">
+    <widget class="QLineEdit" name="rowStart">
      <property name="text">
       <string>0</string>
      </property>
@@ -171,7 +171,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Montage Start (Col, Row) [Inclusive, Zero Based]</string>
+      <string>Montage Column Start/End [Inclusive, Zero Based]</string>
      </property>
     </widget>
    </item>
@@ -234,14 +234,14 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLineEdit" name="montageStartX">
+    <widget class="QLineEdit" name="colStart">
      <property name="text">
       <string>0</string>
      </property>
     </widget>
    </item>
    <item row="3" column="2">
-    <widget class="QLineEdit" name="montageEndY">
+    <widget class="QLineEdit" name="rowEnd">
      <property name="text">
       <string>0</string>
      </property>

@@ -122,7 +122,7 @@ font-size: 11px;
    <item>
     <layout class="QGridLayout" name="gridLayout_20">
      <item row="4" column="2">
-      <widget class="SVSpinBox" name="montageEndRow">
+      <widget class="SVSpinBox" name="rowEnd">
        <property name="toolTip">
         <string>The number of digits to allow for the slice index.</string>
        </property>
@@ -270,7 +270,7 @@ font-size: 11px;
       </layout>
      </item>
      <item row="4" column="1">
-      <widget class="SVSpinBox" name="montageEndCol">
+      <widget class="SVSpinBox" name="rowStart">
        <property name="toolTip">
         <string>The number of digits to allow for the slice index.</string>
        </property>
@@ -286,14 +286,14 @@ font-size: 11px;
       </widget>
      </item>
      <item row="3" column="2">
-      <widget class="QSpinBox" name="montageStartRow">
+      <widget class="QSpinBox" name="colEnd">
        <property name="maximum">
         <number>999</number>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="montageStartCol">
+      <widget class="QSpinBox" name="colStart">
        <property name="maximum">
         <number>999</number>
        </property>
@@ -315,7 +315,7 @@ font-size: 11px;
 }</string>
        </property>
        <property name="text">
-        <string>Montage Start (Col, Row) [Inclusive, Zero Based]       </string>
+        <string>Montage Column Start/End [Inclusive, Zero Based]</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -338,7 +338,7 @@ font-size: 11px;
 }</string>
        </property>
        <property name="text">
-        <string>Montage End (Col, Row) [Inclusive, Zero Based]       </string>
+        <string>Montage Row Start/End [Inclusive, Zero Based]</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

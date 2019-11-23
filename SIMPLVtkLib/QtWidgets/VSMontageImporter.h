@@ -39,6 +39,8 @@
 #include "SIMPLib/DataContainers/DataContainerArray.h"
 #include "SIMPLib/Filtering/FilterPipeline.h"
 
+#include "SIMPLVtkLib/Database/MontageMetadata.h"
+
 class DataContainerArray;
 using DataContainerArrayShPtrType = std::shared_ptr<DataContainerArray>;
 
@@ -52,10 +54,10 @@ class SIMPLVtkLib_EXPORT VSMontageImporter : public VSAbstractImporter
 public:
   SIMPL_SHARED_POINTERS(VSMontageImporter)
 
-  ~VSMontageImporter();
+  ~VSMontageImporter() override;
 
-  static Pointer New(FilterPipeline::Pointer pipeline);
-  static Pointer New(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dataContainerArray);
+  static Pointer New(FilterPipeline::Pointer pipeline, MontageMetadata::DisplayType displayType);
+  static Pointer New(FilterPipeline::Pointer pipeline, DataContainerArrayShPtrType dataContainerArray, MontageMetadata::DisplayType displayType);
   virtual QString getName() override;
   virtual void execute() override;
 
@@ -64,8 +66,8 @@ public:
   virtual void reset() override;
 
 protected:
-  VSMontageImporter(FilterPipeline::Pointer pipeline);
-  VSMontageImporter(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray);
+  VSMontageImporter(FilterPipeline::Pointer pipeline, MontageMetadata::DisplayType displayType);
+  VSMontageImporter(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray, MontageMetadata::DisplayType displayType);
 
 protected slots:
   /**
@@ -75,10 +77,13 @@ protected slots:
   void processPipelineMessage(const AbstractMessage::Pointer& pipelineMsg);
 
 signals:
-  void resultReady(FilterPipeline::Pointer pipeline, int err);
+  void montageResultsReady(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
 
 private:
   FilterPipeline::Pointer m_Pipeline;
   DataContainerArray::Pointer m_DataContainerArray = nullptr;
+  MontageMetadata::DisplayType m_DisplayType;
   bool m_Resetting = false;
+
+  void handleMontageResults();
 };

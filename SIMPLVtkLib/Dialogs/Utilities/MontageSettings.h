@@ -77,7 +77,7 @@ class SIMPLVtkLib_EXPORT MontageSettings : public QObject
   Q_PROPERTY(bool useVirtualInputImages READ isUsingVirtualInputImages WRITE setUsingVirtualInputImages)
   Q_PROPERTY(bool confirmFiles READ isConfirmingFiles WRITE setConfirmingFiles)
   Q_PROPERTY(bool ignoreCalibration READ isIgnoringCalibration WRITE setIgnoringCalibration)
-  Q_PROPERTY(FileListInfo_t fileListInfo READ getFileListInfo WRITE setFileListInfo)
+  Q_PROPERTY(StackFileListInfo fileListInfo READ getFileListInfo WRITE setFileListInfo)
 
 public:
   enum MontageType : int
@@ -302,13 +302,13 @@ public:
    * @brief Returns the input file list
    * @return
    */
-  FileListInfo_t getFileListInfo() const;
+  StackFileListInfo getFileListInfo() const;
 
   /**
    * @brief Sets the file info for the input
    * @param fileListInfo
    */
-  void setFileListInfo(FileListInfo_t fileListInfo);
+  void setFileListInfo(StackFileListInfo fileListInfo);
 
   /**
    * @brief Returns the regression threshold
@@ -556,7 +556,7 @@ private:
   QString m_multiSeriesFile;
   QString m_fileNames;
   QString m_outputFileName;
-  FileListInfo_t m_fileListInfo;
+  StackFileListInfo m_fileListInfo;
   double m_regressionThreshold = 0.30;
   double m_maxDisplacementThreshold = 2.50;
   double m_absoluteDisplacementThreshold = 3.50;

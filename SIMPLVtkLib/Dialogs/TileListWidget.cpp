@@ -546,12 +546,12 @@ void TileListWidget::findMaxSliceAndPrefix()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-FileListInfo_t TileListWidget::getFileListInfo()
+StackFileListInfo TileListWidget::getFileListInfo()
 {
   SIMPLDataPathValidator* validator = SIMPLDataPathValidator::Instance();
   QString inputPath = validator->convertToAbsolutePath(m_Ui->inputDir->text());
 
-  FileListInfo_t data;
+  StackFileListInfo data;
   data.IncrementIndex = m_Ui->increment->value();
   data.EndIndex = m_Ui->endIndex->value();
   data.FileExtension = m_Ui->fileExt->text();

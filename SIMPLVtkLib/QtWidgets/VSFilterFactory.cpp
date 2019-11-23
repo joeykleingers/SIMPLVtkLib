@@ -41,6 +41,7 @@
 #include "SIMPLib/DataContainers/DataContainerArrayProxy.h"
 #include "SIMPLib/FilterParameters/FloatVec3FilterParameter.h"
 #include "SIMPLib/FilterParameters/IntVec2FilterParameter.h"
+#include "SIMPLib/FilterParameters/MontageFileListInfo.h"
 #include "SIMPLib/Filtering/FilterFactory.hpp"
 #include "SIMPLib/Filtering/FilterManager.h"
 
@@ -189,9 +190,7 @@ AbstractFilter::Pointer VSFilterFactory::createSetOriginResolutionFilter(const D
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AbstractFilter::Pointer VSFilterFactory::createImportFijiMontageFilter(const QString& fijiFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, bool changeOrigin,
-                                                                       const float* origin, IntVec2Type montageStart, IntVec2Type montageEnd, bool changeSpacing, const float* spacing,
-                                                                       int32_t lengthUnit)
+AbstractFilter::Pointer VSFilterFactory::createImportFijiMontageFilter(const FijiMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName)
 {
   QString filterName = "ITKImportFijiMontage";
   FilterManager* fm = FilterManager::Instance();
@@ -205,27 +204,28 @@ AbstractFilter::Pointer VSFilterFactory::createImportFijiMontageFilter(const QSt
       QVariant var;
 
       // Set the path for the Fiji Configuration File
-      var.setValue(fijiFile);
+      var.setValue(metadata.getConfigFilePath());
       if(!setFilterProperty(importFijiMontageFilter, "InputFile", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage start
-      var.setValue(montageStart);
-      if(!setFilterProperty(importFijiMontageFilter, "MontageStart", var))
+      var.setValue(metadata.getRowLimits());
+      if(!setFilterProperty(importFijiMontageFilter, "RowMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage end
-      var.setValue(montageEnd);
-      if(!setFilterProperty(importFijiMontageFilter, "MontageEnd", var))
+      var.setValue(metadata.getColumnLimits());
+      if(!setFilterProperty(importFijiMontageFilter, "ColumnMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set Origin
+      bool changeOrigin = metadata.getChangeOrigin();
       var.setValue(changeOrigin);
       if(!setFilterProperty(importFijiMontageFilter, "ChangeOrigin", var))
       {
@@ -234,32 +234,9 @@ AbstractFilter::Pointer VSFilterFactory::createImportFijiMontageFilter(const QSt
 
       if(changeOrigin)
       {
-        float originX = origin[0];
-        float originY = origin[1];
-        float originZ = origin[2];
-        FloatVec3Type newOrigin = {originX, originY, originZ};
-        var.setValue(newOrigin);
+        FloatVec3Type origin = metadata.getOrigin();
+        var.setValue(origin);
         if(!setFilterProperty(importFijiMontageFilter, "Origin", var))
-        {
-          return AbstractFilter::NullPointer();
-        }
-      }
-
-      // Set Spacing
-      var.setValue(changeSpacing);
-      if(!setFilterProperty(importFijiMontageFilter, "ChangeSpacing", var))
-      {
-        return AbstractFilter::NullPointer();
-      }
-
-      if(changeSpacing)
-      {
-        float spacingX = spacing[0];
-        float spacingY = spacing[1];
-        float spacingZ = spacing[2];
-        FloatVec3Type newSpacing = {spacingX, spacingY, spacingZ};
-        var.setValue(newSpacing);
-        if(!setFilterProperty(importFijiMontageFilter, "Spacing", var))
         {
           return AbstractFilter::NullPointer();
         }
@@ -287,7 +264,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportFijiMontageFilter(const QSt
       }
 
       // Set the Length Unit
-      var.setValue(lengthUnit);
+      var.setValue(metadata.getLengthUnitsIdx());
       if(!setFilterProperty(importFijiMontageFilter, "LengthUnit", var))
       {
         return AbstractFilter::NullPointer();
@@ -303,9 +280,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportFijiMontageFilter(const QSt
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const QString& robometFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, int sliceNumber,
-                                                                          const QString& imageFilePrefix, const QString& imageFileExtension, bool changeOrigin, const float* origin,
-                                                                          IntVec2Type montageStart, IntVec2Type montageEnd, bool changeSpacing, const float* spacing, int32_t lengthUnit)
+AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const RobometMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName,
+                                                                          int sliceNumber)
 {
   QString filterName = "ITKImportRoboMetMontage";
   FilterManager* fm = FilterManager::Instance();
@@ -319,27 +295,28 @@ AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const 
       QVariant var;
 
       // Set the path for the Robomet Configuration File
-      var.setValue(robometFile);
+      var.setValue(metadata.getFilePath());
       if(!setFilterProperty(importRoboMetMontageFilter, "InputFile", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage start
-      var.setValue(montageStart);
-      if(!setFilterProperty(importRoboMetMontageFilter, "MontageStart", var))
+      var.setValue(metadata.getRowLimits());
+      if(!setFilterProperty(importRoboMetMontageFilter, "RowMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage end
-      var.setValue(montageEnd);
-      if(!setFilterProperty(importRoboMetMontageFilter, "MontageEnd", var))
+      var.setValue(metadata.getColumnLimits());
+      if(!setFilterProperty(importRoboMetMontageFilter, "ColumnMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set Origin
+      bool changeOrigin = metadata.getChangeOrigin();
       var.setValue(changeOrigin);
       if(!setFilterProperty(importRoboMetMontageFilter, "ChangeOrigin", var))
       {
@@ -348,11 +325,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const 
 
       if(changeOrigin)
       {
-        float originX = origin[0];
-        float originY = origin[1];
-        float originZ = origin[2];
-        FloatVec3Type newOrigin = {originX, originY, originZ};
-        var.setValue(newOrigin);
+        FloatVec3Type origin = metadata.getOrigin();
+        var.setValue(origin);
         if(!setFilterProperty(importRoboMetMontageFilter, "Origin", var))
         {
           return AbstractFilter::NullPointer();
@@ -360,6 +334,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const 
       }
 
       // Set Spacing
+      bool changeSpacing = metadata.getChangeSpacing();
       var.setValue(changeSpacing);
       if(!setFilterProperty(importRoboMetMontageFilter, "ChangeSpacing", var))
       {
@@ -368,11 +343,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const 
 
       if(changeSpacing)
       {
-        float spacingX = spacing[0];
-        float spacingY = spacing[1];
-        float spacingZ = spacing[2];
-        FloatVec3Type newSpacing = {spacingX, spacingY, spacingZ};
-        var.setValue(newSpacing);
+        FloatVec3Type spacing = metadata.getSpacing();
+        var.setValue(spacing);
         if(!setFilterProperty(importRoboMetMontageFilter, "Spacing", var))
         {
           return AbstractFilter::NullPointer();
@@ -408,21 +380,21 @@ AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const 
       }
 
       // Image file prefix
-      var.setValue(imageFilePrefix);
+      var.setValue(metadata.getFilePrefix());
       if(!setFilterProperty(importRoboMetMontageFilter, "ImageFilePrefix", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Image file extension
-      var.setValue(imageFileExtension);
+      var.setValue(metadata.getFileExtension());
       if(!setFilterProperty(importRoboMetMontageFilter, "ImageFileExtension", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set the Length Unit
-      var.setValue(lengthUnit);
+      var.setValue(metadata.getLengthUnitsIdx());
       if(!setFilterProperty(importRoboMetMontageFilter, "LengthUnit", var))
       {
         return AbstractFilter::NullPointer();
@@ -438,8 +410,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportRobometMontageFilter(const 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(const QString& zeissFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, bool convertToGrayscale,
-                                                                           FloatVec3Type colorWeights, bool changeOrigin, FloatVec3Type origin, IntVec2Type montageStart, IntVec2Type montageEnd)
+AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(ZeissZenMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName)
 {
   // Instantiate Import AxioVision V4 Montage filter
   QString filterName = "ImportZenInfoMontage";
@@ -454,22 +425,22 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(const
       QVariant var;
 
       // Set the path for the Zeiss Zen File
-      var.setValue(zeissFile);
+      var.setValue(metadata.getConfigFilePath());
       if(!setFilterProperty(importZeissZenMontageFilter, "InputFile", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage start
-      var.setValue(montageStart);
-      if(!setFilterProperty(importZeissZenMontageFilter, "MontageStart", var))
+      var.setValue(metadata.getRowLimits());
+      if(!setFilterProperty(importZeissZenMontageFilter, "RowMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage end
-      var.setValue(montageEnd);
-      if(!setFilterProperty(importZeissZenMontageFilter, "MontageEnd", var))
+      var.setValue(metadata.getColumnLimits());
+      if(!setFilterProperty(importZeissZenMontageFilter, "ColumnMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
@@ -496,18 +467,16 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(const
       }
 
       // Set Convert to Grayscale
-      var.setValue(convertToGrayscale);
+      bool convertToGreyscale = metadata.getConvertToGreyscale();
+      var.setValue(convertToGreyscale);
       if(!setFilterProperty(importZeissZenMontageFilter, "ConvertToGrayScale", var))
       {
         return AbstractFilter::NullPointer();
       }
 
-      if(convertToGrayscale)
+      if(convertToGreyscale)
       {
-        float colorWeightR = colorWeights[0];
-        float colorWeightG = colorWeights[1];
-        float colorWeightB = colorWeights[2];
-        FloatVec3Type colorWeights = {colorWeightR, colorWeightG, colorWeightB};
+        FloatVec3Type colorWeights = metadata.getColorWeighting();
         var.setValue(colorWeights);
         if(!setFilterProperty(importZeissZenMontageFilter, "ColorWeights", var))
         {
@@ -516,6 +485,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(const
       }
 
       // Set Origin
+      bool changeOrigin = metadata.getChangeOrigin();
       var.setValue(changeOrigin);
       if(!setFilterProperty(importZeissZenMontageFilter, "ChangeOrigin", var))
       {
@@ -524,11 +494,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(const
 
       if(changeOrigin)
       {
-        float originX = origin[0];
-        float originY = origin[1];
-        float originZ = origin[2];
-        FloatVec3Type newOrigin = {originX, originY, originZ};
-        var.setValue(newOrigin);
+        FloatVec3Type origin = metadata.getOrigin();
+        var.setValue(origin);
         if(!setFilterProperty(importZeissZenMontageFilter, "Origin", var))
         {
           return AbstractFilter::NullPointer();
@@ -545,9 +512,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissZenMontageFilter(const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QString& zeissFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, const QString& metaAmName,
-                                                                        bool importAllMetadata, bool convertToGrayscale, FloatVec3Type colorWeights, bool changeOrigin, FloatVec3Type origin,
-                                                                        IntVec2Type montageStart, IntVec2Type montageEnd, bool changeSpacing, FloatVec3Type spacing)
+AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const ZeissMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName,
+                                                                        const QString& metaAmName, bool importAllMetadata)
 {
   // Instantiate Import AxioVision V4 Montage filter
   QString filterName = "ImportAxioVisionV4Montage";
@@ -562,22 +528,22 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
       QVariant var;
 
       // Set the path for the Robomet Configuration File
-      var.setValue(zeissFile);
+      var.setValue(metadata.getConfigFilePath());
       if(!setFilterProperty(importZeissMontageFilter, "InputFile", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage start
-      var.setValue(montageStart);
-      if(!setFilterProperty(importZeissMontageFilter, "MontageStart", var))
+      var.setValue(metadata.getRowLimits());
+      if(!setFilterProperty(importZeissMontageFilter, "RowMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage end
-      var.setValue(montageEnd);
-      if(!setFilterProperty(importZeissMontageFilter, "MontageEnd", var))
+      var.setValue(metadata.getColumnLimits());
+      if(!setFilterProperty(importZeissMontageFilter, "ColumnMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
@@ -618,18 +584,16 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
       }
 
       // Set Convert to Grayscale
-      var.setValue(convertToGrayscale);
+      bool convertToGreyscale = metadata.getConvertToGreyscale();
+      var.setValue(convertToGreyscale);
       if(!setFilterProperty(importZeissMontageFilter, "ConvertToGrayScale", var))
       {
         return AbstractFilter::NullPointer();
       }
 
-      if(convertToGrayscale)
+      if(convertToGreyscale)
       {
-        float colorWeightR = colorWeights[0];
-        float colorWeightG = colorWeights[1];
-        float colorWeightB = colorWeights[2];
-        FloatVec3Type colorWeights = {colorWeightR, colorWeightG, colorWeightB};
+        FloatVec3Type colorWeights = metadata.getColorWeighting();
         var.setValue(colorWeights);
         if(!setFilterProperty(importZeissMontageFilter, "ColorWeights", var))
         {
@@ -638,6 +602,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
       }
 
       // Set Origin
+      bool changeOrigin = metadata.getChangeOrigin();
       var.setValue(changeOrigin);
       if(!setFilterProperty(importZeissMontageFilter, "ChangeOrigin", var))
       {
@@ -646,11 +611,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
 
       if(changeOrigin)
       {
-        float originX = origin[0];
-        float originY = origin[1];
-        float originZ = origin[2];
-        FloatVec3Type newOrigin = {originX, originY, originZ};
-        var.setValue(newOrigin);
+        FloatVec3Type origin = metadata.getOrigin();
+        var.setValue(origin);
         if(!setFilterProperty(importZeissMontageFilter, "Origin", var))
         {
           return AbstractFilter::NullPointer();
@@ -658,6 +620,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
       }
 
       // Set Spacing
+      bool changeSpacing = metadata.getChangeSpacing();
       var.setValue(changeSpacing);
       if(!setFilterProperty(importZeissMontageFilter, "ChangeSpacing", var))
       {
@@ -666,11 +629,8 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
 
       if(changeSpacing)
       {
-        float spacingX = spacing[0];
-        float spacingY = spacing[1];
-        float spacingZ = spacing[2];
-        FloatVec3Type newSpacing = {spacingX, spacingY, spacingZ};
-        var.setValue(newSpacing);
+        FloatVec3Type spacing = metadata.getSpacing();
+        var.setValue(spacing);
         if(!setFilterProperty(importZeissMontageFilter, "Spacing", var))
         {
           return AbstractFilter::NullPointer();
@@ -687,7 +647,108 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const QS
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AbstractFilter::Pointer VSFilterFactory::createPCMTileRegistrationFilter(IntVec2Type montageStart, IntVec2Type montageEnd, const QString& dcPrefix, const QString& amName, const QString& daName)
+AbstractFilter::Pointer VSFilterFactory::createImportEbsdMontageFilter(const EbsdMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& cellAMName, const QString& cellEnsembleAMName,
+                                                                       const QString& daName, const QString& ipfColorsArrayName)
+{
+  QString filterName = "ITKImportFijiMontage";
+  FilterManager* fm = FilterManager::Instance();
+  IFilterFactory::Pointer factory = fm->getFactoryFromClassName(filterName);
+
+  if(factory.get() != nullptr)
+  {
+    AbstractFilter::Pointer importEbsdMontageFilter = factory->create();
+    if(importEbsdMontageFilter.get() != nullptr)
+    {
+      QVariant var;
+
+      // Set the path for the Fiji Configuration File
+      MontageFileListInfo fileListInfo;
+      IntVec2Type rowLimits = metadata.getRowLimits();
+      IntVec2Type colLimits = metadata.getColumnLimits();
+      fileListInfo.RowStart = rowLimits[0];
+      fileListInfo.RowEnd = rowLimits[1];
+      fileListInfo.ColStart = colLimits[0];
+      fileListInfo.ColEnd = colLimits[1];
+      fileListInfo.InputPath = metadata.getInputDirectory();
+      fileListInfo.FilePrefix = metadata.getFilePrefix();
+      fileListInfo.FileSuffix = metadata.getFileSuffix();
+      fileListInfo.FileExtension = metadata.getFileExtension();
+      fileListInfo.PaddingDigits = metadata.getNumIndexDigits();
+      fileListInfo.IncrementIndex = metadata.getIncrementIndex();
+
+      var.setValue(fileListInfo);
+      if(!setFilterProperty(importEbsdMontageFilter, "InputFileListInfo", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      var.setValue(metadata.getMontageName());
+      if(!setFilterProperty(importEbsdMontageFilter, "MontageName", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the Cell Attribute Matrix Name
+      var.setValue(cellAMName);
+      if(!setFilterProperty(importEbsdMontageFilter, "CellAttributeMatrixName", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the Cell Ensemble Attribute Matrix Name
+      var.setValue(cellEnsembleAMName);
+      if(!setFilterProperty(importEbsdMontageFilter, "CellEnsembleAttributeMatrixName", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the Define Scan Overlap
+      var.setValue(metadata.getScanTypeOverlapIdx());
+      if(!setFilterProperty(importEbsdMontageFilter, "DefineScanOverlap", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the Define Pixel Overlap
+      var.setValue(metadata.getPixelOverlap());
+      if(!setFilterProperty(importEbsdMontageFilter, "ScanOverlapPixel", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the Define Percent Overlap
+      var.setValue(metadata.getPercentOverlap());
+      if(!setFilterProperty(importEbsdMontageFilter, "ScanOverlapPercent", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the Generate IPF Color Map
+      var.setValue(metadata.getGenerateIPFColorMap());
+      if(!setFilterProperty(importEbsdMontageFilter, "GenerateIPFColorMap", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      // Set the IPF Colors Array Name
+      var.setValue(ipfColorsArrayName);
+      if(!setFilterProperty(importEbsdMontageFilter, "CellIPFColorsArrayName", var))
+      {
+        return AbstractFilter::NullPointer();
+      }
+
+      return importEbsdMontageFilter;
+    }
+  }
+
+  return AbstractFilter::NullPointer();
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+AbstractFilter::Pointer VSFilterFactory::createPCMTileRegistrationFilter(IntVec2Type rowMontageLimits, IntVec2Type colMontageLimits, const QString& dcPrefix, const QString& amName,
+                                                                         const QString& daName)
 {
   QString filterName = "ITKPCMTileRegistration";
   FilterManager* fm = FilterManager::Instance();
@@ -700,35 +761,30 @@ AbstractFilter::Pointer VSFilterFactory::createPCMTileRegistrationFilter(IntVec2
     {
       QVariant var;
 
-      // Set montage start
-      var.setValue(montageStart);
-      if(!setFilterProperty(itkRegistrationFilter, "MontageStart", var))
+      var.setValue(colMontageLimits);
+      if(!setFilterProperty(itkRegistrationFilter, "ColumnMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
-      // Set montage end
-      var.setValue(montageEnd);
-      if(!setFilterProperty(itkRegistrationFilter, "MontageEnd", var))
+      var.setValue(rowMontageLimits);
+      if(!setFilterProperty(itkRegistrationFilter, "RowMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
-      // Set Common Attribute Matrix Name
       var.setValue(amName);
       if(!setFilterProperty(itkRegistrationFilter, "CommonAttributeMatrixName", var))
       {
         return AbstractFilter::NullPointer();
       }
 
-      // Set Common Data Array Name
       var.setValue(daName);
       if(!setFilterProperty(itkRegistrationFilter, "CommonDataArrayName", var))
       {
         return AbstractFilter::NullPointer();
       }
 
-      // Set the list of image data containers
       var.setValue(dcPrefix);
       if(!setFilterProperty(itkRegistrationFilter, "DataContainerPrefix", var))
       {
@@ -745,7 +801,7 @@ AbstractFilter::Pointer VSFilterFactory::createPCMTileRegistrationFilter(IntVec2
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-AbstractFilter::Pointer VSFilterFactory::createTileStitchingFilter(IntVec2Type montageStart, IntVec2Type montageEnd, const QString& dcPrefix, const QString& amName, const QString& daName,
+AbstractFilter::Pointer VSFilterFactory::createTileStitchingFilter(IntVec2Type rowMontageLimits, IntVec2Type colMontageLimits, const QString& dcPrefix, const QString& amName, const QString& daName,
                                                                    const DataArrayPath& montagePath)
 {
   QString filterName = "ITKStitchMontage";
@@ -760,15 +816,15 @@ AbstractFilter::Pointer VSFilterFactory::createTileStitchingFilter(IntVec2Type m
       QVariant var;
 
       // Set montage start
-      var.setValue(montageStart);
-      if(!setFilterProperty(itkStitchingFilter, "MontageStart", var))
+      var.setValue(colMontageLimits);
+      if(!setFilterProperty(itkStitchingFilter, "ColumnMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
 
       // Set montage end
-      var.setValue(montageEnd);
-      if(!setFilterProperty(itkStitchingFilter, "MontageEnd", var))
+      var.setValue(rowMontageLimits);
+      if(!setFilterProperty(itkStitchingFilter, "RowMontageLimits", var))
       {
         return AbstractFilter::NullPointer();
       }
@@ -928,7 +984,7 @@ bool VSFilterFactory::setFilterProperty(const AbstractFilter::Pointer& filter, c
 {
   if(!filter->setProperty(propertyName, value))
   {
-    notifyErrorMessage(tr("%1: %2 property not set. Aborting.").arg(filter->getHumanLabel()).arg(propertyName), -1000);
+    notifyErrorMessage(tr("%1: Unable to set '%2' property. Aborting.").arg(filter->getHumanLabel(), propertyName), -1000);
     return false;
   }
   return true;

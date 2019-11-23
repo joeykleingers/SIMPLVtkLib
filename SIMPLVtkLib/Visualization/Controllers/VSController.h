@@ -136,7 +136,7 @@ public:
    * @brief Import data from a FilterPipeline and add any relevant DataContainers as top-level VisualFilters
    * @param pipelines
    */
-  void importPipelineOutput(std::vector<FilterPipeline::Pointer> pipelines);
+  void importPipelinesOutput(std::vector<FilterPipeline::Pointer> pipelines);
 
   /**
    * @brief Import data from a DataContainerArray and add any relevant DataContainers

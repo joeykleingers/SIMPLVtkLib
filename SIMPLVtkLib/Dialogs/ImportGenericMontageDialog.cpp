@@ -97,12 +97,10 @@ void ImportGenericMontageDialog::setupGui()
   m_Ui->spacingX->setValidator(new QDoubleValidator);
   m_Ui->spacingY->setValidator(new QDoubleValidator);
   m_Ui->spacingZ->setValidator(new QDoubleValidator);
-  m_Ui->montageStartX->setValidator(new QDoubleValidator);
-  m_Ui->montageStartY->setValidator(new QDoubleValidator);
-  m_Ui->montageEndX->setValidator(new QDoubleValidator);
-  m_Ui->montageEndY->setValidator(new QDoubleValidator);
-
-  setDisplayType(AbstractImportMontageDialog::DisplayType::Outline);
+  m_Ui->rowStart->setValidator(new QDoubleValidator);
+  m_Ui->rowEnd->setValidator(new QDoubleValidator);
+  m_Ui->colStart->setValidator(new QDoubleValidator);
+  m_Ui->colEnd->setValidator(new QDoubleValidator);
 
   checkComplete();
 }
@@ -112,8 +110,6 @@ void ImportGenericMontageDialog::setupGui()
 // -----------------------------------------------------------------------------
 void ImportGenericMontageDialog::connectSignalsSlots()
 {
-  connect(m_Ui->dataDisplayTypeCB, qOverload<int>(&QComboBox::currentIndexChanged), [=](int index) { setDisplayType(static_cast<AbstractImportMontageDialog::DisplayType>(index)); });
-
   connect(m_Ui->tileOverlapSB, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [=] { checkComplete(); });
 
   connect(m_Ui->montageNameLE, &QLineEdit::textChanged, this, [=] { checkComplete(); });
@@ -136,10 +132,10 @@ void ImportGenericMontageDialog::connectSignalsSlots()
   connect(m_Ui->originY, &QLineEdit::textChanged, [=] { checkComplete(); });
   connect(m_Ui->originZ, &QLineEdit::textChanged, [=] { checkComplete(); });
 
-  connect(m_Ui->montageStartX, &QLineEdit::textChanged, [=] { checkComplete(); });
-  connect(m_Ui->montageStartY, &QLineEdit::textChanged, [=] { checkComplete(); });
-  connect(m_Ui->montageEndX, &QLineEdit::textChanged, [=] { checkComplete(); });
-  connect(m_Ui->montageEndY, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->rowStart, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->rowEnd, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->colStart, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->colEnd, &QLineEdit::textChanged, [=] { checkComplete(); });
 
   connect(m_Ui->changeSpacingCB, &QCheckBox::stateChanged, [=] {
     bool isChecked = m_Ui->changeSpacingCB->isChecked();
@@ -160,7 +156,7 @@ void ImportGenericMontageDialog::tileListWidgetChanged()
 {
   checkComplete();
 
-  FileListInfo_t fileListInfo = m_Ui->tileListWidget->getFileListInfo();
+  StackFileListInfo fileListInfo = m_Ui->tileListWidget->getFileListInfo();
   setFileListInfo(fileListInfo);
 }
 
@@ -203,12 +199,8 @@ void ImportGenericMontageDialog::checkComplete() const
     result = false;
   }
 
-  int montageStartX = m_Ui->montageStartX->text().toInt();
-  int montageStartY = m_Ui->montageStartY->text().toInt();
-  int montageEndX = m_Ui->montageEndX->text().toInt();
-  int montageEndY = m_Ui->montageEndY->text().toInt();
-  int numCols = montageEndX - montageStartX + 1;
-  int numRows = montageEndY - montageStartY + 1;
+  int numCols = m_Ui->colEnd->text().toInt() - m_Ui->colStart->text().toInt() + 1;
+  int numRows = m_Ui->rowEnd->text().toInt() - m_Ui->rowStart->text().toInt() + 1;
 
   int numberOfMontageTiles = numCols * numRows;
   int numberOfSelectedTiles = m_Ui->tileListWidget->getCurrentNumberOfTiles();
@@ -331,95 +323,27 @@ void ImportGenericMontageDialog::updateOrderChoices(MontageSettings::MontageType
 }
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportGenericMontageDialog::getMontageName()
+GenericMontageMetadata ImportGenericMontageDialog::getMetadata() const
 {
-  return m_Ui->montageNameLE->text();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-IntVec2Type ImportGenericMontageDialog::getMontageStart()
-{
-  int montageStartX = m_Ui->montageStartX->text().toInt();
-  int montageStartY = m_Ui->montageStartY->text().toInt();
-  IntVec2Type montageStart = {montageStartX, montageStartY};
-  return montageStart;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-IntVec2Type ImportGenericMontageDialog::getMontageEnd()
-{
-  int montageEndX = m_Ui->montageEndX->text().toInt();
-  int montageEndY = m_Ui->montageEndY->text().toInt();
-  IntVec2Type montageStart = {montageEndX, montageEndY};
-  return montageStart;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-int ImportGenericMontageDialog::getTileOverlap()
-{
-  return m_Ui->tileOverlapSB->value();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-MontageSettings::MontageType ImportGenericMontageDialog::getMontageType()
-{
-  return static_cast<MontageSettings::MontageType>(m_Ui->collectionTypeCB->currentIndex());
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-MontageSettings::MontageOrder ImportGenericMontageDialog::getMontageOrder()
-{
-  return static_cast<MontageSettings::MontageOrder>(m_Ui->orderCB->currentIndex());
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-bool ImportGenericMontageDialog::getOverrideSpacing()
-{
-  return m_Ui->changeSpacingCB->isChecked();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-std::tuple<double, double, double> ImportGenericMontageDialog::getSpacing()
-{
-  double spacingX = m_Ui->spacingX->text().toDouble();
-  double spacingY = m_Ui->spacingY->text().toDouble();
-  double spacingZ = m_Ui->spacingZ->text().toDouble();
-  std::tuple<double, double, double> spacing = std::make_tuple(spacingX, spacingY, spacingZ);
-  return spacing;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-std::tuple<double, double, double> ImportGenericMontageDialog::getOrigin()
-{
-  double originX = m_Ui->originX->text().toDouble();
-  double originY = m_Ui->originY->text().toDouble();
-  double originZ = m_Ui->originZ->text().toDouble();
-  std::tuple<double, double, double> origin = std::make_tuple(originX, originY, originZ);
-  return origin;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-int32_t ImportGenericMontageDialog::getLengthUnit()
-{
-  return m_Ui->unitsCB->currentIndex();
+  GenericMontageMetadata metadata;
+  metadata.setMontageName(m_Ui->montageNameLE->text());
+  metadata.setDataDisplayType(static_cast<MontageMetadata::DisplayType>(m_Ui->dataDisplayTypeCB->currentIndex()));
+  metadata.setMontageType(static_cast<MontageSettings::MontageType>(m_Ui->collectionTypeCB->currentIndex()));
+  metadata.setMontageOrder(static_cast<MontageSettings::MontageOrder>(m_Ui->orderCB->currentIndex()));
+  metadata.setTileOverlap(m_Ui->tileOverlapSB->value());
+  float originX = m_Ui->originX->text().toFloat();
+  float originY = m_Ui->originY->text().toFloat();
+  float originZ = m_Ui->originZ->text().toFloat();
+  FloatVec3Type origin = {originX, originY, originZ};
+  metadata.setOrigin(origin);
+  metadata.setChangeSpacing(m_Ui->changeSpacingCB->isChecked());
+  float spacingX = m_Ui->originX->text().toFloat();
+  float spacingY = m_Ui->originY->text().toFloat();
+  float spacingZ = m_Ui->originZ->text().toFloat();
+  FloatVec3Type spacing = {spacingX, spacingY, spacingZ};
+  metadata.setSpacing(spacing);
+  metadata.setLengthUnitsIdx(m_Ui->unitsCB->currentIndex());
+  metadata.setRowLimits({m_Ui->rowStart->text().toInt(), m_Ui->rowEnd->text().toInt()});
+  metadata.setColumnLimits({m_Ui->colStart->text().toInt(), m_Ui->colEnd->text().toInt()});
+  return metadata;
 }

@@ -35,12 +35,15 @@
 
 #include "VSMontageImporter.h"
 
+#include "SIMPLib/Geometry/ImageGeom.h"
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline)
+VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline, MontageMetadata::DisplayType displayType)
 : VSAbstractImporter()
 , m_Pipeline(pipeline)
+, m_DisplayType(displayType)
 {
   pipeline->addMessageReceiver(this);
 }
@@ -48,10 +51,11 @@ VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray)
+VSMontageImporter::VSMontageImporter(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray, MontageMetadata::DisplayType displayType)
 : VSAbstractImporter()
 , m_Pipeline(pipeline)
 , m_DataContainerArray(dataContainerArray)
+, m_DisplayType(displayType)
 {
   pipeline->addMessageReceiver(this);
 }
@@ -64,18 +68,18 @@ VSMontageImporter::~VSMontageImporter() = default;
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::Pointer VSMontageImporter::New(FilterPipeline::Pointer pipeline)
+VSMontageImporter::Pointer VSMontageImporter::New(FilterPipeline::Pointer pipeline, MontageMetadata::DisplayType displayType)
 {
-  VSMontageImporter::Pointer sharedPtr(new VSMontageImporter(pipeline));
+  VSMontageImporter::Pointer sharedPtr(new VSMontageImporter(pipeline, displayType));
   return sharedPtr;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSMontageImporter::Pointer VSMontageImporter::New(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray)
+VSMontageImporter::Pointer VSMontageImporter::New(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dataContainerArray, MontageMetadata::DisplayType displayType)
 {
-  VSMontageImporter::Pointer sharedPtr(new VSMontageImporter(pipeline, dataContainerArray));
+  VSMontageImporter::Pointer sharedPtr(new VSMontageImporter(pipeline, dataContainerArray, displayType));
   return sharedPtr;
 }
 
@@ -110,8 +114,6 @@ void VSMontageImporter::execute()
     m_Pipeline->execute();
   }
 
-  int err = m_Pipeline->getErrorCode();
-
   //  qInfo() << "Pipeline err condition: " << err;
   //  // For now, quit after an error condition
   //  // However, may want to consider returning
@@ -133,7 +135,7 @@ void VSMontageImporter::execute()
   else
   {
     setState(State::Finished);
-    emit resultReady(m_Pipeline, err);
+    handleMontageResults();
   }
 }
 
@@ -161,5 +163,47 @@ void VSMontageImporter::reset()
   else
   {
     setState(State::Ready);
+  }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void VSMontageImporter::handleMontageResults()
+{
+  int err = m_Pipeline->getErrorCode();
+  if(err >= 0)
+  {
+    DataContainerArray::Pointer dca = m_Pipeline->getDataContainerArray();
+    QStringList pipelineNameTokens = m_Pipeline->getName().split("_", QString::SplitBehavior::SkipEmptyParts);
+    int slice = 0;
+    if(pipelineNameTokens.size() > 1)
+    {
+      slice = pipelineNameTokens[1].toInt();
+    }
+
+    // If Display Montage was selected, remove non-stitched image data containers
+    if(m_DisplayType == MontageMetadata::DisplayType::Montage)
+    {
+      for(const DataContainer::Pointer& dc : dca->getDataContainers())
+      {
+        if(dc->getName() == "MontageDC")
+        {
+          ImageGeom::Pointer imageGeom = dc->getGeometryAs<ImageGeom>();
+          if(imageGeom)
+          {
+            FloatVec3Type origin = imageGeom->getOrigin();
+            origin[2] += slice;
+            imageGeom->setOrigin(origin);
+          }
+        }
+        else
+        {
+          dca->removeDataContainer(dc->getName());
+        }
+      }
+    }
+
+    emit montageResultsReady(m_Pipeline, dca);
   }
 }

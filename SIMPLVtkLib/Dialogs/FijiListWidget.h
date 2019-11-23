@@ -46,7 +46,7 @@
 #include "SIMPLib/FilterParameters/FileListInfoFilterParameter.h"
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
-
+#include "SIMPLVtkLib/Database/FijiMontageMetadata.h"
 #include "SVWidgetsLib/QtSupport/QtSPluginFrame.h"
 
 #include "SVWidgetsLib/FilterParameterWidgets/FilterParameterWidget.h"
@@ -113,12 +113,6 @@ public:
   bool isComplete() const;
 
   /**
-   * @brief getFijiListInfo
-   * @return
-   */
-  FijiListInfo_t getFijiListInfo();
-
-  /**
    * @brief getMontagePrefix
    * @return
    */
@@ -129,6 +123,12 @@ public:
    * @return
    */
   int getCurrentNumberOfTiles();
+
+  /**
+   * @brief getMetadata
+   * @return
+   */
+  FijiMontageMetadata getMetadata() const;
 
 protected slots:
 

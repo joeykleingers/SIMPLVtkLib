@@ -44,6 +44,11 @@
 #include "SIMPLib/Filtering/AbstractFilter.h"
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
+#include "SIMPLVtkLib/Database/FijiMontageMetadata.h"
+#include "SIMPLVtkLib/Database/EbsdMontageMetadata.h"
+#include "SIMPLVtkLib/Database/RobometMontageMetadata.h"
+#include "SIMPLVtkLib/Database/ZeissMontageMetadata.h"
+#include "SIMPLVtkLib/Database/ZeissZenMontageMetadata.h"
 
 /**
  * @class VSFilterFactory VSFilterFactory.h
@@ -79,8 +84,7 @@ public:
    * isn't needed if changeSpacing is false.
    * @return
    */
-  AbstractFilter::Pointer createImportFijiMontageFilter(const QString& fijiFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, bool changeOrigin, const float* origin,
-                                                        IntVec2Type montageStart, IntVec2Type montageEnd, bool changeSpacing, const float* spacing, int32_t lengthUnit);
+  AbstractFilter::Pointer createImportFijiMontageFilter(const FijiMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName);
 
   /**
    * @brief Creates a filter that imports a Robomet montage, and sets all the necessary properties
@@ -101,9 +105,7 @@ public:
    * isn't needed if changeSpacing is false.
    * @return
    */
-  AbstractFilter::Pointer createImportRobometMontageFilter(const QString& robometFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, int sliceNumber,
-                                                           const QString& imageFilePrefix, const QString& imageFileExtension, bool changeOrigin, const float* origin, IntVec2Type montageStart,
-                                                           IntVec2Type montageEnd, bool changeSpacing, const float* spacing, int32_t lengthUnit);
+  AbstractFilter::Pointer createImportRobometMontageFilter(const RobometMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName, int sliceNumber);
 
   /**
    * @brief Creates a filter that imports a Zeiss montage, and sets all the necessary properties
@@ -126,9 +128,8 @@ public:
    * isn't needed if changeSpacing is false.
    * @return
    */
-  AbstractFilter::Pointer createImportZeissMontageFilter(const QString& zeissFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, const QString& metaAmName,
-                                                         bool importAllMetadata, bool convertToGrayscale, FloatVec3Type colorWeights, bool changeOrigin, FloatVec3Type origin, IntVec2Type montageStart,
-                                                         IntVec2Type montageEnd, bool changeSpacing, FloatVec3Type spacing);
+  AbstractFilter::Pointer createImportZeissMontageFilter(const ZeissMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName, const QString& metaAmName,
+                                                         bool importAllMetadata);
 
   /**
    * @brief Creates a filter that imports a Zeiss Zen montage, and sets all the necessary properties
@@ -146,8 +147,15 @@ public:
    * @param montageEnd The ending column and row of the montage
    * @return
    */
-  AbstractFilter::Pointer createImportZeissZenMontageFilter(const QString& zeissFile, const DataArrayPath& dcPath, const QString& amName, const QString& daName, bool convertToGrayscale,
-                                                            FloatVec3Type colorWeights, bool changeOrigin, FloatVec3Type origin, IntVec2Type montageStart, IntVec2Type montageEnd);
+  AbstractFilter::Pointer createImportZeissZenMontageFilter(ZeissZenMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& amName, const QString& daName);
+
+  /**
+   * @brief Creates a filter that imports an Ebsd montage, and sets all the necessary properties
+   * @param metadata The Ebsd Montage metadata
+   * @return
+   */
+  AbstractFilter::Pointer createImportEbsdMontageFilter(const EbsdMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& cellAMName, const QString& cellEnsembleAMName,
+                                                        const QString& daName, const QString& ipfColorsArrayName);
 
   /**
    * @brief Creates a PCM Tile Registration filter, and sets all necessary properties
@@ -158,7 +166,7 @@ public:
    * @param daName Common data array name in each common attribute matrix
    * @return
    */
-  AbstractFilter::Pointer createPCMTileRegistrationFilter(IntVec2Type montageStart, IntVec2Type montageEnd, const QString& dcPrefix, const QString& amName, const QString& daName);
+  AbstractFilter::Pointer createPCMTileRegistrationFilter(IntVec2Type rowMontageLimits, IntVec2Type colMontageLimits, const QString& dcPrefix, const QString& amName, const QString& daName);
 
   /**
    * @brief Creates a PCM Tile Registration filter, and sets all necessary properties
@@ -170,7 +178,7 @@ public:
    * @param montagePath The path to the created montage data array
    * @return
    */
-  AbstractFilter::Pointer createTileStitchingFilter(IntVec2Type montageStart, IntVec2Type montageEnd, const QString& dcPrefix, const QString& amName, const QString& daName,
+  AbstractFilter::Pointer createTileStitchingFilter(IntVec2Type rowMontageLimits, IntVec2Type colMontageLimits, const QString& dcPrefix, const QString& amName, const QString& daName,
                                                     const DataArrayPath& montagePath);
 
   /**

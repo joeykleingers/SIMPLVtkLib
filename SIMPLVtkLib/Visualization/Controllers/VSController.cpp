@@ -127,7 +127,7 @@ void VSController::importPipelineOutput(const FilterPipeline::Pointer &pipeline,
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSController::importPipelineOutput(std::vector<FilterPipeline::Pointer> pipelines)
+void VSController::importPipelinesOutput(std::vector<FilterPipeline::Pointer> pipelines)
 {
   for(const FilterPipeline::Pointer &pipeline : pipelines)
   {

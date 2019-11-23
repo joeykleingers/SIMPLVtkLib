@@ -46,6 +46,7 @@
 #include "SIMPLib/FilterParameters/FileListInfoFilterParameter.h"
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
+#include "SIMPLVtkLib/Database/ZeissMontageMetadata.h"
 
 #include "SVWidgetsLib/QtSupport/QtSPluginFrame.h"
 
@@ -123,6 +124,12 @@ public:
    * @return
    */
   int getCurrentNumberOfTiles();
+
+  /**
+   * @brief getMetadata
+   * @return
+   */
+  ZeissMontageMetadata getMetadata() const;
 
 protected slots:
 

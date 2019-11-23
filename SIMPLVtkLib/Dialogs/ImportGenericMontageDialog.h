@@ -37,6 +37,7 @@
 
 #include "SIMPLib/Common/SIMPLArray.hpp"
 
+#include "SIMPLVtkLib/Database/GenericMontageMetadata.h"
 #include "SIMPLVtkLib/Dialogs/AbstractImportMontageDialog.h"
 #include "SIMPLVtkLib/Dialogs/Utilities/MontageSettings.h"
 
@@ -58,8 +59,8 @@ public:
    */
   static Pointer New(QWidget* parent = nullptr);
 
-  SIMPL_INSTANCE_PROPERTY(FileListInfo_t, FileListInfo)
-  Q_PROPERTY(FileListInfo_t FileListInfo READ getFileListInfo WRITE setFileListInfo)
+  SIMPL_INSTANCE_PROPERTY(StackFileListInfo, FileListInfo)
+  Q_PROPERTY(StackFileListInfo FileListInfo READ getFileListInfo WRITE setFileListInfo)
 
   /**
    * @brief Initializes some of the GUI elements with selections or other GUI related items
@@ -73,64 +74,10 @@ public:
   void checkComplete() const override;
 
   /**
-   * @brief getMontageName
+   * @brief getMetadata
    * @return
    */
-  QString getMontageName();
-
-  /**
-   * @brief getMontageStart
-   * @return
-   */
-  IntVec2Type getMontageStart();
-
-  /**
-   * @brief getMontageEnd
-   * @return
-   */
-  IntVec2Type getMontageEnd();
-
-  /**
-   * @brief getTileOverlap
-   * @return
-   */
-  int getTileOverlap();
-
-  /**
-   * @brief getMontageType
-   * @return
-   */
-  MontageSettings::MontageType getMontageType();
-
-  /**
-   * @brief getMontageOrder
-   * @return
-   */
-  MontageSettings::MontageOrder getMontageOrder();
-
-  /**
-   * @brief getOverrideSpacing
-   * @return
-   */
-  bool getOverrideSpacing();
-
-  /**
-   * @brief getSpacing
-   * @return
-   */
-  std::tuple<double, double, double> getSpacing();
-
-  /**
-   * @brief getOrigin
-   * @return
-   */
-  std::tuple<double, double, double> getOrigin();
-
-  /**
-   * @brief getLengthUnit
-   * @return
-   */
-  int32_t getLengthUnit();
+  GenericMontageMetadata getMetadata() const;
 
 protected:
   /**

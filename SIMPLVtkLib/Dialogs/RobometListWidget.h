@@ -46,6 +46,7 @@
 #include "SIMPLib/FilterParameters/FileListInfoFilterParameter.h"
 
 #include "SIMPLVtkLib/SIMPLVtkLib.h"
+#include "SIMPLVtkLib/Database/RobometMontageMetadata.h"
 
 #include "SVWidgetsLib/QtSupport/QtSPluginFrame.h"
 
@@ -138,16 +139,10 @@ public:
   bool isComplete() const;
 
   /**
-   * @brief getRobometListInfo
+   * @brief getMetadata
    * @return
    */
-  RobometListInfo_t getRobometListInfo();
-
-  /**
-   * @brief getMontagePrefix
-   * @return
-   */
-  QString getMontagePrefix();
+  RobometMontageMetadata getMetadata() const;
 
 protected slots:
 

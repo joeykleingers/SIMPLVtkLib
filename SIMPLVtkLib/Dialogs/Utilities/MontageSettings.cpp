@@ -237,7 +237,7 @@ void MontageSettings::setOutputFileName(QString outputFileName)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-FileListInfo_t MontageSettings::getFileListInfo() const
+StackFileListInfo MontageSettings::getFileListInfo() const
 {
   return m_fileListInfo;
 }
@@ -245,7 +245,7 @@ FileListInfo_t MontageSettings::getFileListInfo() const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void MontageSettings::setFileListInfo(FileListInfo_t fileListInfo)
+void MontageSettings::setFileListInfo(StackFileListInfo fileListInfo)
 {
   m_fileListInfo = fileListInfo;
 }

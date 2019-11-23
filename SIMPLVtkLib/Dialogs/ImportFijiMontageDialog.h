@@ -74,52 +74,10 @@ public:
   void checkComplete() const override;
 
   /**
-   * @brief getMontageName
+   * @brief getMetadata
    * @return
    */
-  QString getMontageName();
-
-  /**
-   * @brief getOverrideSpacing
-   * @return
-   */
-  bool getOverrideSpacing();
-
-  /**
-   * @brief getSpacing
-   * @return
-   */
-  FloatVec3Type getSpacing();
-
-  /**
-   * @brief getOverrideOrigin
-   * @return
-   */
-  bool getOverrideOrigin();
-
-  /**
-   * @brief getOrigin
-   * @return
-   */
-  FloatVec3Type getOrigin();
-
-  /**
-   * @brief getMontageStart
-   * @return
-   */
-  IntVec2Type getMontageStart();
-
-  /**
-   * @brief getMontageEnd
-   * @return
-   */
-  IntVec2Type getMontageEnd();
-
-  /**
-   * @brief getLengthUnit
-   * @return
-   */
-  int32_t getLengthUnit();
+  FijiMontageMetadata getMetadata() const;
 
 protected:
   /**
@@ -134,8 +92,6 @@ protected slots:
 
   // Slots to catch signals emitted by the various ui widgets
   void changeOrigin_stateChanged(int state);
-  void changeSpacing_stateChanged(int state);
-  void fijiListWidgetChanged();
 
 protected:
   static void setOpenDialogLastFilePath(const QString& val)
@@ -163,11 +119,6 @@ private:
    * @brief connectSignalsSlots
    */
   void connectSignalsSlots();
-
-  /**
-   * @brief disconnectSignalsSlots
-   */
-  void disconnectSignalsSlots();
 
 public:
   ImportFijiMontageDialog(const ImportFijiMontageDialog&) = delete;            // Copy Constructor Not Implemented

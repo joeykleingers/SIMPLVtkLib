@@ -528,9 +528,9 @@ bool VSMainWidgetBase::importPipelineOutput(FilterPipeline::Pointer pipeline, Da
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool VSMainWidgetBase::importPipelineOutput(std::vector<FilterPipeline::Pointer> pipelines)
+bool VSMainWidgetBase::importPipelinesOutput(std::vector<FilterPipeline::Pointer> pipelines)
 {
-  m_Controller->importPipelineOutput(pipelines);
+  m_Controller->importPipelinesOutput(pipelines);
   return true;
 }
 

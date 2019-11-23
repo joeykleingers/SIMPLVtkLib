@@ -55,11 +55,3 @@ AbstractImportMontageDialog::AbstractImportMontageDialog(QWidget* parent)
 //
 // -----------------------------------------------------------------------------
 AbstractImportMontageDialog::~AbstractImportMontageDialog() = default;
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void AbstractImportMontageDialog::setDisplayType(AbstractImportMontageDialog::DisplayType displayType)
-{
-  m_DisplayType = displayType;
-}

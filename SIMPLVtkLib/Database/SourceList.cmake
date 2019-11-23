@@ -1,0 +1,25 @@
+set(SUBDIR_NAME Database)
+
+set(${PROJECT_NAME}_${SUBDIR_NAME}_HDRS
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/DREAM3DMontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/EbsdMontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/FijiMontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/GenericMontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/MontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/RobometMontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/ZeissMontageMetadata.h
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/ZeissZenMontageMetadata.h
+)
+
+set(${PROJECT_NAME}_${SUBDIR_NAME}_SRCS
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/DREAM3DMontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/EbsdMontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/FijiMontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/GenericMontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/MontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/RobometMontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/ZeissMontageMetadata.cpp
+  ${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/${SUBDIR_NAME}/ZeissZenMontageMetadata.cpp
+)
+
+cmp_IDE_SOURCE_PROPERTIES( "${PROJECT_NAME}/${SUBDIR_NAME}" "${${PROJECT_NAME}_${SUBDIR_NAME}_HDRS}" "${${PROJECT_NAME}_${SUBDIR_NAME}_SRCS}" "0")

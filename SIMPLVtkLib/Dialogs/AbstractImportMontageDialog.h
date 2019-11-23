@@ -50,16 +50,6 @@ public:
 
   ~AbstractImportMontageDialog() override;
 
-  enum DisplayType
-  {
-    Outline,
-    SideBySide,
-    Montage,
-    NotSpecified
-  };
-
-  SIMPL_GET_PROPERTY(AbstractImportMontageDialog::DisplayType, DisplayType)
-
   class InvalidOKButtonException : public std::exception
   {
     const char* what() const noexcept;
@@ -79,15 +69,6 @@ protected:
    * @param parent The parent QWidget for this Widget
    */
   AbstractImportMontageDialog(QWidget* parent = nullptr);
-
-  /**
-   * @brief setDisplayType
-   * @param displayType
-   */
-  void setDisplayType(AbstractImportMontageDialog::DisplayType displayType);
-
-private:
-  DisplayType m_DisplayType = DisplayType::NotSpecified;
 
 public:
   AbstractImportMontageDialog(const AbstractImportMontageDialog&) = delete;            // Copy Constructor Not Implemented

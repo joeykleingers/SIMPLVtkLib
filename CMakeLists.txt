@@ -148,6 +148,7 @@ foreach(h ${SIMPLVtkLib_Generated_RC_SRCS})
 endforeach()
 
 include(${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/Common/SourceList.cmake)
+include(${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/Database/SourceList.cmake)
 include(${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/QtWidgets/SourceList.cmake)
 include(${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/SIMPLBridge/SourceList.cmake)
 include(${${PROJECT_NAME}_SOURCE_DIR}/SIMPLVtkLib/Visualization/SourceList.cmake)
@@ -189,6 +190,9 @@ set(Project_SRCS
 
   ${${PROJECT_NAME}_Common_HDRS}
   ${${PROJECT_NAME}_Common_SRCS}
+
+  ${${PROJECT_NAME}_Database_HDRS}
+  ${${PROJECT_NAME}_Database_SRCS}
 
   ${${PROJECT_NAME}_VtkWidget_HDRS}
   ${${PROJECT_NAME}_VtkWidget_SRCS}

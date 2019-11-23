@@ -94,12 +94,10 @@ void ImportDREAM3DMontageDialog::setupGui()
 
   connectSignalsSlots();
 
-  m_Ui->montageStartX->setValidator(new QIntValidator(m_Ui->montageStartX));
-  m_Ui->montageStartY->setValidator(new QIntValidator(m_Ui->montageStartY));
-  m_Ui->montageEndX->setValidator(new QIntValidator(m_Ui->montageEndX));
-  m_Ui->montageEndY->setValidator(new QIntValidator(m_Ui->montageEndY));
-
-  setDisplayType(AbstractImportMontageDialog::DisplayType::Outline);
+  m_Ui->rowStart->setValidator(new QIntValidator(m_Ui->rowStart));
+  m_Ui->rowEnd->setValidator(new QIntValidator(m_Ui->rowEnd));
+  m_Ui->colStart->setValidator(new QIntValidator(m_Ui->colStart));
+  m_Ui->colEnd->setValidator(new QIntValidator(m_Ui->colEnd));
 
   checkComplete();
 }
@@ -109,8 +107,6 @@ void ImportDREAM3DMontageDialog::setupGui()
 // -----------------------------------------------------------------------------
 void ImportDREAM3DMontageDialog::connectSignalsSlots()
 {
-  connect(m_Ui->dataDisplayTypeCB, qOverload<int>(&QComboBox::currentIndexChanged), [=](int index) { setDisplayType(static_cast<AbstractImportMontageDialog::DisplayType>(index)); });
-
   connect(m_Ui->loadHDF5DataWidget, &VSLoadHDF5DataWidget::proxyChanged, this, &ImportDREAM3DMontageDialog::proxyChanged);
   connect(m_Ui->selectButton, &QPushButton::clicked, this, &ImportDREAM3DMontageDialog::selectBtn_clicked);
 
@@ -121,10 +117,10 @@ void ImportDREAM3DMontageDialog::connectSignalsSlots()
 
   connect(m_Ui->montageNameLE, &QLineEdit::textChanged, this, [=] { checkComplete(); });
 
-  connect(m_Ui->montageStartX, &QLineEdit::textChanged, [=] { checkComplete(); });
-  connect(m_Ui->montageStartY, &QLineEdit::textChanged, [=] { checkComplete(); });
-  connect(m_Ui->montageEndX, &QLineEdit::textChanged, [=] { checkComplete(); });
-  connect(m_Ui->montageEndY, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->rowStart, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->rowEnd, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->colStart, &QLineEdit::textChanged, [=] { checkComplete(); });
+  connect(m_Ui->colEnd, &QLineEdit::textChanged, [=] { checkComplete(); });
 
   connect(m_Ui->loadHDF5DataWidget, &VSLoadHDF5DataWidget::proxyChanged, this, &ImportDREAM3DMontageDialog::proxyChanged);
 }
@@ -164,8 +160,8 @@ void ImportDREAM3DMontageDialog::proxyChanged(DataContainerArrayProxy proxy)
     }
   }
 
-  m_Ui->montageEndY->setText(QString::number(rowCount));
-  m_Ui->montageEndX->setText(QString::number(colCount));
+  m_Ui->rowEnd->setText(QString::number(rowCount));
+  m_Ui->colEnd->setText(QString::number(colCount));
 
   checkComplete();
 }
@@ -284,70 +280,16 @@ QString ImportDREAM3DMontageDialog::getInputDirectory()
 }
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportDREAM3DMontageDialog::getDataContainerPrefix() const
+DREAM3DMontageMetadata ImportDREAM3DMontageDialog::getMetadata() const
 {
-  return m_Ui->dcPrefixLE->text();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportDREAM3DMontageDialog::getMontageName()
-{
-  return m_Ui->montageNameLE->text();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-IntVec2Type ImportDREAM3DMontageDialog::getMontageStart()
-{
-  IntVec2Type montageStart = {m_Ui->montageStartX->text().toInt(), m_Ui->montageStartY->text().toInt()};
-  return montageStart;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-IntVec2Type ImportDREAM3DMontageDialog::getMontageEnd()
-{
-  IntVec2Type montageEnd = {m_Ui->montageEndX->text().toInt(), m_Ui->montageEndY->text().toInt()};
-  return montageEnd;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-IntVec3Type ImportDREAM3DMontageDialog::getMontageSize()
-{
-  int rowCount = m_Ui->montageEndY->text().toInt() - m_Ui->montageStartY->text().toInt() + 1;
-  int colCount = m_Ui->montageEndX->text().toInt() - m_Ui->montageStartX->text().toInt() + 1;
-  IntVec3Type montageSize = {colCount, rowCount, 1};
-  return montageSize;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportDREAM3DMontageDialog::getDataFilePath()
-{
-  return m_Ui->dataFileLE->text();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportDREAM3DMontageDialog::getAttributeMatrixName()
-{
-  return m_Ui->cellAttrMatrixNameLE->text();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-QString ImportDREAM3DMontageDialog::getDataArrayName()
-{
-  return m_Ui->imageArrayNameLE->text();
+  DREAM3DMontageMetadata metadata;
+  metadata.setMontageName(m_Ui->montageNameLE->text());
+  metadata.setDataDisplayType(static_cast<MontageMetadata::DisplayType>(m_Ui->dataDisplayTypeCB->currentIndex()));
+  metadata.setRowLimits({m_Ui->rowStart->text().toInt(), m_Ui->rowEnd->text().toInt()});
+  metadata.setColumnLimits({m_Ui->colStart->text().toInt(), m_Ui->colEnd->text().toInt()});
+  metadata.setFilePath(m_Ui->dataFileLE->text());
+  metadata.setDataContainerPrefix(m_Ui->dcPrefixLE->text());
+  metadata.setAttributeMatrixName(m_Ui->cellAttrMatrixNameLE->text());
+  metadata.setDataArrayName(m_Ui->imageArrayNameLE->text());
+  return metadata;
 }

@@ -62,7 +62,7 @@ TileConfigFileGenerator::TileConfigFileGenerator()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-TileConfigFileGenerator::TileConfigFileGenerator(FileListInfo_t fileListInfo, MontageSettings::MontageType montageType, MontageSettings::MontageOrder montageOrder, int gridSizeX, int gridSizeY,
+TileConfigFileGenerator::TileConfigFileGenerator(StackFileListInfo fileListInfo, MontageSettings::MontageType montageType, MontageSettings::MontageOrder montageOrder, int gridSizeX, int gridSizeY,
                                                  double tileOverlap, QString outputFilename)
 {
   m_fileListInfo = std::move(fileListInfo);
