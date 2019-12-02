@@ -52,8 +52,6 @@
 QString ImportEbsdMontageDialog::m_OpenDialogLastDirectory = "";
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
 ImportEbsdMontageDialog::ImportEbsdMontageDialog(QWidget* parent)
 : AbstractImportMontageDialog(parent)
 , m_Ui(new Ui::ImportEbsdMontageDialog)
@@ -64,12 +62,8 @@ ImportEbsdMontageDialog::ImportEbsdMontageDialog(QWidget* parent)
 }
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
 ImportEbsdMontageDialog::~ImportEbsdMontageDialog() = default;
 
-// -----------------------------------------------------------------------------
-//
 // -----------------------------------------------------------------------------
 ImportEbsdMontageDialog::Pointer ImportEbsdMontageDialog::New(QWidget* parent)
 {
@@ -77,8 +71,6 @@ ImportEbsdMontageDialog::Pointer ImportEbsdMontageDialog::New(QWidget* parent)
   return sharedPtr;
 }
 
-// -----------------------------------------------------------------------------
-//
 // -----------------------------------------------------------------------------
 void ImportEbsdMontageDialog::setupGui()
 {
@@ -92,15 +84,32 @@ void ImportEbsdMontageDialog::setupGui()
 }
 
 // -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
 void ImportEbsdMontageDialog::connectSignalsSlots()
 {
   connect(m_Ui->ebsdMontageListFrame, &EbsdMontageListWidget::widgetChanged, this, &ImportEbsdMontageDialog::checkComplete);
+  connect(m_Ui->scanOverlapTypeCB, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ImportEbsdMontageDialog::listenScanOverlapTypeChanged);
 }
 
 // -----------------------------------------------------------------------------
-//
+void ImportEbsdMontageDialog::listenScanOverlapTypeChanged(int index)
+{
+  EbsdMontageMetadata::ScanOverlapType overlapType = static_cast<EbsdMontageMetadata::ScanOverlapType>(index);
+  switch(overlapType)
+  {
+  case EbsdMontageMetadata::ScanOverlapType::None:
+    m_Ui->overlapValueLabel->setDisabled(true);
+    m_Ui->overlapValueXLE->setDisabled(true);
+    m_Ui->overlapValueYLE->setDisabled(true);
+    break;
+  case EbsdMontageMetadata::ScanOverlapType::PixelOverlap:
+  case EbsdMontageMetadata::ScanOverlapType::PercentOverlap:
+    m_Ui->overlapValueLabel->setEnabled(true);
+    m_Ui->overlapValueXLE->setEnabled(true);
+    m_Ui->overlapValueYLE->setEnabled(true);
+    break;
+  }
+}
+
 // -----------------------------------------------------------------------------
 void ImportEbsdMontageDialog::checkComplete() const
 {

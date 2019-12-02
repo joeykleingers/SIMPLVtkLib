@@ -85,7 +85,6 @@ protected:
    */
   ImportEbsdMontageDialog(QWidget* parent = nullptr);
 
-protected:
   static void setOpenDialogLastFilePath(const QString& val)
   {
     m_OpenDialogLastDirectory = val;
@@ -94,6 +93,9 @@ protected:
   {
     return m_OpenDialogLastDirectory;
   }
+
+protected slots:
+  void listenScanOverlapTypeChanged(int index);
 
 signals:
   /**
