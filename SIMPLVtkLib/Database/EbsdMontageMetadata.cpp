@@ -120,15 +120,15 @@ void EbsdMontageMetadata::setFilePaths(const std::list<QString>& val)
 }
 
 // -----------------------------------------------------------------------------
-int32_t EbsdMontageMetadata::getScanTypeOverlapIdx() const
+EbsdMontageMetadata::ScanOverlapType EbsdMontageMetadata::getScanOverlapType() const
 {
-  return m_ScanTypeOverlapIdx;
+  return m_ScanOverlapType;
 }
 
 // -----------------------------------------------------------------------------
-void EbsdMontageMetadata::setScanTypeOverlapIdx(const int32_t& val)
+void EbsdMontageMetadata::setScanOverlapType(const ScanOverlapType& val)
 {
-  m_ScanTypeOverlapIdx = val;
+  m_ScanOverlapType = val;
 }
 
 // -----------------------------------------------------------------------------
@@ -144,25 +144,25 @@ void EbsdMontageMetadata::setGenerateIPFColorMap(const bool& val)
 }
 
 // -----------------------------------------------------------------------------
-int EbsdMontageMetadata::getPixelOverlap() const
+IntVec2Type EbsdMontageMetadata::getPixelOverlap() const
 {
   return m_PixelOverlap;
 }
 
 // -----------------------------------------------------------------------------
-void EbsdMontageMetadata::setPixelOverlap(const int& val)
+void EbsdMontageMetadata::setPixelOverlap(const IntVec2Type& val)
 {
   m_PixelOverlap = val;
 }
 
 // -----------------------------------------------------------------------------
-float EbsdMontageMetadata::getPercentOverlap() const
+FloatVec2Type EbsdMontageMetadata::getPercentOverlap() const
 {
   return m_PercentOverlap;
 }
 
 // -----------------------------------------------------------------------------
-void EbsdMontageMetadata::setPercentOverlap(const float& val)
+void EbsdMontageMetadata::setPercentOverlap(const FloatVec2Type& val)
 {
   m_PercentOverlap = val;
 }

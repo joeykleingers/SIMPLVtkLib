@@ -703,7 +703,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportEbsdMontageFilter(const Ebs
       }
 
       // Set the Define Scan Overlap
-      var.setValue(metadata.getScanTypeOverlapIdx());
+      var.setValue(static_cast<int>(metadata.getScanOverlapType()));
       if(!setFilterProperty(importEbsdMontageFilter, "DefineScanOverlap", var))
       {
         return AbstractFilter::NullPointer();

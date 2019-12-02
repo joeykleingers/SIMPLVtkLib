@@ -42,6 +42,13 @@
 class SIMPLVtkLib_EXPORT EbsdMontageMetadata : public MontageMetadata
 {
 public:
+  enum class ScanOverlapType
+  {
+    None,
+    PixelOverlap,
+    PercentOverlap
+  };
+
   /**
    * @brief getInputDirectory
    * @return
@@ -134,17 +141,17 @@ public:
   void setFilePaths(const std::list<QString>& val);
 
   /**
-   * @brief getScanTypeOverlapIdx
+   * @brief getScanOverlapType
    * @return
    */
-  int32_t getScanTypeOverlapIdx() const;
+  ScanOverlapType getScanOverlapType() const;
 
   /**
-   * @brief setScanTypeOverlapIdx
+   * @brief setScanOverlapType
    * @param val
    * @return
    */
-  void setScanTypeOverlapIdx(const int32_t& val);
+  void setScanOverlapType(const ScanOverlapType& val);
 
   /**
    * @brief getGenerateIPFColorMap
@@ -163,27 +170,27 @@ public:
    * @brief getPixelOverlap
    * @return
    */
-  int getPixelOverlap() const;
+  IntVec2Type getPixelOverlap() const;
 
   /**
    * @brief setPixelOverlap
    * @param val
    * @return
    */
-  void setPixelOverlap(const int& val);
+  void setPixelOverlap(const IntVec2Type& val);
 
   /**
    * @brief getPercentOverlap
    * @return
    */
-  float getPercentOverlap() const;
+  FloatVec2Type getPercentOverlap() const;
 
   /**
    * @brief setPercentOverlap
    * @param val
    * @return
    */
-  void setPercentOverlap(const float& val);
+  void setPercentOverlap(const FloatVec2Type& val);
 
 private:
   QString m_InputDirectory;
@@ -193,8 +200,8 @@ private:
   int m_IncrementIndex;
   int m_NumIndexDigits;
   std::list<QString> m_FilePaths;
-  int32_t m_ScanTypeOverlapIdx = 0;
-  int m_PixelOverlap = 0;
-  float m_PercentOverlap = 0.0F;
+  ScanOverlapType m_ScanOverlapType = ScanOverlapType::None;
+  IntVec2Type m_PixelOverlap = {0, 0};
+  FloatVec2Type m_PercentOverlap = {0.0F, 0.0F};
   bool m_GenerateIPFColorMap = false;
 };

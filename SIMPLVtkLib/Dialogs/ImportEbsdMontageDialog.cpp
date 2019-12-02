@@ -141,7 +141,19 @@ EbsdMontageMetadata ImportEbsdMontageDialog::getMetadata() const
   EbsdMontageMetadata metadata = m_Ui->ebsdMontageListFrame->getMetadata();
   metadata.setMontageName(m_Ui->montageNameLE->text());
   metadata.setDataDisplayType(static_cast<MontageMetadata::DisplayType>(m_Ui->dataDisplayTypeCB->currentIndex()));
-  metadata.setScanTypeOverlapIdx(m_Ui->scanOverlapTypeCB->currentIndex());
+  EbsdMontageMetadata::ScanOverlapType scanOverlapType = static_cast<EbsdMontageMetadata::ScanOverlapType>(m_Ui->scanOverlapTypeCB->currentIndex());
+  switch(scanOverlapType)
+  {
+  case EbsdMontageMetadata::ScanOverlapType::PixelOverlap:
+    metadata.setPixelOverlap({m_Ui->overlapValueXLE->text().toInt(), m_Ui->overlapValueYLE->text().toInt()});
+    break;
+  case EbsdMontageMetadata::ScanOverlapType::PercentOverlap:
+    metadata.setPercentOverlap({m_Ui->overlapValueXLE->text().toFloat(), m_Ui->overlapValueYLE->text().toFloat()});
+    break;
+  case EbsdMontageMetadata::ScanOverlapType::None:
+    break;
+  }
+  metadata.setScanOverlapType(scanOverlapType);
   metadata.setGenerateIPFColorMap(m_Ui->generateIPFColorMapCB->isChecked());
   return metadata;
 }
