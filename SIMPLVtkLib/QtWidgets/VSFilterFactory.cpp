@@ -38,6 +38,8 @@
 
 #include <array>
 
+#include <QtWidgets/QMessageBox>
+
 #include "SIMPLib/DataContainers/DataContainerArrayProxy.h"
 #include "SIMPLib/FilterParameters/FloatVec3FilterParameter.h"
 #include "SIMPLib/FilterParameters/IntVec2FilterParameter.h"
@@ -984,7 +986,8 @@ bool VSFilterFactory::setFilterProperty(const AbstractFilter::Pointer& filter, c
 {
   if(!filter->setProperty(propertyName, value))
   {
-    notifyErrorMessage(tr("%1: Unable to set '%2' property. Aborting.").arg(filter->getHumanLabel(), propertyName), -1000);
+    QString msg = tr("%1: Unable to set '%2' property. Aborting.").arg(filter->getHumanLabel(), propertyName);
+    QMessageBox::critical(nullptr, "Filter Factory Error", msg, QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Ok);
     return false;
   }
   return true;

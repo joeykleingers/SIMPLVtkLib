@@ -230,9 +230,6 @@ protected:
    */
   VSFilterFactory(QObject* parent = nullptr);
 
-signals:
-  void notifyErrorMessage(const QString& msg, int code);
-
 private:
   /**
    * @brief printPropertyError
