@@ -652,7 +652,7 @@ AbstractFilter::Pointer VSFilterFactory::createImportZeissMontageFilter(const Ze
 AbstractFilter::Pointer VSFilterFactory::createImportEbsdMontageFilter(const EbsdMontageMetadata& metadata, const DataArrayPath& dcPath, const QString& cellAMName, const QString& cellEnsembleAMName,
                                                                        const QString& daName, const QString& ipfColorsArrayName)
 {
-  QString filterName = "ITKImportFijiMontage";
+  QString filterName = "ImportEbsdMontage";
   FilterManager* fm = FilterManager::Instance();
   IFilterFactory::Pointer factory = fm->getFactoryFromClassName(filterName);
 
