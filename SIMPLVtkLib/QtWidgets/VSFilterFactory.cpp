@@ -41,6 +41,7 @@
 #include <QtWidgets/QMessageBox>
 
 #include "SIMPLib/DataContainers/DataContainerArrayProxy.h"
+#include "SIMPLib/FilterParameters/FloatVec2FilterParameter.h"
 #include "SIMPLib/FilterParameters/FloatVec3FilterParameter.h"
 #include "SIMPLib/FilterParameters/IntVec2FilterParameter.h"
 #include "SIMPLib/FilterParameters/MontageFileListInfo.h"
