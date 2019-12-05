@@ -608,7 +608,7 @@ vtkDataSetMapper* VSFilterViewSettings::getImageMapper() const
 {
   if(ActorType::Image2D == m_ActorType && isValid())
   {
-    return dynamic_cast<vtkDataSetMapper*>(m_Mapper.Get());
+    return vtkDataSetMapper::SafeDownCast(m_Mapper);
   }
 
   return nullptr;
@@ -621,7 +621,7 @@ vtkActor* VSFilterViewSettings::getImageActor() const
 {
   if(ActorType::Image2D == m_ActorType && isValid())
   {
-    return dynamic_cast<vtkActor*>(m_Actor.Get());
+    return vtkActor::SafeDownCast(m_Actor);
   }
 
   return nullptr;
