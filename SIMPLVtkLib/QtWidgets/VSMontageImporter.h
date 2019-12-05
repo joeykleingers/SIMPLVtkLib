@@ -77,7 +77,7 @@ protected slots:
   void processPipelineMessage(const AbstractMessage::Pointer& pipelineMsg);
 
 signals:
-  void montageResultsReady(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
+  void montageResultsReady(FilterPipeline::Pointer pipeline);
 
 private:
   FilterPipeline::Pointer m_Pipeline;

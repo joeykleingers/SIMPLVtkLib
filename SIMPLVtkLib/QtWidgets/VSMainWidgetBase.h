@@ -210,10 +210,9 @@ public slots:
   /**
    * @brief importPipelineOutput
    * @param pipeline
-   * @param dca
    * @return
    */
-  bool importPipelineOutput(FilterPipeline::Pointer pipeline, DataContainerArray::Pointer dca);
+  bool importPipelineOutput(FilterPipeline::Pointer pipeline);
 
   /**
    * @brief Create a clip filter and set the given filter as its parent.  If no filter is provided,

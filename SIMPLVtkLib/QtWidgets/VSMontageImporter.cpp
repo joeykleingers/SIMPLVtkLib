@@ -204,6 +204,6 @@ void VSMontageImporter::handleMontageResults()
       }
     }
 
-    emit montageResultsReady(m_Pipeline, dca);
+    emit montageResultsReady(m_Pipeline);
   }
 }
