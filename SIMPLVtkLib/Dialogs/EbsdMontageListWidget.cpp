@@ -448,8 +448,8 @@ EbsdMontageMetadata EbsdMontageListWidget::getMetadata() const
   metadata.setFilePrefix(m_Ui->filePrefix->text());
   metadata.setFileSuffix(m_Ui->fileSuffix->text());
   metadata.setFileExtension(m_Ui->fileExt->text());
-  metadata.setRowLimits({m_Ui->rowStart->value(), m_Ui->rowEnd->value()});
-  metadata.setColumnLimits({m_Ui->colStart->value(), m_Ui->colEnd->value()});
+  metadata.setRowLimits({m_Ui->rowStart->value(), m_Ui->rowEnd->value() + 1});
+  metadata.setColumnLimits({m_Ui->colStart->value(), m_Ui->colEnd->value() + 1});
   metadata.setIncrementIndex(m_Ui->increment->value());
   metadata.setNumIndexDigits(m_Ui->totalDigits->value());
 
