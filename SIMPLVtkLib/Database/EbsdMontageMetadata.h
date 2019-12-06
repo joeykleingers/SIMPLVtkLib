@@ -202,6 +202,6 @@ private:
   std::list<QString> m_FilePaths;
   ScanOverlapType m_ScanOverlapType = ScanOverlapType::None;
   IntVec2Type m_PixelOverlap = {0, 0};
-  FloatVec2Type m_PercentOverlap = {0.0F, 0.0F};
+  FloatVec2Type m_PercentOverlap = {0.0f, 0.0f};
   bool m_GenerateIPFColorMap = false;
 };
