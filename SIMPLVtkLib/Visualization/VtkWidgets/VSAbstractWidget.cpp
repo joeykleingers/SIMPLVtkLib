@@ -70,9 +70,9 @@ double* VSAbstractWidget::getBounds()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSAbstractWidget::calculateLocalOrigin(double* bounds, VSTransform* transform)
+std::array<double, 3> VSAbstractWidget::calculateLocalOrigin(double* bounds, VSTransform* transform)
 {
-  double* origin = calculateGlobalOrigin(bounds);
+  std::array<double, 3> origin = calculateGlobalOrigin(bounds);
   transform->localizePoint(origin);
   return origin;
 }
@@ -80,9 +80,9 @@ double* VSAbstractWidget::calculateLocalOrigin(double* bounds, VSTransform* tran
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSAbstractWidget::calculateGlobalOrigin(double* bounds)
+std::array<double, 3> VSAbstractWidget::calculateGlobalOrigin(double* bounds)
 {
-  double* origin = new double[3];
+  std::array<double, 3> origin;
   for(int i = 0; i < 3; i++)
   {
     origin[i] = (bounds[i * 2] + bounds[i * 2 + 1]) / 2.0;

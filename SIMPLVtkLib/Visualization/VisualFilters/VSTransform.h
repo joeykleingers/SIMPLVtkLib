@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <QtCore/QObject>
 
 #include <vtkMatrix4x4.h>
@@ -65,6 +67,8 @@ class SIMPLVtkLib_EXPORT VSTransform : public QObject
   Q_PROPERTY(std::vector<double> globalScale READ getScaleVector NOTIFY updatedScale)
 
 public:
+  using Array3Type = std::array<double, 3>;
+
   /**
    * @brief Constructor
    * @param parent
@@ -80,7 +84,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSTransform() = default;
+  ~VSTransform() override;
 
   /**
    * @brief Assignment operator
@@ -158,68 +162,69 @@ public:
    * @brief Returns the transform's global position in 3D space
    * @return
    */
-  double* getPosition();
+  Array3Type getPosition();
 
   /**
    * @brief Returns the transform's local position in 3D space
    * @return
    */
-  double* getLocalPosition();
+  Array3Type getLocalPosition();
 
   /**
    * @brief Returns the transform's global Euler rotation
    * @return
    */
-  double* getRotation();
+  Array3Type getRotation();
 
   /**
    * @brief Returns the transform's local Euler rotation
    * @return
    */
-  double* getLocalRotation();
+  Array3Type getLocalRotation();
 
   /**
    * @brief Returns the transform's global scale
    * @return
    */
-  double* getScale();
+  Array3Type getScale();
 
   /**
    * @brief Returns the transform's local scale
    * @return
    */
-  double* getLocalScale();
+  Array3Type getLocalScale();
 
   /**
    * @brief Sets the transform's local position
    * @param position
    */
-  void setLocalPosition(double position[3]);
+  void setLocalPosition(const Array3Type& position);
 
   /**
    * @brief Sets the transform's local Euler rotation
    * @param rotation
    */
-  void setLocalRotation(double rotation[3]);
+  void setLocalRotation(const Array3Type& rotation);
 
   /**
    * @brief Sets the transform's local scale
    * @param scale
    */
-  void setLocalScale(double scale[3]);
+  void setLocalScale(const Array3Type& scale);
 
   /**
    * @brief Translates the object in global space
    * @param delta
    */
-  void translate(double delta[3]);
+  void translate(const Array3Type& delta);
 
   /**
    * @brief Rotates the transform by the given amount along a specified axis
    * @param amount
    * @param axis
    */
-  void rotate(double amount, double axis[3]);
+  void rotate(double amount, const Array3Type& axis);
+  void rotate(double amount, const double* axis);
 
   /**
    * @brief Scales the transform by a given amount
@@ -231,7 +236,7 @@ public:
    * @brief Scales the transform by a given amount
    * @param amount
    */
-  void scale(double amount[3]);
+  void scale(const Array3Type& amount);
 
   /**
    * @brief Returns the vtkTransform describing the global position, rotation, and scale.
@@ -243,7 +248,7 @@ public:
    * @brief Localizes the given point from global space
    * @param point
    */
-  void localizePoint(double point[3]);
+  void localizePoint(Array3Type& point);
 
   /**
    * @brief Localizes the given points from global space
@@ -255,7 +260,7 @@ public:
    * @brief Localizes the given normal from global space
    * @param orientation
    */
-  void localizeNormal(double normal[3]);
+  void localizeNormal(const Array3Type& normal);
 
   /**
    * @brief Localizes the given normals from global space
@@ -285,7 +290,7 @@ public:
    * @brief Performs the transformation on the given point to put it in global space
    * @param point
    */
-  void globalizePoint(double point[3]);
+  void globalizePoint(const Array3Type& point);
 
   /**
    * @brief Globalizes the given points to put them in global space
@@ -297,7 +302,7 @@ public:
    * @brief Performs the transformation on the given normal to put it in global space
    * @param normal
    */
-  void globalizeNormal(double normal[3]);
+  void globalizeNormal(const Array3Type& normal);
 
   /**
    * @brief Globalizes the given normals to put them in global space
@@ -327,37 +332,40 @@ public:
    * @brief Get the origin position of the transform
    * @return origin
    */
-  double* getOriginPosition() const;
+  Array3Type getOriginPosition() const;
 
   /**
    * @brief Set the origin position of the transform
    * @param originPosition
    */
   void setOriginPosition(double* originPosition);
+  void setOriginPosition(const Array3Type& originPosition);
 
   /**
    * @brief Get the origin of the transform
    * @return originRotation
    */
-  double* getOriginRotation() const;
+  Array3Type getOriginRotation() const;
 
   /**
    * @brief Set the origin rotation of the transform
    * @param originRotation
    */
   void setOriginRotation(double* originRotation);
+  void setOriginRotation(const Array3Type& originRotation);
 
   /**
    * @brief Get the origin scale of the transform
    * @return originScale
    */
-  double* getOriginScale() const;
+  Array3Type getOriginScale() const;
 
   /**
    * @brief Set the origin scale of the transform
    * @param originScale
    */
   void setOriginScale(double* originScale);
+  void setOriginScale(const Array3Type& originScale);
 
 signals:
   void updatedPosition();
@@ -384,7 +392,7 @@ protected:
    * @param rotation
    * @param scale
    */
-  static vtkTransform* createTransform(double position[3], double rotation[3], double scale[3]);
+  static vtkTransform* createTransform(const double* position, const double* rotation, const double* scale);
 
   /**
    * @brief Sets the local transformation to match the given values.
@@ -392,7 +400,7 @@ protected:
    * @param rotation
    * @param scale
    */
-  void setLocalValues(double position[3], double rotation[3], double scale[3]);
+  void setLocalValues(const Array3Type& position, const Array3Type& rotation, const Array3Type& scale);
 
   /**
    * @brief Returns the vtkTransform describing the local position, rotation, and scale.
@@ -427,8 +435,8 @@ protected:
 private:
   VSTransform* m_Parent = nullptr;
 
-  double* m_OriginPosition;
-  double* m_OriginRotation;
-  double* m_OriginScale;
+  Array3Type m_OriginPosition;
+  Array3Type m_OriginRotation;
+  Array3Type m_OriginScale;
   VTK_PTR(vtkTransform) m_LocalTransform;
 };

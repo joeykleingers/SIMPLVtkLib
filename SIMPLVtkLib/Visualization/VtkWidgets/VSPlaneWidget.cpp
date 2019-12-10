@@ -35,17 +35,20 @@
 
 #include "VSPlaneWidget.h"
 
+#include <array>
+
 #include <vtkCommand.h>
 #include <vtkImplicitPlaneRepresentation.h>
 #include <vtkImplicitPlaneWidget2.h>
 #include <vtkPlane.h>
 #include <vtkRenderWindowInteractor.h>
-
 #include <vtkSmartPointer.h>
 
 #include <QDoubleSpinBox>
 
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSAbstractFilter.h"
+
+using Array3Type = std::array<double, 3>;
 
 // -----------------------------------------------------------------------------
 //
@@ -76,12 +79,7 @@ public:
     m_VSPlaneWidget->modified();
   }
 
-  vtkPlaneCallback()
-  : m_UsePlane(nullptr)
-  , m_VSPlaneWidget(nullptr)
-  , m_VSTransform(nullptr)
-  {
-  }
+  vtkPlaneCallback() = default;
 
   void setUsePlane(vtkPlane* plane)
   {
@@ -104,10 +102,10 @@ public:
   }
 
 private:
-  vtkPlane* m_UsePlane;
-  vtkPlane* m_ViewPlane;
-  VSPlaneWidget* m_VSPlaneWidget;
-  VSTransform* m_VSTransform;
+  vtkPlane* m_UsePlane = nullptr;
+  vtkPlane* m_ViewPlane = nullptr;
+  VSPlaneWidget* m_VSPlaneWidget = nullptr;
+  VSTransform* m_VSTransform = nullptr;
 };
 
 // -----------------------------------------------------------------------------
@@ -121,16 +119,16 @@ VSPlaneWidget::VSPlaneWidget(QWidget* parent, VSTransform* transform, double bou
   m_ViewPlane = vtkSmartPointer<vtkPlane>::New();
   m_UsePlane = vtkSmartPointer<vtkPlane>::New();
 
-  double normal[3] = {1.0, 0.0, 0.0};
-  double viewNormal[3] = {1.0, 0.0, 0.0};
+  Array3Type normal = {1.0, 0.0, 0.0};
+  Array3Type viewNormal = {1.0, 0.0, 0.0};
   transform->globalizeNormal(viewNormal);
-  double* origin = calculateLocalOrigin(bounds, transform);
-  double* viewOrigin = calculateGlobalOrigin(bounds);
+  Array3Type origin = calculateLocalOrigin(bounds, transform);
+  Array3Type viewOrigin = calculateGlobalOrigin(bounds);
 
-  m_UsePlane->SetOrigin(origin);
-  m_UsePlane->SetNormal(normal);
-  m_ViewPlane->SetOrigin(viewOrigin);
-  m_ViewPlane->SetNormal(viewNormal);
+  m_UsePlane->SetOrigin(origin.data());
+  m_UsePlane->SetNormal(normal.data());
+  m_ViewPlane->SetOrigin(viewOrigin.data());
+  m_ViewPlane->SetNormal(viewNormal.data());
 
   // Implicit Plane Widget
   m_PlaneRep = vtkImplicitPlaneRepresentation::New();
@@ -244,7 +242,7 @@ void VSPlaneWidget::setOrigin(double origin[3])
   originZSpinBox->setValue(origin[2]);
 
   m_ViewPlane->SetOrigin(origin);
-  getVSTransform()->globalizePoint(origin);
+  //  getVSTransform()->globalizePoint(origin);
 
   drawPlaneOn();
   emit modified();
@@ -395,10 +393,10 @@ void VSPlaneWidget::spinBoxValueChanged()
 // -----------------------------------------------------------------------------
 void VSPlaneWidget::updatePlaneWidget()
 {
-  double normals[3];
-  double origin[3];
-  getNormal(normals);
-  m_UsePlane->GetOrigin(origin);
+  Array3Type normals;
+  Array3Type origin;
+  getNormal(normals.data());
+  m_UsePlane->GetOrigin(origin.data());
 
   getVSTransform()->globalizeNormal(normals);
   getVSTransform()->globalizePoint(origin);
@@ -406,13 +404,13 @@ void VSPlaneWidget::updatePlaneWidget()
   int enabled = m_PlaneWidget->GetEnabled();
   m_PlaneWidget->Off();
 
-  m_ViewPlane->SetNormal(normals);
-  m_ViewPlane->SetOrigin(origin);
+  m_ViewPlane->SetNormal(normals.data());
+  m_ViewPlane->SetOrigin(origin.data());
 
   m_PlaneRep->SetPlane(m_ViewPlane);
   m_PlaneWidget->SetEnabled(enabled);
 
-  if(getInteractor() && enabled)
+  if(nullptr != getInteractor() && enabled)
   {
     getInteractor()->Render();
   }

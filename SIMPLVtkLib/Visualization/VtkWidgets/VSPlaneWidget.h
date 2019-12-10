@@ -71,7 +71,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSPlaneWidget();
+  ~VSPlaneWidget() override;
 
   /**
    * @brief Returns the current normal
@@ -209,7 +209,7 @@ protected slots:
   /**
    * @brief Updates the vtk widget for positioning in global space
    */
-  virtual void updateGlobalSpace() override;
+  void updateGlobalSpace() override;
 
 protected:
   /**
@@ -220,6 +220,6 @@ protected:
 private:
   vtkSmartPointer<vtkPlane> m_UsePlane;
   vtkSmartPointer<vtkPlane> m_ViewPlane;
-  vtkImplicitPlaneWidget2* m_PlaneWidget;
-  vtkImplicitPlaneRepresentation* m_PlaneRep;
+  vtkImplicitPlaneWidget2* m_PlaneWidget = nullptr;
+  vtkImplicitPlaneRepresentation* m_PlaneRep = nullptr;
 };

@@ -40,16 +40,14 @@
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSAbstractFilter.h"
 
 #include "ui_VSTransformWidget.h"
-
+using Array3Type = std::array<double, 3>;
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 class VSTransformWidget::VSInternals : public Ui::VSTransformWidget
 {
 public:
-  VSInternals()
-  {
-  }
+  VSInternals() = default;
 };
 
 // -----------------------------------------------------------------------------
@@ -97,9 +95,9 @@ void VSTransformWidget::setupGui()
     for(VSAbstractFilter* filter : m_SelectedFilters)
     {
       VSTransform* transform = filter->getTransform();
-      double* resetPos = transform->getOriginPosition();
-      double* resetRot = transform->getOriginRotation();
-      double* resetScale = transform->getOriginScale();
+      Array3Type resetPos = transform->getOriginPosition();
+      Array3Type resetRot = transform->getOriginRotation();
+      Array3Type resetScale = transform->getOriginScale();
       transform->setLocalPosition(resetPos);
       transform->setLocalRotation(resetRot);
       transform->setLocalScale(resetScale);
@@ -120,7 +118,7 @@ VSTransform* VSTransformWidget::getTransform()
 // -----------------------------------------------------------------------------
 void VSTransformWidget::setTransform(VSTransform* transform)
 {
-  if(m_Transform)
+  if(nullptr != m_Transform)
   {
     disconnect(m_Transform, &VSTransform::updatedPosition, this, &VSTransformWidget::updateTranslationLabels);
     disconnect(m_Transform, &VSTransform::updatedRotation, this, &VSTransformWidget::updateRotationLabels);
@@ -164,41 +162,38 @@ void VSTransformWidget::setTransform(VSTransform* transform)
     connect(transform, &VSTransform::updatedLocalScale, this, &VSTransformWidget::updateLocalScale);
 
     // local
-    double* localPos = transform->getLocalPosition();
-    double* originPosition = transform->getOriginPosition();
-    if(originPosition != nullptr)
+    Array3Type localPos = transform->getLocalPosition();
+    Array3Type originPosition = transform->getOriginPosition();
+
+    for(int i = 0; i < 3; i++)
     {
-      for(int i = 0; i < 3; i++)
-      {
-        localPos[i] -= originPosition[i];
-      }
+      localPos[i] -= originPosition[i];
     }
+
     m_Internals->posXEdit->setText(QString::number(localPos[0]));
     m_Internals->posYEdit->setText(QString::number(localPos[1]));
     m_Internals->posZEdit->setText(QString::number(localPos[2]));
 
-    double* localRot = transform->getLocalRotation();
-    double* originRotation = transform->getOriginRotation();
-    if(originRotation != nullptr)
+    Array3Type localRot = transform->getLocalRotation();
+    Array3Type originRotation = transform->getOriginRotation();
+
+    for(int i = 0; i < 3; i++)
     {
-      for(int i = 0; i < 3; i++)
-      {
-        localRot[i] -= originRotation[i];
-      }
+      localRot[i] -= originRotation[i];
     }
+
     m_Internals->rotXEdit->setText(QString::number(localRot[0]));
     m_Internals->rotYEdit->setText(QString::number(localRot[1]));
     m_Internals->rotZEdit->setText(QString::number(localRot[2]));
 
-    double* localScale = transform->getLocalScale();
-    double* originScale = transform->getOriginScale();
-    if(originScale != nullptr)
+    Array3Type localScale = transform->getLocalScale();
+    Array3Type originScale = transform->getOriginScale();
+
+    for(int i = 0; i < 3; i++)
     {
-      for(int i = 0; i < 3; i++)
-      {
-        localScale[i] /= originScale[i];
-      }
+      localScale[i] /= originScale[i];
     }
+
     m_Internals->scaleXEdit->setText(QString::number(localScale[0]));
     m_Internals->scaleYEdit->setText(QString::number(localScale[1]));
     m_Internals->scaleZEdit->setText(QString::number(localScale[2]));
@@ -256,7 +251,7 @@ void VSTransformWidget::setTransform(VSTransform* transform)
 // -----------------------------------------------------------------------------
 void VSTransformWidget::setFilters(VSAbstractFilter::FilterListType filters)
 {
-  if(filters.size() == 0)
+  if(filters.empty())
   {
     setTransform(nullptr);
   }
@@ -277,11 +272,11 @@ void VSTransformWidget::translationEditChanged()
     return;
   }
 
-  double position[3];
+  Array3Type position;
 
   for(VSAbstractFilter* filter : m_SelectedFilters)
   {
-    double* originPosition = filter->getTransform()->getOriginPosition();
+    Array3Type originPosition = filter->getTransform()->getOriginPosition();
     position[0] = m_Internals->posXEdit->text().toDouble() + originPosition[0];
     position[1] = m_Internals->posYEdit->text().toDouble() + originPosition[1];
     position[2] = m_Internals->posZEdit->text().toDouble() + originPosition[2];
@@ -299,12 +294,12 @@ void VSTransformWidget::rotationEditChanged(char axis)
     return;
   }
 
-  double rotation[3];
+  Array3Type rotation;
 
   for(VSAbstractFilter* filter : m_SelectedFilters)
   {
-    double* originRotation = filter->getTransform()->getOriginRotation();
-    double* localRotation = filter->getTransform()->getLocalRotation();
+    Array3Type originRotation = filter->getTransform()->getOriginRotation();
+    Array3Type localRotation = filter->getTransform()->getLocalRotation();
 
     switch(axis)
     {
@@ -343,12 +338,12 @@ void VSTransformWidget::scaleEditChanged(char axis)
     return;
   }
 
-  double scale[3];
+  Array3Type scale;
 
   for(VSAbstractFilter* filter : m_SelectedFilters)
   {
-    double* originScale = filter->getTransform()->getOriginScale();
-    double* localScale = filter->getTransform()->getLocalScale();
+    Array3Type originScale = filter->getTransform()->getOriginScale();
+    Array3Type localScale = filter->getTransform()->getLocalScale();
 
     switch(axis)
     {
@@ -382,10 +377,9 @@ void VSTransformWidget::scaleEditChanged(char axis)
 // -----------------------------------------------------------------------------
 void VSTransformWidget::updateTranslationLabels()
 {
-  double* position;
+  Array3Type position;
   if(nullptr == m_Transform)
   {
-    position = new double[3];
     for(int i = 0; i < 3; i++)
     {
       position[i] = 0.0;
@@ -412,10 +406,9 @@ void VSTransformWidget::updateTranslationLabels()
 // -----------------------------------------------------------------------------
 void VSTransformWidget::updateRotationLabels()
 {
-  double* rotation;
+  Array3Type rotation;
   if(nullptr == m_Transform)
   {
-    rotation = new double[3];
     for(int i = 0; i < 3; i++)
     {
       rotation[i] = 0.0;
@@ -424,13 +417,11 @@ void VSTransformWidget::updateRotationLabels()
   else
   {
     rotation = m_Transform->getRotation();
-    double* originRotation = m_Transform->getOriginRotation();
-    if(originRotation != nullptr)
+    Array3Type originRotation = m_Transform->getOriginRotation();
+
+    for(int i = 0; i < 3; i++)
     {
-      for(int i = 0; i < 3; i++)
-      {
-        rotation[i] -= originRotation[i];
-      }
+      rotation[i] -= originRotation[i];
     }
   }
 
@@ -450,10 +441,9 @@ void VSTransformWidget::updateRotationLabels()
 // -----------------------------------------------------------------------------
 void VSTransformWidget::updateScaleLabels()
 {
-  double* scale;
+  Array3Type scale;
   if(nullptr == m_Transform)
   {
-    scale = new double[3];
     for(int i = 0; i < 3; i++)
     {
       scale[i] = 1.0;
@@ -480,11 +470,10 @@ void VSTransformWidget::updateScaleLabels()
 // -----------------------------------------------------------------------------
 void VSTransformWidget::updateLocalTranslation()
 {
-  double* position;
-  double* origin;
+  Array3Type position;
+  Array3Type origin;
   if(nullptr == m_Transform)
   {
-    position = new double[3];
     for(int i = 0; i < 3; i++)
     {
       position[i] = 0.0;
@@ -493,7 +482,7 @@ void VSTransformWidget::updateLocalTranslation()
   else
   {
     position = m_Transform->getLocalPosition();
-    double* origin = m_Transform->getOriginPosition();
+    Array3Type origin = m_Transform->getOriginPosition();
     for(int i = 0; i < 3; i++)
     {
       position[i] -= origin[i];
@@ -510,10 +499,9 @@ void VSTransformWidget::updateLocalTranslation()
 // -----------------------------------------------------------------------------
 void VSTransformWidget::updateLocalRotation()
 {
-  double* rotation;
+  Array3Type rotation;
   if(nullptr == m_Transform)
   {
-    rotation = new double[3];
     for(int i = 0; i < 3; i++)
     {
       rotation[i] = 0.0;
@@ -534,10 +522,9 @@ void VSTransformWidget::updateLocalRotation()
 // -----------------------------------------------------------------------------
 void VSTransformWidget::updateLocalScale()
 {
-  double* scale;
+  Array3Type scale;
   if(nullptr == m_Transform)
   {
-    scale = new double[3];
     for(int i = 0; i < 3; i++)
     {
       scale[i] = 0.0;
@@ -546,14 +533,12 @@ void VSTransformWidget::updateLocalScale()
   else
   {
     scale = m_Transform->getLocalScale();
-    double* originScale = m_Transform->getOriginScale();
-    if(originScale != nullptr)
+    Array3Type originScale = m_Transform->getOriginScale();
+
+    for(int i = 0; i < 3; i++)
     {
-      for(int i = 0; i < 3; i++)
-      {
-        scale[i] /= originScale[i];
+      scale[i] /= originScale[i];
       }
-    }
   }
 
   m_Internals->scaleXEdit->setText(QString::number(scale[0]));

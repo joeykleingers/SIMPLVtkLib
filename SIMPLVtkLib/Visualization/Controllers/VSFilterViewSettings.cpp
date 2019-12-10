@@ -35,6 +35,8 @@
 
 #include "VSFilterViewSettings.h"
 
+#include <array>
+
 #include <QtWidgets/QColorDialog>
 #include <QtWidgets/QInputDialog>
 
@@ -63,14 +65,14 @@ QIcon* VSFilterViewSettings::s_SolidColorIcon = nullptr;
 QIcon* VSFilterViewSettings::s_CellDataIcon = nullptr;
 QIcon* VSFilterViewSettings::s_PointDataIcon = nullptr;
 
+using Array3Type = std::array<double, 3>;
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 VSFilterViewSettings::VSFilterViewSettings()
 : QObject(nullptr)
-, m_Filter(nullptr)
 , m_ShowFilter(false)
-, m_ActiveComponent(-1)
 , m_Representation(Representation::Invalid)
 {
   SetupStaticIcons();
@@ -81,15 +83,14 @@ VSFilterViewSettings::VSFilterViewSettings()
 // -----------------------------------------------------------------------------
 VSFilterViewSettings::VSFilterViewSettings(VSAbstractFilter* filter, Representation representation, MontageMetadata::DisplayType displayType)
 : QObject(nullptr)
-, m_ShowFilter(true)
-, m_DisplayType(displayType)
 , m_Representation(representation)
+, m_DisplayType(displayType)
 {
   SetupStaticIcons();
 
   connectFilter(filter);
   setupActions();
-  bool isSIMPL = dynamic_cast<VSSIMPLDataContainerFilter*>(filter);
+  bool isSIMPL = (nullptr == dynamic_cast<VSSIMPLDataContainerFilter*>(filter));
   setupActors(isSIMPL);
   if(isSIMPL && (representation == Representation::Surface || representation == Representation::SurfaceWithEdges))
   {
@@ -122,7 +123,7 @@ VSFilterViewSettings::VSFilterViewSettings(const VSFilterViewSettings& copy)
   setRepresentation(copy.getRepresentation());
   setIsSelected(copy.m_Selected);
 
-  if(copy.m_LookupTable)
+  if(copy.m_LookupTable != nullptr)
   {
     // Create a new VSLookupTableController if necessary
     if(nullptr == m_LookupTable)
@@ -141,7 +142,7 @@ VSFilterViewSettings::VSFilterViewSettings(const VSFilterViewSettings& copy)
 // -----------------------------------------------------------------------------
 VSFilterViewSettings::~VSFilterViewSettings()
 {
-  if(m_LookupTable)
+  if(m_LookupTable != nullptr)
   {
     delete m_LookupTable;
     m_LookupTable = nullptr;
@@ -203,14 +204,11 @@ VSAbstractFilter* VSFilterViewSettings::getFilter()
 // -----------------------------------------------------------------------------
 QString VSFilterViewSettings::getFilterName() const
 {
-  if(m_Filter)
+  if(m_Filter != nullptr)
   {
     return m_Filter->getFilterName();
   }
-  else
-  {
-    return "[Filter Missing]";
-  }
+  return "[Filter Missing]";
 }
 
 // -----------------------------------------------------------------------------
@@ -236,7 +234,7 @@ bool VSFilterViewSettings::isValid() const
     return false;
   }
 
-  bool valid = m_Mapper && m_Actor;
+  bool valid = m_Mapper != nullptr && m_Actor != nullptr;
   return valid;
 }
 
@@ -340,18 +338,15 @@ QString VSFilterViewSettings::getActiveComponentName() const
   {
     return m_ActiveArrayName;
   }
-  else if(isColorArray && m_ActiveComponent == -1)
+  if(isColorArray && m_ActiveComponent == -1)
   {
     return m_ActiveArrayName;
   }
-  else if(m_ActiveComponent == -1)
+  if(m_ActiveComponent == -1)
   {
     return m_ActiveArrayName + " Magnitude";
   }
-  else
-  {
-    return dataArray->GetComponentName(m_ActiveComponent);
-  }
+  return dataArray->GetComponentName(m_ActiveComponent);
 }
 
 // -----------------------------------------------------------------------------
@@ -359,7 +354,7 @@ QString VSFilterViewSettings::getActiveComponentName() const
 // -----------------------------------------------------------------------------
 QStringList VSFilterViewSettings::getArrayNames() const
 {
-  if(m_Filter)
+  if(m_Filter != nullptr)
   {
     QStringList arrayNames = m_Filter->getArrayNames();
     arrayNames.prepend("Solid Colors");
@@ -374,7 +369,7 @@ QStringList VSFilterViewSettings::getArrayNames() const
 // -----------------------------------------------------------------------------
 QStringList VSFilterViewSettings::getScalarNames() const
 {
-  if(m_Filter)
+  if(m_Filter != nullptr)
   {
     return m_Filter->getScalarNames();
   }
@@ -387,7 +382,7 @@ QStringList VSFilterViewSettings::getScalarNames() const
 // -----------------------------------------------------------------------------
 QStringList VSFilterViewSettings::getComponentNames()
 {
-  if(m_Filter)
+  if(m_Filter != nullptr)
   {
     return m_Filter->getComponentList(getActiveArrayName());
   }
@@ -398,9 +393,9 @@ QStringList VSFilterViewSettings::getComponentNames()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QStringList VSFilterViewSettings::getComponentNames(QString arrayName)
+QStringList VSFilterViewSettings::getComponentNames(const QString& arrayName)
 {
-  if(m_Filter)
+  if(m_Filter != nullptr)
   {
     return m_Filter->getComponentList(arrayName);
   }
@@ -431,7 +426,7 @@ int VSFilterViewSettings::getNumberOfComponents(int arrayIndex)
     array = cellData->GetAbstractArray(arrayIndex);
   }
 
-  if(array)
+  if(array != nullptr)
   {
     return array->GetNumberOfComponents();
   }
@@ -441,7 +436,7 @@ int VSFilterViewSettings::getNumberOfComponents(int arrayIndex)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-int VSFilterViewSettings::getNumberOfComponents(QString arrayName)
+int VSFilterViewSettings::getNumberOfComponents(const QString& arrayName)
 {
   if(nullptr == m_Filter->getOutput())
   {
@@ -461,7 +456,7 @@ int VSFilterViewSettings::getNumberOfComponents(QString arrayName)
     array = cellData->GetAbstractArray(qPrintable(arrayName));
   }
 
-  if(array)
+  if(array != nullptr)
   {
     return array->GetNumberOfComponents();
   }
@@ -498,7 +493,7 @@ double VSFilterViewSettings::getAlpha()
 // -----------------------------------------------------------------------------
 bool VSFilterViewSettings::isScalarBarVisible() const
 {
-  return m_ScalarBarWidget && m_ToggleScalarBarAction->isChecked();
+  return m_ScalarBarWidget != nullptr && m_ToggleScalarBarAction->isChecked();
 }
 
 // -----------------------------------------------------------------------------
@@ -664,7 +659,7 @@ void VSFilterViewSettings::hide()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::setVisible(bool visible)
 {
-  if(false == isValid())
+  if(!isValid())
   {
     return;
   }
@@ -679,7 +674,7 @@ void VSFilterViewSettings::setVisible(bool visible)
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::setGridVisible(bool visible)
 {
-  if(false == isValid())
+  if(!isValid())
   {
     return;
   }
@@ -721,14 +716,14 @@ vtkDataArray* VSFilterViewSettings::getArrayAtIndex(int index)
 
   if(isPointData())
   {
-    if(dataSet->GetPointData())
+    if(dataSet->GetPointData() != nullptr)
     {
       return dataSet->GetPointData()->GetArray(index);
     }
   }
   else
   {
-    if(dataSet->GetCellData())
+    if(dataSet->GetCellData() != nullptr)
     {
       return dataSet->GetCellData()->GetArray(index);
     }
@@ -750,14 +745,14 @@ vtkDataArray* VSFilterViewSettings::getArrayByName(QString name) const
 
   if(isPointData())
   {
-    if(dataSet->GetPointData())
+    if(dataSet->GetPointData() != nullptr)
     {
       return dataSet->GetPointData()->GetArray(qPrintable(name));
     }
   }
   else
   {
-    if(dataSet->GetCellData())
+    if(dataSet->GetCellData() != nullptr)
     {
       return dataSet->GetCellData()->GetArray(qPrintable(name));
     }
@@ -769,18 +764,15 @@ vtkDataArray* VSFilterViewSettings::getArrayByName(QString name) const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::setActiveArrayName(QString name)
+void VSFilterViewSettings::setActiveArrayName(const QString& name)
 {
   vtkDataSetMapper* mapper = getDataSetMapper();
   if(nullptr == mapper)
   {
-    if(nullptr == getImageMapper())
+    mapper = getImageMapper();
+    if(nullptr == mapper)
     {
       return;
-    }
-    else
-    {
-      mapper = getImageMapper();
     }
   }
 
@@ -820,13 +812,10 @@ void VSFilterViewSettings::setActiveComponentIndex(int index)
   vtkDataSetMapper* mapper = getDataSetMapper();
   if(nullptr == mapper)
   {
-    if(nullptr == getImageMapper())
+    mapper = getImageMapper();
+    if(nullptr == mapper)
     {
       return;
-    }
-    else
-    {
-      mapper = getImageMapper();
     }
   }
 
@@ -846,18 +835,25 @@ void VSFilterViewSettings::setActiveComponentIndex(int index)
   }
 
   // Set data type to map
+  VTK_PTR(vtkDataSet) outputData = m_Filter->getOutput();
   if(isPointData())
   {
     mapper->SetScalarModeToUsePointFieldData();
+    outputData->GetPointData()->SetActiveScalars(qPrintable(m_ActiveArrayName));
+    outputData->Modified();
+    outputData->GetPointData()->Modified();
   }
   else
   {
     mapper->SetScalarModeToUseCellFieldData();
+    outputData->GetCellData()->SetActiveScalars(qPrintable(m_ActiveArrayName));
+    outputData->Modified();
+    outputData->GetCellData()->Modified();
   }
 
   // Set array component index in the vtkDataSetMapper
   int numComponents = dataArray->GetNumberOfComponents();
-  mapper->ColorByArrayComponent(qPrintable(m_ActiveArrayName), index);
+  // mapper->ColorByArrayComponent(qPrintable(m_ActiveArrayName), index);
   updateColorMode();
 
   // Set ScalarBar title
@@ -984,7 +980,7 @@ bool VSFilterViewSettings::isMappingColors() const
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::setMapColors(ColorMapping mapColors)
 {
-  if(false == isValid())
+  if(!isValid())
   {
     return;
   }
@@ -1065,7 +1061,7 @@ void VSFilterViewSettings::updateImageAlpha()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::invertScalarBar()
 {
-  if(false == isValid() || nullptr == m_LookupTable)
+  if(!isValid() || nullptr == m_LookupTable)
   {
     return;
   }
@@ -1079,7 +1075,7 @@ void VSFilterViewSettings::invertScalarBar()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::loadPresetColors(const QJsonObject& colors)
 {
-  if(false == isValid() || nullptr == m_LookupTable)
+  if(!isValid() || nullptr == m_LookupTable)
   {
     return;
   }
@@ -1106,7 +1102,7 @@ void VSFilterViewSettings::hideScalarBarWidget()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::setScalarBarVisible(bool visible)
 {
-  if(false == isValid())
+  if(!isValid())
   {
     return;
   }
@@ -1120,7 +1116,7 @@ void VSFilterViewSettings::setScalarBarVisible(bool visible)
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::updateScalarBarVisibility()
 {
-  if(false == isValid())
+  if(!isValid())
   {
     return;
   }
@@ -1131,7 +1127,7 @@ void VSFilterViewSettings::updateScalarBarVisibility()
     return;
   }
 
-  if(false == isMappingColors())
+  if(!isMappingColors())
   {
     setScalarBarVisible(false);
   }
@@ -1194,7 +1190,7 @@ void VSFilterViewSettings::setupActors(bool outline)
 bool VSFilterViewSettings::isFlatImage()
 {
   VSAbstractDataFilter* dataFilter = dynamic_cast<VSAbstractDataFilter*>(m_Filter);
-  if(dataFilter)
+  if(dataFilter != nullptr)
   {
     return dataFilter->isFlatImage();
   }
@@ -1333,15 +1329,13 @@ void VSFilterViewSettings::setupImageActors()
 
   vtkImageData* imageData = dynamic_cast<vtkImageData*>(outputData.Get());
 
-  double spacing[3];
-  imageData->GetSpacing(spacing);
+  Array3Type spacing;
+  imageData->GetSpacing(spacing.data());
 
   // Get transform vectors
   VSTransform* transform = m_Filter->getTransform();
 
-  double scaling[3] = {spacing[0], spacing[1], spacing[2]};
-
-  transform->setLocalScale(scaling);
+  transform->setLocalScale(spacing);
 
   // Save the initial transform
   VSTransform* defaultTransform = getDefaultTransform();
@@ -1473,7 +1467,7 @@ void VSFilterViewSettings::setupCubeAxesActor()
     m_CubeAxesActor->ZAxisMinorTickVisibilityOff();
   }
 
-  if(m_Filter && m_Filter->getOutput())
+  if(m_Filter != nullptr && m_Filter->getOutput() != nullptr)
   {
     m_CubeAxesActor->SetBounds(m_Filter->getBounds());
   }
@@ -1484,12 +1478,12 @@ void VSFilterViewSettings::setupCubeAxesActor()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::updateInputPort(VSAbstractFilter* filter)
 {
-  if(false == isValid())
+  if(!isValid())
   {
     return;
   }
 
-  if(!m_DataSetFilter)
+  if(nullptr == m_DataSetFilter)
   {
     if(m_ActorType != ActorType::Image2D)
     {
@@ -1518,7 +1512,7 @@ void VSFilterViewSettings::updateInputPort(VSAbstractFilter* filter)
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::updateTransform()
 {
-  if(false == (m_Filter && m_Filter->getTransform() && m_Actor))
+  if(m_Filter == nullptr || m_Filter->getTransform() == nullptr || m_Actor == nullptr)
   {
     return;
   }
@@ -1539,12 +1533,13 @@ void VSFilterViewSettings::updateTransform()
 
     // Get transform vectors
     VSTransform* transform = m_Filter->getTransform();
-    double* transformPosition = transform->getPosition();
-    double* transformRotation = transform->getRotation();
-    double* transformScale = transform->getScale();
+    Array3Type transformPosition = transform->getPosition();
+    Array3Type transformRotation = transform->getRotation();
+    Array3Type transformScale = transform->getScale();
 
-    m_Actor->SetPosition(transformPosition);
-    m_Actor->SetOrientation(transformRotation);
+    // std::cout << "  transformPosition:" << transformPosition[0] << ", " << transformPosition[1] << ", " << transformPosition[2] << std::endl;
+    m_Actor->SetPosition(transformPosition.data());
+    m_Actor->SetOrientation(transformRotation.data());
     m_Actor->SetScale(extent[1] * transformScale[0], extent[3] * transformScale[1], extent[5] * transformScale[2]);
   }
   else
@@ -1554,7 +1549,7 @@ void VSFilterViewSettings::updateTransform()
     m_Actor->SetScale(1.0, 1.0, 1.0);
   }
 
-  if(m_CubeAxesActor && m_Filter->getOutput())
+  if(m_CubeAxesActor != nullptr && m_Filter->getOutput() != nullptr)
   {
     if(ActorType::Image2D == m_ActorType)
     {
@@ -1574,7 +1569,7 @@ void VSFilterViewSettings::updateTransform()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::connectFilter(VSAbstractFilter* filter)
 {
-  if(m_Filter)
+  if(m_Filter != nullptr)
   {
     disconnect(m_Filter, SIGNAL(updatedOutputPort(VSAbstractFilter*)), this, SLOT(updateInputPort(VSAbstractFilter*)));
     disconnect(m_Filter, SIGNAL(transformChanged()), this, SIGNAL(updateTransform()));
@@ -1591,7 +1586,7 @@ void VSFilterViewSettings::connectFilter(VSAbstractFilter* filter)
   }
 
   m_Filter = filter;
-  if(filter)
+  if(filter != nullptr)
   {
     connect(filter, SIGNAL(updatedOutputPort(VSAbstractFilter*)), this, SLOT(updateInputPort(VSAbstractFilter*)));
     connect(filter, SIGNAL(transformChanged()), this, SLOT(updateTransform()));
@@ -1600,7 +1595,7 @@ void VSFilterViewSettings::connectFilter(VSAbstractFilter* filter)
     connect(filter, &VSAbstractFilter::scalarNamesChanged, this, &VSFilterViewSettings::scalarNamesChanged);
     connect(filter, &VSAbstractFilter::dataImported, this, &VSFilterViewSettings::dataLoaded);
 
-    if(filter->getArrayNames().size() < 1)
+    if(filter->getArrayNames().empty())
     {
       setScalarBarVisible(false);
       setMapColors(ColorMapping::None);
@@ -1612,7 +1607,7 @@ void VSFilterViewSettings::connectFilter(VSAbstractFilter* filter)
       m_HadNoArrays = false;
     }
 
-    if(dynamic_cast<VSAbstractDataFilter*>(filter))
+    if(dynamic_cast<VSAbstractDataFilter*>(filter) != nullptr)
     {
       connect(filter, SIGNAL(dataImported()), this, SLOT(importedData()));
       connect(filter, SIGNAL(dataReloaded()), this, SLOT(reloadedData()));
@@ -1674,14 +1669,10 @@ QColor VSFilterViewSettings::getSolidColor() const
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::setSolidColor(QColor color)
+void VSFilterViewSettings::setSolidColor(const QColor& color)
 {
-  double dColor[3];
-  dColor[0] = color.redF();
-  dColor[1] = color.greenF();
-  dColor[2] = color.blueF();
-
-  setSolidColorPtr(dColor);
+  Array3Type dColor = {color.redF(), color.greenF(), color.blueF()};
+  setSolidColorPtr(dColor.data());
 }
 
 // -----------------------------------------------------------------------------
@@ -1729,7 +1720,7 @@ bool VSFilterViewSettings::isRenderingPoints()
 // -----------------------------------------------------------------------------
 int VSFilterViewSettings::getPointSize() const
 {
-  if(ActorType::DataSet == getActorType() && getDataSetActor())
+  if(ActorType::DataSet == getActorType() && nullptr != getDataSetActor())
   {
     return getDataSetActor()->GetProperty()->GetPointSize();
   }
@@ -1742,7 +1733,7 @@ int VSFilterViewSettings::getPointSize() const
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::setPointSize(int pointSize)
 {
-  if(ActorType::DataSet == getActorType() && getDataSetActor())
+  if(ActorType::DataSet == getActorType() && nullptr != getDataSetActor())
   {
     getDataSetActor()->GetProperty()->SetPointSize(pointSize);
     emit pointSizeChanged(pointSize);
@@ -1755,7 +1746,7 @@ void VSFilterViewSettings::setPointSize(int pointSize)
 // -----------------------------------------------------------------------------
 bool VSFilterViewSettings::renderPointsAsSpheres() const
 {
-  if(ActorType::DataSet == getActorType() && getDataSetActor())
+  if(ActorType::DataSet == getActorType() && nullptr != getDataSetActor())
   {
     return getDataSetActor()->GetProperty()->GetRenderPointsAsSpheres();
   }
@@ -1768,7 +1759,7 @@ bool VSFilterViewSettings::renderPointsAsSpheres() const
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::setRenderPointsAsSpheres(bool renderSpheres)
 {
-  if(ActorType::DataSet == getActorType() && getDataSetActor())
+  if(ActorType::DataSet == getActorType() && nullptr != getDataSetActor())
   {
     getDataSetActor()->GetProperty()->SetRenderPointsAsSpheres(renderSpheres);
     emit renderPointSpheresChanged(renderSpheres);
@@ -1794,10 +1785,7 @@ void VSFilterViewSettings::setRepresentation(const Representation& type)
     {
       return;
     }
-    else
-    {
-      mapper = getImageMapper();
-    }
+    mapper = getImageMapper();
   }
 
   const Representation prevRep = m_Representation;
@@ -1854,7 +1842,7 @@ void VSFilterViewSettings::importedData()
   if(dynamic_cast<VSAbstractDataFilter*>(getFilter()) && getRepresentation() == Representation::Outline)
   {
     setupActors(false);
-    if(getImageMapper() && getDataSetActor())
+    if(nullptr != getImageMapper() && nullptr != getDataSetActor())
     {
       getDataSetActor()->VisibilityOff();
       getDataSetMapper()->ScalarVisibilityOff();
@@ -1898,7 +1886,7 @@ void VSFilterViewSettings::reloadedData()
     vtkImageData* imageData = dynamic_cast<vtkImageData*>(outputData.Get());
 
     int* currentDims = imageData->GetDimensions();
-    int newDims[3];
+    std::array<int, 3> newDims;
     for(int i = 0; i < 3; i++)
     {
       if(currentDims[i] > 1)
@@ -1911,8 +1899,8 @@ void VSFilterViewSettings::reloadedData()
       }
     }
 
-    int extent[6] = {0, newDims[0], 0, newDims[1], 0, newDims[2] - 1};
-    imageData->SetExtent(extent);
+    std::array<int, 6> extent = {0, newDims[0], 0, newDims[1], 0, newDims[2] - 1};
+    imageData->SetExtent(extent.data());
   }
   setupActors(false);
   emit actorsUpdated();
@@ -1924,12 +1912,12 @@ void VSFilterViewSettings::reloadedData()
 // -----------------------------------------------------------------------------
 void VSFilterViewSettings::copySettings(VSFilterViewSettings* copy)
 {
-  if((nullptr == copy) || (false == copy->isValid()))
+  if((nullptr == copy) || (!copy->isValid()))
   {
     return;
   }
 
-  bool hasUi = copy->getScalarBarWidget();
+  bool hasUi = (nullptr == copy->getScalarBarWidget());
   if(hasUi && m_ScalarBarWidget)
   {
     vtkRenderWindowInteractor* iren = copy->m_ScalarBarWidget->GetInteractor();
@@ -1948,7 +1936,7 @@ void VSFilterViewSettings::copySettings(VSFilterViewSettings* copy)
   setRepresentation(copy->getRepresentation());
   setPointSize(copy->getPointSize());
 
-  if(hasUi && m_ScalarBarWidget)
+  if(hasUi && nullptr != m_ScalarBarWidget)
   {
     m_LookupTable->copy(*(copy->m_LookupTable));
   }
@@ -2099,7 +2087,7 @@ QAction* VSFilterViewSettings::getToggleScalarBarAction()
 // -----------------------------------------------------------------------------
 QIcon VSFilterViewSettings::GetSolidColorIcon()
 {
-  if(s_SolidColorIcon)
+  if(nullptr != s_SolidColorIcon)
   {
     return *s_SolidColorIcon;
   }
@@ -2112,7 +2100,7 @@ QIcon VSFilterViewSettings::GetSolidColorIcon()
 // -----------------------------------------------------------------------------
 QIcon VSFilterViewSettings::GetCellDataIcon()
 {
-  if(s_CellDataIcon)
+  if(nullptr != s_CellDataIcon)
   {
     return *s_CellDataIcon;
   }
@@ -2125,7 +2113,7 @@ QIcon VSFilterViewSettings::GetCellDataIcon()
 // -----------------------------------------------------------------------------
 QIcon VSFilterViewSettings::GetPointDataIcon()
 {
-  if(s_PointDataIcon)
+  if(nullptr != s_PointDataIcon)
   {
     return *s_PointDataIcon;
   }
@@ -2136,7 +2124,7 @@ QIcon VSFilterViewSettings::GetPointDataIcon()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-int VSFilterViewSettings::GetPointSize(VSFilterViewSettings::Collection collection)
+int VSFilterViewSettings::GetPointSize(const VSFilterViewSettings::Collection& collection)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2152,7 +2140,7 @@ int VSFilterViewSettings::GetPointSize(VSFilterViewSettings::Collection collecti
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetPointSize(VSFilterViewSettings::Collection collection, int size)
+void VSFilterViewSettings::SetPointSize(const VSFilterViewSettings::Collection& collection, int size)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2163,7 +2151,7 @@ void VSFilterViewSettings::SetPointSize(VSFilterViewSettings::Collection collect
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Qt::CheckState VSFilterViewSettings::IsRenderingPoints(VSFilterViewSettings::Collection collection)
+Qt::CheckState VSFilterViewSettings::IsRenderingPoints(const VSFilterViewSettings::Collection& collection)
 {
   bool renderingPoints = false;
   bool valueSet = false;
@@ -2189,7 +2177,7 @@ Qt::CheckState VSFilterViewSettings::IsRenderingPoints(VSFilterViewSettings::Col
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Qt::CheckState VSFilterViewSettings::IsRenderingPointsAsSpheres(VSFilterViewSettings::Collection collection)
+Qt::CheckState VSFilterViewSettings::IsRenderingPointsAsSpheres(const VSFilterViewSettings::Collection& collection)
 {
   bool renderSpheres = false;
   bool valueSet = false;
@@ -2215,7 +2203,7 @@ Qt::CheckState VSFilterViewSettings::IsRenderingPointsAsSpheres(VSFilterViewSett
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetRenderPointsAsSpheres(VSFilterViewSettings::Collection collection, bool renderSpheres)
+void VSFilterViewSettings::SetRenderPointsAsSpheres(const VSFilterViewSettings::Collection& collection, bool renderSpheres)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2226,7 +2214,7 @@ void VSFilterViewSettings::SetRenderPointsAsSpheres(VSFilterViewSettings::Collec
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Qt::CheckState VSFilterViewSettings::IsGridVisible(VSFilterViewSettings::Collection collection)
+Qt::CheckState VSFilterViewSettings::IsGridVisible(const VSFilterViewSettings::Collection& collection)
 {
   bool gridVisible = false;
   bool valueSet = false;
@@ -2252,7 +2240,7 @@ Qt::CheckState VSFilterViewSettings::IsGridVisible(VSFilterViewSettings::Collect
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetGridVisible(VSFilterViewSettings::Collection collection, bool visible)
+void VSFilterViewSettings::SetGridVisible(const VSFilterViewSettings::Collection& collection, bool visible)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2263,7 +2251,7 @@ void VSFilterViewSettings::SetGridVisible(VSFilterViewSettings::Collection colle
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool VSFilterViewSettings::HasValidSettings(VSFilterViewSettings::Collection collection)
+bool VSFilterViewSettings::HasValidSettings(const VSFilterViewSettings::Collection& collection)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2279,10 +2267,10 @@ bool VSFilterViewSettings::HasValidSettings(VSFilterViewSettings::Collection col
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QStringList getMutualArrayNames(QStringList list1, QStringList list2)
+QStringList getMutualArrayNames(const QStringList& list1, const QStringList& list2)
 {
   QStringList mutualItems;
-  for(QString item : list1)
+  for(const QString& item : list1)
   {
     if(list2.contains(item))
     {
@@ -2296,7 +2284,7 @@ QStringList getMutualArrayNames(QStringList list1, QStringList list2)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QStringList VSFilterViewSettings::GetArrayNames(VSFilterViewSettings::Collection collection)
+QStringList VSFilterViewSettings::GetArrayNames(const VSFilterViewSettings::Collection& collection)
 {
   bool valueSet = false;
   QStringList arrayNames;
@@ -2322,9 +2310,9 @@ QStringList VSFilterViewSettings::GetArrayNames(VSFilterViewSettings::Collection
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QStringList VSFilterViewSettings::GetComponentNames(VSFilterViewSettings::Collection collection, QString arrayName)
+QStringList VSFilterViewSettings::GetComponentNames(const VSFilterViewSettings::Collection& collection, const QString& arrayName)
 {
-  if(collection.size() == 0 || arrayName.isEmpty())
+  if(collection.empty() || arrayName.isEmpty())
   {
     return QStringList();
   }
@@ -2346,7 +2334,7 @@ QStringList VSFilterViewSettings::GetComponentNames(VSFilterViewSettings::Collec
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool VSFilterViewSettings::ActiveArrayNamesConsistent(VSFilterViewSettings::Collection collection)
+bool VSFilterViewSettings::ActiveArrayNamesConsistent(const VSFilterViewSettings::Collection& collection)
 {
   bool valueSet = false;
   QString activeArrayName;
@@ -2371,11 +2359,11 @@ bool VSFilterViewSettings::ActiveArrayNamesConsistent(VSFilterViewSettings::Coll
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString VSFilterViewSettings::GetActiveArrayName(VSFilterViewSettings::Collection collection)
+QString VSFilterViewSettings::GetActiveArrayName(const VSFilterViewSettings::Collection& collection)
 {
   // Return empty string when there are no values or the value is to use the solid color
   // Reserve null string for multiple values
-  if(collection.size() == 0)
+  if(collection.empty())
   {
     return QString("");
   }
@@ -2408,7 +2396,7 @@ QString VSFilterViewSettings::GetActiveArrayName(VSFilterViewSettings::Collectio
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetActiveArrayName(VSFilterViewSettings::Collection collection, QString arrayName)
+void VSFilterViewSettings::SetActiveArrayName(const VSFilterViewSettings::Collection& collection, const QString& arrayName)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2419,10 +2407,10 @@ void VSFilterViewSettings::SetActiveArrayName(VSFilterViewSettings::Collection c
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-int VSFilterViewSettings::GetActiveComponentIndex(VSFilterViewSettings::Collection collection)
+int VSFilterViewSettings::GetActiveComponentIndex(const VSFilterViewSettings::Collection& collection)
 {
   QString activeArrayName = GetActiveArrayName(collection);
-  if(activeArrayName.isEmpty() || false == CheckComponentNamesCompatible(collection, activeArrayName))
+  if(activeArrayName.isEmpty() || !CheckComponentNamesCompatible(collection, activeArrayName))
   {
     return -2;
   }
@@ -2451,10 +2439,10 @@ int VSFilterViewSettings::GetActiveComponentIndex(VSFilterViewSettings::Collecti
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetActiveComponentIndex(VSFilterViewSettings::Collection collection, int index)
+void VSFilterViewSettings::SetActiveComponentIndex(const VSFilterViewSettings::Collection& collection, int index)
 {
   // Do not set the active component index if the components are not compatible
-  if(false == CheckComponentNamesCompatible(collection, GetActiveArrayName(collection)))
+  if(!CheckComponentNamesCompatible(collection, GetActiveArrayName(collection)))
   {
     return;
   }
@@ -2468,7 +2456,7 @@ void VSFilterViewSettings::SetActiveComponentIndex(VSFilterViewSettings::Collect
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetSubsampling(VSFilterViewSettings::Collection collection, int value)
+void VSFilterViewSettings::SetSubsampling(const VSFilterViewSettings::Collection& collection, int value)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2492,9 +2480,9 @@ void VSFilterViewSettings::setSubsampling(int value)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-int VSFilterViewSettings::GetNumberOfComponents(VSFilterViewSettings::Collection collection, QString arrayName)
+int VSFilterViewSettings::GetNumberOfComponents(const VSFilterViewSettings::Collection& collection, const QString& arrayName)
 {
-  if(false == CheckComponentNamesCompatible(collection, arrayName))
+  if(!CheckComponentNamesCompatible(collection, arrayName))
   {
     return -1;
   }
@@ -2515,9 +2503,9 @@ int VSFilterViewSettings::GetNumberOfComponents(VSFilterViewSettings::Collection
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool VSFilterViewSettings::CheckComponentNamesCompatible(VSFilterViewSettings::Collection collection, QString arrayName)
+bool VSFilterViewSettings::CheckComponentNamesCompatible(const VSFilterViewSettings::Collection& collection, const QString& arrayName)
 {
-  if(collection.size() == 0)
+  if(collection.empty())
   {
     return false;
   }
@@ -2537,7 +2525,7 @@ bool VSFilterViewSettings::CheckComponentNamesCompatible(VSFilterViewSettings::C
       if(!listSet)
       {
         componentList = settings->getComponentNames(arrayName);
-        if(componentList.size() == 0)
+        if(componentList.empty())
         {
           return false;
         }
@@ -2546,7 +2534,7 @@ bool VSFilterViewSettings::CheckComponentNamesCompatible(VSFilterViewSettings::C
       else
       {
         // Check if the active array has the same name
-        if(false == settings->getArrayNames().contains(arrayName))
+        if(!settings->getArrayNames().contains(arrayName))
         {
           return false;
         }
@@ -2575,7 +2563,7 @@ bool VSFilterViewSettings::CheckComponentNamesCompatible(VSFilterViewSettings::C
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QString VSFilterViewSettings::GetActiveComponentName(VSFilterViewSettings::Collection collection)
+QString VSFilterViewSettings::GetActiveComponentName(const VSFilterViewSettings::Collection& collection)
 {
   QString arrayName = GetActiveArrayName(collection);
   if(arrayName.isEmpty())
@@ -2588,18 +2576,15 @@ QString VSFilterViewSettings::GetActiveComponentName(VSFilterViewSettings::Colle
   {
     return arrayName;
   }
-  else
-  {
-    return arrayName + " [" + GetComponentNames(collection, arrayName)[componentIndex + 1] + " Component]";
-  }
+  return arrayName + " [" + GetComponentNames(collection, arrayName)[componentIndex + 1] + " Component]";
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-int VSFilterViewSettings::GetRepresentationi(VSFilterViewSettings::Collection collection)
+int VSFilterViewSettings::GetRepresentationi(const VSFilterViewSettings::Collection& collection)
 {
-  if(collection.size() == 0)
+  if(collection.empty())
   {
     return static_cast<int>(Representation::Surface);
   }
@@ -2628,7 +2613,7 @@ int VSFilterViewSettings::GetRepresentationi(VSFilterViewSettings::Collection co
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetRepresentation(VSFilterViewSettings::Collection collection, Representation rep)
+void VSFilterViewSettings::SetRepresentation(const VSFilterViewSettings::Collection& collection, Representation rep)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2639,7 +2624,7 @@ void VSFilterViewSettings::SetRepresentation(VSFilterViewSettings::Collection co
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSFilterViewSettings::SetSolidColor(VSFilterViewSettings::Collection collection, QColor color)
+void VSFilterViewSettings::SetSolidColor(const VSFilterViewSettings::Collection& collection, const QColor& color)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2650,7 +2635,7 @@ void VSFilterViewSettings::SetSolidColor(VSFilterViewSettings::Collection collec
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-QColor VSFilterViewSettings::GetSolidColor(VSFilterViewSettings::Collection collection)
+QColor VSFilterViewSettings::GetSolidColor(const VSFilterViewSettings::Collection& collection)
 {
   for(VSFilterViewSettings* settings : collection)
   {
@@ -2670,7 +2655,7 @@ QColor VSFilterViewSettings::GetSolidColor(VSFilterViewSettings::Collection coll
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSFilterViewSettings::ActorType VSFilterViewSettings::GetActorType(VSFilterViewSettings::Collection collection)
+VSFilterViewSettings::ActorType VSFilterViewSettings::GetActorType(const VSFilterViewSettings::Collection& collection)
 {
   bool valueSet = false;
   ActorType value = ActorType::Invalid;
@@ -2696,9 +2681,9 @@ VSFilterViewSettings::ActorType VSFilterViewSettings::GetActorType(VSFilterViewS
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSFilterViewSettings::ColorMapping VSFilterViewSettings::GetColorMapping(VSFilterViewSettings::Collection collection)
+VSFilterViewSettings::ColorMapping VSFilterViewSettings::GetColorMapping(const VSFilterViewSettings::Collection& collection)
 {
-  if(collection.size() == 0)
+  if(collection.empty())
   {
     return ColorMapping::NonColors;
   }
@@ -2727,7 +2712,7 @@ VSFilterViewSettings::ColorMapping VSFilterViewSettings::GetColorMapping(VSFilte
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-VSFilterViewSettings::ScalarBarSetting VSFilterViewSettings::GetScalarBarSettings(VSFilterViewSettings::Collection collection)
+VSFilterViewSettings::ScalarBarSetting VSFilterViewSettings::GetScalarBarSettings(const VSFilterViewSettings::Collection& collection)
 {
   bool valueSet = false;
   ScalarBarSetting value = ScalarBarSetting::OnSelection;
@@ -2753,7 +2738,7 @@ VSFilterViewSettings::ScalarBarSetting VSFilterViewSettings::GetScalarBarSetting
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double VSFilterViewSettings::GetAlpha(VSFilterViewSettings::Collection collection)
+double VSFilterViewSettings::GetAlpha(const VSFilterViewSettings::Collection& collection)
 {
   // Returns the first valid setting's alpha value
   for(VSFilterViewSettings* settings : collection)
@@ -2770,7 +2755,7 @@ double VSFilterViewSettings::GetAlpha(VSFilterViewSettings::Collection collectio
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double VSFilterViewSettings::GetSubsampling(VSFilterViewSettings::Collection collection)
+double VSFilterViewSettings::GetSubsampling(const VSFilterViewSettings::Collection& collection)
 {
   // Returns the first valid setting's subsampling value
   for(VSFilterViewSettings* settings : collection)
@@ -2848,7 +2833,7 @@ void VSFilterViewSettings::inputUpdated(VSAbstractFilter* filter)
   if(filter->getOutput() != nullptr)
   {
     VTK_PTR(vtkCellData) cellData = filter->getOutput()->GetCellData();
-    if(cellData)
+    if(nullptr != cellData)
     {
       setActiveArrayName(cellData->GetArrayName(0));
     }
@@ -2888,12 +2873,8 @@ VSTransform* VSFilterViewSettings::getDefaultTransform()
   if(m_DefaultTransform == nullptr)
   {
     m_DefaultTransform = new VSTransform(m_Filter->getTransform());
-    return m_DefaultTransform;
   }
-  else
-  {
-    return m_DefaultTransform;
-  }
+  return m_DefaultTransform;
 }
 
 // -----------------------------------------------------------------------------

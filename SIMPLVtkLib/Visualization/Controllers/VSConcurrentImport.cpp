@@ -204,7 +204,7 @@ void VSConcurrentImport::partialWrappingThreadFinished()
       DataContainer::Pointer dataContainer = wrappedDc->m_DataContainer;
       ImageGeom::Pointer imageGeom = dataContainer->getGeometryAs<ImageGeom>();
       FloatVec3Type originTuple = imageGeom->getOrigin();
-      double origin[3];
+      std::array<double, 3> origin;
       origin[0] = originTuple[0];
       origin[1] = originTuple[1];
       origin[2] = originTuple[2];

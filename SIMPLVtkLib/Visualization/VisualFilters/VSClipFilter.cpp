@@ -35,8 +35,9 @@
 
 #include "VSClipFilter.h"
 
-#include <QApplication>
+#include <array>
 
+#include <QApplication>
 #include <QtCore/QJsonArray>
 #include <QtCore/QString>
 #include <QtCore/QUuid>
@@ -46,11 +47,12 @@
 
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSClipValues.h"
 
+using Array3Type = std::array<double, 3>;
+
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 VSClipFilter::VSClipFilter(VSAbstractFilter* parent)
-: VSAbstractFilter()
 {
   m_ClipAlgorithm = nullptr;
   setParentFilter(parent);
@@ -62,7 +64,6 @@ VSClipFilter::VSClipFilter(VSAbstractFilter* parent)
 //
 // -----------------------------------------------------------------------------
 VSClipFilter::VSClipFilter(const VSClipFilter& copy)
-: VSAbstractFilter()
 {
   m_ClipAlgorithm = nullptr;
   setParentFilter(copy.getParentFilter());
@@ -275,17 +276,17 @@ void VSClipFilter::apply(std::vector<double> origin, std::vector<double> rotatio
 
   // Front
   {
-    double normal[3]{0.0, 0.0, 1.0};
+    Array3Type normal = {0.0, 0.0, 1.0};
     transform->globalizeNormal(normal);
 
-    double planeOrigin[3]{0.0, 0.0, 1.0};
+    Array3Type planeOrigin = {0.0, 0.0, 1.0};
     transform->globalizePoint(planeOrigin);
 
     for(int i = 0; i < 3; i++)
     {
       normals->SetComponent(0, i, normal[i]);
     }
-    points->SetPoint(0, planeOrigin);
+    points->SetPoint(0, planeOrigin.data());
 
     qDebug() << "Normals: " << normal[0] << ", " << normal[1] << ", " << normal[2];
     qDebug() << "Points: " << planeOrigin[0] << ", " << planeOrigin[1] << ", " << planeOrigin[2];
@@ -293,17 +294,17 @@ void VSClipFilter::apply(std::vector<double> origin, std::vector<double> rotatio
 
   // Back
   {
-    double normal[3]{0.0, 0.0, -1.0};
+    Array3Type normal = {0.0, 0.0, -1.0};
     transform->globalizeNormal(normal);
 
-    double planeOrigin[3]{0.0, 0.0, -1.0};
+    Array3Type planeOrigin = {0.0, 0.0, -1.0};
     transform->globalizePoint(planeOrigin);
 
     for(int i = 0; i < 3; i++)
     {
       normals->SetComponent(1, i, normal[i]);
     }
-    points->SetPoint(1, planeOrigin);
+    points->SetPoint(1, planeOrigin.data());
 
     qDebug() << "Normals: " << normal[0] << ", " << normal[1] << ", " << normal[2];
     qDebug() << "Points: " << planeOrigin[0] << ", " << planeOrigin[1] << ", " << planeOrigin[2];
@@ -311,17 +312,17 @@ void VSClipFilter::apply(std::vector<double> origin, std::vector<double> rotatio
 
   // Left
   {
-    double normal[3]{-1.0, 0.0, 0.0};
+    Array3Type normal = {-1.0, 0.0, 0.0};
     transform->globalizeNormal(normal);
 
-    double planeOrigin[3]{-1.0, 0.0, 0.0};
+    Array3Type planeOrigin = {-1.0, 0.0, 0.0};
     transform->globalizePoint(planeOrigin);
 
     for(int i = 0; i < 3; i++)
     {
       normals->SetComponent(2, i, normal[i]);
     }
-    points->SetPoint(2, planeOrigin);
+    points->SetPoint(2, planeOrigin.data());
 
     qDebug() << "Normals: " << normal[0] << ", " << normal[1] << ", " << normal[2];
     qDebug() << "Points: " << planeOrigin[0] << ", " << planeOrigin[1] << ", " << planeOrigin[2];
@@ -329,17 +330,17 @@ void VSClipFilter::apply(std::vector<double> origin, std::vector<double> rotatio
 
   // Right
   {
-    double normal[3]{1.0, 0.0, 0.0};
+    Array3Type normal = {1.0, 0.0, 0.0};
     transform->globalizeNormal(normal);
 
-    double planeOrigin[3]{1.0, 0.0, 0.0};
+    Array3Type planeOrigin = {1.0, 0.0, 0.0};
     transform->globalizePoint(planeOrigin);
 
     for(int i = 0; i < 3; i++)
     {
       normals->SetComponent(3, i, normal[i]);
     }
-    points->SetPoint(3, planeOrigin);
+    points->SetPoint(3, planeOrigin.data());
 
     qDebug() << "Normals: " << normal[0] << ", " << normal[1] << ", " << normal[2];
     qDebug() << "Points: " << planeOrigin[0] << ", " << planeOrigin[1] << ", " << planeOrigin[2];
@@ -347,17 +348,17 @@ void VSClipFilter::apply(std::vector<double> origin, std::vector<double> rotatio
 
   // Top
   {
-    double normal[3]{0.0, 1.0, 0.0};
+    Array3Type normal = {0.0, 1.0, 0.0};
     transform->globalizeNormal(normal);
 
-    double planeOrigin[3]{0.0, 1.0, 0.0};
+    Array3Type planeOrigin = {0.0, 1.0, 0.0};
     transform->globalizePoint(planeOrigin);
 
     for(int i = 0; i < 3; i++)
     {
       normals->SetComponent(4, i, normal[i]);
     }
-    points->SetPoint(4, planeOrigin);
+    points->SetPoint(4, planeOrigin.data());
 
     qDebug() << "Normals: " << normal[0] << ", " << normal[1] << ", " << normal[2];
     qDebug() << "Points: " << planeOrigin[0] << ", " << planeOrigin[1] << ", " << planeOrigin[2];
@@ -365,17 +366,17 @@ void VSClipFilter::apply(std::vector<double> origin, std::vector<double> rotatio
 
   // Bottom
   {
-    double normal[3]{0.0, -1.0, 0.0};
+    Array3Type normal = {0.0, -1.0, 0.0};
     transform->globalizeNormal(normal);
 
-    double planeOrigin[3]{0.0, -1.0, 0.0};
+    Array3Type planeOrigin = {0.0, -1.0, 0.0};
     transform->globalizePoint(planeOrigin);
 
     for(int i = 0; i < 3; i++)
     {
       normals->SetComponent(5, i, normal[i]);
     }
-    points->SetPoint(5, planeOrigin);
+    points->SetPoint(5, planeOrigin.data());
 
     qDebug() << "Normals: " << normal[0] << ", " << normal[1] << ", " << normal[2];
     qDebug() << "Points: " << planeOrigin[0] << ", " << planeOrigin[1] << ", " << planeOrigin[2];
@@ -506,14 +507,14 @@ bool VSClipFilter::CompatibleWithParent(VSAbstractFilter* filter)
 // -----------------------------------------------------------------------------
 bool VSClipFilter::CompatibleWithParents(VSAbstractFilter::FilterListType filters)
 {
-  if(filters.size() == 0)
+  if(filters.empty())
   {
     return false;
   }
 
   for(VSAbstractFilter* filter : filters)
   {
-    if(false == CompatibleWithParent(filter))
+    if(!CompatibleWithParent(filter))
     {
       return false;
     }

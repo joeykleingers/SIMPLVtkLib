@@ -307,9 +307,9 @@ VSFilterViewSettings* VSFilterViewModel::createFilterViewSettings(VSAbstractFilt
     viewSettings = new VSFilterViewSettings(filter, representation, m_DisplayType);
   }
 
-  viewSettings->getTransform()->setOriginPosition(viewSettings->getTransform()->getLocalPosition());
-  viewSettings->getTransform()->setOriginRotation(viewSettings->getTransform()->getLocalRotation());
-  viewSettings->getTransform()->setOriginScale(viewSettings->getTransform()->getLocalScale());
+  viewSettings->getTransform()->setOriginPosition(viewSettings->getTransform()->getLocalPosition().data());
+  viewSettings->getTransform()->setOriginRotation(viewSettings->getTransform()->getLocalRotation().data());
+  viewSettings->getTransform()->setOriginScale(viewSettings->getTransform()->getLocalScale().data());
 
   // connect(filter, &VSAbstractFilter::removeFilter, this, [=] { removeFilterViewSettings(filter); });
   // connect(viewSettings, &VSFilterViewSettings::visibilityChanged, this, [=] { filterVisibilityChanged(); });

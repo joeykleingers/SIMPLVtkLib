@@ -257,6 +257,13 @@ public:
   QStringList getArrayNames();
 
   /**
+   * @brief getArrayIndex
+   * @param name
+   * @return
+   */
+  int32_t getArrayIndex(const QString& name);
+
+  /**
    * @brief Returns a list of scalar array names
    * @return
    */

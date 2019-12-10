@@ -57,9 +57,12 @@ VSTransform::VSTransform(const VSTransform& copy)
   m_LocalTransform->DeepCopy(copy.m_LocalTransform);
 
   setParent(copy.getParent());
-  setOriginPosition(copy.getOriginPosition());
+  setOriginPosition(copy.getOriginPosition().data());
   setupSignals();
 }
+
+// -----------------------------------------------------------------------------
+VSTransform::~VSTransform() = default;
 
 // -----------------------------------------------------------------------------
 //
@@ -100,7 +103,7 @@ void VSTransform::operator=(const VSTransform& copy)
 // -----------------------------------------------------------------------------
 void VSTransform::setParent(VSTransform* parent)
 {
-  if(m_Parent)
+  if(nullptr != m_Parent)
   {
     disconnect(m_Parent, SIGNAL(emitPosition()), this, SIGNAL(emitPosition()));
     disconnect(m_Parent, SIGNAL(emitRotation()), this, SIGNAL(emitRotation()));
@@ -110,7 +113,7 @@ void VSTransform::setParent(VSTransform* parent)
 
   m_Parent = parent;
 
-  if(parent)
+  if(nullptr != parent)
   {
     connect(m_Parent, SIGNAL(emitPosition()), this, SIGNAL(emitPosition()));
     connect(m_Parent, SIGNAL(emitRotation()), this, SIGNAL(emitRotation()));
@@ -128,39 +131,39 @@ VSTransform* VSTransform::getParent() const
 {
   return m_Parent;
 }
-
+// sadfasdf
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getPosition()
+std::array<double, 3> VSTransform::getPosition()
 {
-  double* position = new double[3];
-  getGlobalTransform()->GetPosition(position);
+  std::array<double, 3> position;
+  getGlobalTransform()->GetPosition(position.data());
   return position;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getLocalPosition()
+std::array<double, 3> VSTransform::getLocalPosition()
 {
-  double* position = new double[3];
-  m_LocalTransform->GetPosition(position);
+  std::array<double, 3> position;
+  m_LocalTransform->GetPosition(position.data());
   return position;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getRotation()
+std::array<double, 3> VSTransform::getRotation()
 {
   if(nullptr == m_Parent)
   {
     return getLocalRotation();
   }
 
-  double* rotation = new double[3];
-  getGlobalTransform()->GetOrientation(rotation);
+  std::array<double, 3> rotation;
+  getGlobalTransform()->GetOrientation(rotation.data());
 
   for(int i = 0; i < 3; i++)
   {
@@ -176,10 +179,10 @@ double* VSTransform::getRotation()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getLocalRotation()
+std::array<double, 3> VSTransform::getLocalRotation()
 {
-  double* rotation = new double[3];
-  m_LocalTransform->GetOrientation(rotation);
+  std::array<double, 3> rotation;
+  m_LocalTransform->GetOrientation(rotation.data());
 
   for(int i = 0; i < 3; i++)
   {
@@ -195,29 +198,29 @@ double* VSTransform::getLocalRotation()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getScale()
+std::array<double, 3> VSTransform::getScale()
 {
-  double* scale = new double[3];
-  getGlobalTransform()->GetScale(scale);
+  std::array<double, 3> scale;
+  getGlobalTransform()->GetScale(scale.data());
   return scale;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getLocalScale()
+std::array<double, 3> VSTransform::getLocalScale()
 {
-  double* scale = new double[3];
-  m_LocalTransform->GetScale(scale);
+  std::array<double, 3> scale;
+  m_LocalTransform->GetScale(scale.data());
   return scale;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::translate(double delta[3])
+void VSTransform::translate(const std::array<double, 3>& delta)
 {
-  m_LocalTransform->Translate(delta);
+  m_LocalTransform->Translate(delta.data());
   emit emitPosition();
   emit updatedLocalPosition();
 }
@@ -225,7 +228,12 @@ void VSTransform::translate(double delta[3])
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::rotate(double amount, double axis[3])
+void VSTransform::rotate(double amount, const std::array<double, 3>& axis)
+{
+  rotate(amount, axis.data());
+}
+// -----------------------------------------------------------------------------
+void VSTransform::rotate(double amount, const double* axis)
 {
   m_LocalTransform->RotateWXYZ(amount, axis);
   emit emitRotation();
@@ -245,9 +253,9 @@ void VSTransform::scale(double amount)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::scale(double amount[3])
+void VSTransform::scale(const std::array<double, 3>& amount)
 {
-  m_LocalTransform->Scale(amount);
+  m_LocalTransform->Scale(amount.data());
   emit emitScale();
   emit updatedLocalScale();
 }
@@ -260,7 +268,7 @@ VTK_PTR(vtkTransform) VSTransform::getGlobalTransform()
   VTK_NEW(vtkTransform, transform);
   transform->DeepCopy(m_LocalTransform);
 
-  if(m_Parent)
+  if(nullptr != m_Parent)
   {
     transform->SetInput(m_Parent->getGlobalTransform());
   }
@@ -284,7 +292,7 @@ VTK_PTR(vtkTransform) VSTransform::getLocalTransform()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-vtkTransform* VSTransform::createTransform(double position[3], double rotation[3], double scale[3])
+vtkTransform* VSTransform::createTransform(const double* position, const double* rotation, const double* scale)
 {
   vtkTransform* transform = vtkTransform::New();
 
@@ -317,12 +325,12 @@ vtkTransform* VSTransform::createTransform(double position[3], double rotation[3
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::setLocalValues(double position[3], double rotation[3], double scale[3])
+void VSTransform::setLocalValues(const std::array<double, 3>& position, const std::array<double, 3>& rotation, const std::array<double, 3>& scale)
 {
   m_LocalTransform->Identity();
 
   // Translate
-  m_LocalTransform->Translate(position);
+  m_LocalTransform->Translate(position.data());
 
   // Only rotate if there is a value to rotate by
   if(abs(rotation[2]) >= 0.0001)
@@ -339,7 +347,7 @@ void VSTransform::setLocalValues(double position[3], double rotation[3], double 
   }
 
   // Scale
-  m_LocalTransform->Scale(scale);
+  m_LocalTransform->Scale(scale.data());
 }
 
 // -----------------------------------------------------------------------------
@@ -347,13 +355,8 @@ void VSTransform::setLocalValues(double position[3], double rotation[3], double 
 // -----------------------------------------------------------------------------
 std::vector<double> VSTransform::getPositionVector()
 {
-  double* positionPtr = getPosition();
-  std::vector<double> outputVector(3);
-  for(int i = 0; i < 3; i++)
-  {
-    outputVector[i] = positionPtr[i];
-  }
-
+  std::array<double, 3> positionPtr = getPosition();
+  std::vector<double> outputVector = {positionPtr[0], positionPtr[1], positionPtr[2]};
   return outputVector;
 }
 
@@ -362,13 +365,8 @@ std::vector<double> VSTransform::getPositionVector()
 // -----------------------------------------------------------------------------
 std::vector<double> VSTransform::getRotationVector()
 {
-  double* rotationPtr = getRotation();
-  std::vector<double> outputVector(3);
-  for(int i = 0; i < 3; i++)
-  {
-    outputVector[i] = rotationPtr[i];
-  }
-
+  std::array<double, 3> rotationPtr = getRotation();
+  std::vector<double> outputVector = {rotationPtr[0], rotationPtr[1], rotationPtr[2]};
   return outputVector;
 }
 
@@ -377,13 +375,8 @@ std::vector<double> VSTransform::getRotationVector()
 // -----------------------------------------------------------------------------
 std::vector<double> VSTransform::getScaleVector()
 {
-  double* scalePtr = getScale();
-  std::vector<double> outputVector(3);
-  for(int i = 0; i < 3; i++)
-  {
-    outputVector[i] = scalePtr[i];
-  }
-
+  std::array<double, 3> scalePtr = getScale();
+  std::vector<double> outputVector = {scalePtr[0], scalePtr[1], scalePtr[2]};
   return outputVector;
 }
 
@@ -392,13 +385,8 @@ std::vector<double> VSTransform::getScaleVector()
 // -----------------------------------------------------------------------------
 std::vector<double> VSTransform::getLocalPositionVector()
 {
-  double* localPositionPtr = getLocalPosition();
-  std::vector<double> outputVector(3);
-  for(int i = 0; i < 3; i++)
-  {
-    outputVector[i] = localPositionPtr[i];
-  }
-
+  std::array<double, 3> localPositionPtr = getLocalPosition();
+  std::vector<double> outputVector = {localPositionPtr[0], localPositionPtr[1], localPositionPtr[2]};
   return outputVector;
 }
 
@@ -407,13 +395,8 @@ std::vector<double> VSTransform::getLocalPositionVector()
 // -----------------------------------------------------------------------------
 std::vector<double> VSTransform::getLocalRotationVector()
 {
-  double* localRotationPtr = getLocalRotation();
-  std::vector<double> outputVector(3);
-  for(int i = 0; i < 3; i++)
-  {
-    outputVector[i] = localRotationPtr[i];
-  }
-
+  std::array<double, 3> localRotationPtr = getLocalRotation();
+  std::vector<double> outputVector = {localRotationPtr[0], localRotationPtr[1], localRotationPtr[2]};
   return outputVector;
 }
 
@@ -422,13 +405,8 @@ std::vector<double> VSTransform::getLocalRotationVector()
 // -----------------------------------------------------------------------------
 std::vector<double> VSTransform::getLocalScaleVector()
 {
-  double* localScalePtr = getLocalScale();
-  std::vector<double> outputVector(3);
-  for(int i = 0; i < 3; i++)
-  {
-    outputVector[i] = localScalePtr[i];
-  }
-
+  std::array<double, 3> localScalePtr = getLocalScale();
+  std::vector<double> outputVector = {localScalePtr[0], localScalePtr[1], localScalePtr[2]};
   return outputVector;
 }
 
@@ -437,12 +415,7 @@ std::vector<double> VSTransform::getLocalScaleVector()
 // -----------------------------------------------------------------------------
 void VSTransform::setLocalPositionVector(std::vector<double> positionVector)
 {
-  double position[3];
-  for(int i = 0; i < 3; i++)
-  {
-    position[i] = positionVector[i];
-  }
-  setLocalPosition(position);
+  setLocalPosition({positionVector[0], positionVector[1], positionVector[2]});
 }
 
 // -----------------------------------------------------------------------------
@@ -450,12 +423,7 @@ void VSTransform::setLocalPositionVector(std::vector<double> positionVector)
 // -----------------------------------------------------------------------------
 void VSTransform::setLocalRotationVector(std::vector<double> rotationVector)
 {
-  double rotation[3];
-  for(int i = 0; i < 3; i++)
-  {
-    rotation[i] = rotationVector[i];
-  }
-  setLocalRotation(rotation);
+  setLocalRotation({rotationVector[0], rotationVector[1], rotationVector[2]});
 }
 
 // -----------------------------------------------------------------------------
@@ -463,24 +431,19 @@ void VSTransform::setLocalRotationVector(std::vector<double> rotationVector)
 // -----------------------------------------------------------------------------
 void VSTransform::setLocalScaleVector(std::vector<double> scaleVector)
 {
-  double scale[3];
-  for(int i = 0; i < 3; i++)
-  {
-    scale[i] = scaleVector[i];
-  }
-  setLocalScale(scale);
+  setLocalScale({scaleVector[0], scaleVector[1], scaleVector[2]});
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::setLocalPosition(double position[3])
+void VSTransform::setLocalPosition(const std::array<double, 3>& position)
 {
-  double rotation[3];
-  double scale[3];
+  std::array<double, 3> rotation;
+  std::array<double, 3> scale;
 
-  m_LocalTransform->GetOrientation(rotation);
-  m_LocalTransform->GetScale(scale);
+  m_LocalTransform->GetOrientation(rotation.data());
+  m_LocalTransform->GetScale(scale.data());
 
   setLocalValues(position, rotation, scale);
 
@@ -491,13 +454,13 @@ void VSTransform::setLocalPosition(double position[3])
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::setLocalRotation(double rotation[3])
+void VSTransform::setLocalRotation(const std::array<double, 3>& rotation)
 {
-  double position[3];
-  double scale[3];
+  std::array<double, 3> position;
+  std::array<double, 3> scale;
 
-  m_LocalTransform->GetPosition(position);
-  m_LocalTransform->GetScale(scale);
+  m_LocalTransform->GetPosition(position.data());
+  m_LocalTransform->GetScale(scale.data());
 
   setLocalValues(position, rotation, scale);
 
@@ -508,13 +471,13 @@ void VSTransform::setLocalRotation(double rotation[3])
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::setLocalScale(double scale[3])
+void VSTransform::setLocalScale(const std::array<double, 3>& scale)
 {
-  double position[3];
-  double rotation[3];
+  std::array<double, 3> position;
+  std::array<double, 3> rotation;
 
-  m_LocalTransform->GetPosition(position);
-  m_LocalTransform->GetOrientation(rotation);
+  m_LocalTransform->GetPosition(position.data());
+  m_LocalTransform->GetOrientation(rotation.data());
 
   setLocalValues(position, rotation, scale);
 
@@ -557,9 +520,11 @@ VTK_PTR(vtkTransform) VSTransform::getTransposedTransform()
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::localizePoint(double point[3])
+void VSTransform::localizePoint(std::array<double, 3>& point)
 {
-  getLocalizeTransform()->TransformPoint(point, point);
+  std::array<double, 3> p = {point[0], point[1], point[2]};
+  getLocalizeTransform()->TransformPoint(point.data(), p.data());
+  point.swap(p);
 }
 
 // -----------------------------------------------------------------------------
@@ -573,9 +538,10 @@ void VSTransform::localizePoints(vtkPoints* points)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::localizeNormal(double normal[3])
+void VSTransform::localizeNormal(const std::array<double, 3>& normal)
 {
-  getLocalizeTransform()->TransformNormal(normal, normal);
+  std::array<double, 3> n = {normal[0], normal[1], normal[2]};
+  getLocalizeTransform()->TransformNormal(normal.data(), n.data());
 }
 
 // -----------------------------------------------------------------------------
@@ -596,14 +562,17 @@ void VSTransform::localizePlane(vtkPlane* plane)
     return;
   }
 
-  double* normal = plane->GetNormal();
-  double* origin = plane->GetOrigin();
+  double* normalPtr = plane->GetNormal();
+  double* originPtr = plane->GetOrigin();
+
+  Array3Type normal = {normalPtr[0], normalPtr[1], normalPtr[2]};
+  Array3Type origin = {originPtr[0], originPtr[1], originPtr[2]};
 
   localizeNormal(normal);
   localizePoint(origin);
 
-  plane->SetNormal(normal);
-  plane->SetOrigin(origin);
+  plane->SetNormal(normal.data());
+  plane->SetOrigin(origin.data());
 }
 
 // -----------------------------------------------------------------------------
@@ -626,9 +595,10 @@ void VSTransform::localizeTransform(vtkTransform* transform)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::globalizePoint(double point[3])
+void VSTransform::globalizePoint(const std::array<double, 3>& point)
 {
-  getGlobalizeTransform()->TransformPoint(point, point);
+  std::array<double, 3> p = {point[0], point[1], point[2]};
+  getGlobalizeTransform()->TransformPoint(point.data(), p.data());
 }
 
 // -----------------------------------------------------------------------------
@@ -642,9 +612,10 @@ void VSTransform::globalizePoints(vtkPoints* points)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void VSTransform::globalizeNormal(double normal[3])
+void VSTransform::globalizeNormal(const std::array<double, 3>& normal)
 {
-  getGlobalizeTransform()->TransformNormal(normal, normal);
+  std::array<double, 3> n = {normal[0], normal[1], normal[2]};
+  getGlobalizeTransform()->TransformNormal(normal.data(), n.data());
 }
 
 // -----------------------------------------------------------------------------
@@ -668,8 +639,8 @@ void VSTransform::globalizePlane(vtkPlane* plane)
   double* normal = plane->GetNormal();
   double* origin = plane->GetOrigin();
 
-  globalizeNormal(normal);
-  globalizePoint(origin);
+  globalizeNormal({normal[0], normal[1], normal[2]});
+  globalizePoint({origin[0], origin[1], origin[2]});
 
   plane->SetNormal(normal);
   plane->SetOrigin(origin);
@@ -707,7 +678,7 @@ void VSTransform::updateTransform(vtkTransform* transform)
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getOriginPosition() const
+VSTransform::Array3Type VSTransform::getOriginPosition() const
 {
   return m_OriginPosition;
 }
@@ -717,13 +688,17 @@ double* VSTransform::getOriginPosition() const
 // -----------------------------------------------------------------------------
 void VSTransform::setOriginPosition(double* originPosition)
 {
+  m_OriginPosition = {originPosition[0], originPosition[1], originPosition[2]};
+}
+void VSTransform::setOriginPosition(const Array3Type& originPosition)
+{
   m_OriginPosition = originPosition;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getOriginRotation() const
+VSTransform::Array3Type VSTransform::getOriginRotation() const
 {
   return m_OriginRotation;
 }
@@ -733,13 +708,16 @@ double* VSTransform::getOriginRotation() const
 // -----------------------------------------------------------------------------
 void VSTransform::setOriginRotation(double* originRotation)
 {
+  m_OriginRotation = {originRotation[0], originRotation[1], originRotation[2]};
+}
+void VSTransform::setOriginRotation(const Array3Type& originRotation)
+{
   m_OriginRotation = originRotation;
 }
-
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-double* VSTransform::getOriginScale() const
+VSTransform::Array3Type VSTransform::getOriginScale() const
 {
   return m_OriginScale;
 }
@@ -748,6 +726,10 @@ double* VSTransform::getOriginScale() const
 //
 // -----------------------------------------------------------------------------
 void VSTransform::setOriginScale(double* originScale)
+{
+  m_OriginScale = {originScale[0], originScale[1], originScale[2]};
+}
+void VSTransform::setOriginScale(const Array3Type& originScale)
 {
   m_OriginScale = originScale;
 }

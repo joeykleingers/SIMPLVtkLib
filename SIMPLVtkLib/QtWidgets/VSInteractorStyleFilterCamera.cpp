@@ -781,13 +781,12 @@ void VSInteractorStyleFilterCamera::translateFilter()
   deltaPosition[2] = new_pick_point[2] - old_pick_point[2];
 
   VSTransform* transform = m_ActiveFilter->getTransform();
-  double* globalPosition = transform->getPosition();
-  double localDelta[3];
+  std::array<double, 3> globalPosition = transform->getPosition();
+  std::array<double, 3> localDelta;
   for(int i = 0; i < 3; i++)
   {
     localDelta[i] = deltaPosition[i] + globalPosition[i];
   }
-  delete[] globalPosition;
 
   transform->localizePoint(localDelta);
   for(int i = 0; i < 3; i++)
@@ -896,10 +895,7 @@ void VSInteractorStyleFilterCamera::rotateFilter()
   double rotateAmt = (currentDelta[0] + currentDelta[1]) / ROTATION_SPEED;
   m_RotationAmt += rotateAmt;
 
-  double rotationAxis[3] = {};
-  rotationAxis[0] = m_CameraAxis[0];
-  rotationAxis[1] = m_CameraAxis[1];
-  rotationAxis[2] = m_CameraAxis[2];
+  Array3Type rotationAxis = {m_CameraAxis[0], m_CameraAxis[1], m_CameraAxis[2]};
 
   // Check for custom transform
   if(m_CustomTransform)
@@ -1013,7 +1009,7 @@ void VSInteractorStyleFilterCamera::scaleFilter()
     deltaScale = 1.0;
   }
 
-  double scaleVector[3];
+  Array3Type scaleVector;
   scaleVector[0] = deltaScale;
   scaleVector[1] = deltaScale;
   scaleVector[2] = deltaScale;
@@ -1064,7 +1060,7 @@ void VSInteractorStyleFilterCamera::beginScaling()
   if(m_ActiveFilter)
   {
     vtkRenderWindowInteractor* iren = this->Interactor;
-    double* obj_center = m_ActiveFilter->getTransform()->getPosition();
+    Array3Type obj_center = m_ActiveFilter->getTransform()->getPosition();
     double disp_obj_center[3];
     this->ComputeWorldToDisplay(obj_center[0], obj_center[1], obj_center[2], disp_obj_center);
 

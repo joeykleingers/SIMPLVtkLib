@@ -105,13 +105,13 @@ public:
    * @brief Returns the output port to be used by vtkMappers and subsequent filters
    * @return
    */
-  virtual vtkAlgorithmOutput* getOutputPort() override;
+  vtkAlgorithmOutput* getOutputPort() override;
 
   /**
    * @brief Returns a smart pointer containing the output data from the filter
    * @return
    */
-  virtual VTK_PTR(vtkDataSet) getOutput() const override;
+  VTK_PTR(vtkDataSet) getOutput() const override;
 
   /**
    * @brief Returns the ouput data type

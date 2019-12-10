@@ -346,7 +346,10 @@ void VSVisibilitySettingsWidget::arrayNameComboChanged(const QString& text)
 
   updateComponentComboBox(name);
 
-  VSFilterViewSettings::SetActiveArrayName(m_ViewSettings, name);
+  for(VSFilterViewSettings* setting : m_ViewSettings)
+  {
+    setting->setActiveArrayName(name);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -354,7 +357,7 @@ void VSVisibilitySettingsWidget::arrayNameComboChanged(const QString& text)
 // -----------------------------------------------------------------------------
 void VSVisibilitySettingsWidget::arrayComponentComboChanged(int index)
 {
-  if(m_ViewSettings.size() > 0)
+  if(!m_ViewSettings.empty())
   {
     if(hasMultiValueOption(m_Ui->activeComponentCombo))
     {

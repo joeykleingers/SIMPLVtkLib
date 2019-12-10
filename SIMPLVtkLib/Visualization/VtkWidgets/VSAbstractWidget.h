@@ -66,7 +66,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSAbstractWidget() = default;
+  ~VSAbstractWidget() = default;
 
   /**
    * @brief Copies the vtkWidget bounds
@@ -149,14 +149,14 @@ protected:
    * @param transform
    * @return
    */
-  static double* calculateLocalOrigin(double* bounds, VSTransform* transform);
+  static std::array<double, 3> calculateLocalOrigin(double* bounds, VSTransform* transform);
 
   /**
    * @brief Calculate the global origin from the given bounds
    * @param bounds
    * @return
    */
-  static double* calculateGlobalOrigin(double* bounds);
+  static std::array<double, 3> calculateGlobalOrigin(double* bounds);
 
   /**
    * @brief Returns the VSTransform used by this widget

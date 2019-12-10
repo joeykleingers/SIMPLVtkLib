@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <vtkInteractorStyleImage.h>
 #include <vtkProp3D.h>
 
@@ -51,6 +53,8 @@ class VSAbstractViewWidget;
  */
 class SIMPLVtkLib_EXPORT VSInteractorStyleFilterCamera : public vtkInteractorStyleImage
 {
+  using Array3Type = std::array<double, 3>;
+
 public:
   static VSInteractorStyleFilterCamera* New();
   vtkTypeMacro(VSInteractorStyleFilterCamera, vtkInteractorStyleImage);
@@ -332,14 +336,14 @@ private:
   std::map<VSAbstractFilter*, VSTransform*> m_PreviousTransforms;
   std::map<VSAbstractFilter*, VSTransform*> m_LastUndoneTransforms;
   // Position
-  double* m_InitialPosition;
-  double m_Translation[3];
+  Array3Type m_InitialPosition;
+  Array3Type m_Translation;
   // Rotation
   int* m_InitialMousePos;
   double* m_CameraAxis;
   double m_RotationAmt;
   // Scaling
-  double* m_InitialCenter;
+  Array3Type m_InitialCenter;
   double m_LastDistance;
   double m_ScaleAmt = 1.0;
 

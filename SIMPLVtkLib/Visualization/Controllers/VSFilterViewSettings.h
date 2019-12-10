@@ -158,7 +158,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSFilterViewSettings();
+  ~VSFilterViewSettings() override;
 
   /**
    * @brief Deep copies values from another VSFilterViewSettings
@@ -249,7 +249,7 @@ public:
    * @brief Returns the component names available for the given array
    * @return
    */
-  QStringList getComponentNames(QString arrayName);
+  QStringList getComponentNames(const QString& arrayName);
 
   /**
    * @brief Returns the number of components for the given array
@@ -263,7 +263,7 @@ public:
    * @param arrayIndex
    * @return
    */
-  int getNumberOfComponents(QString name);
+  int getNumberOfComponents(const QString& name);
 
   /**
    * @brief Returns true if the active array has multiple components
@@ -501,7 +501,7 @@ public:
    * @param collection
    * @return
    */
-  static QStringList GetArrayNames(VSFilterViewSettings::Collection collection);
+  static QStringList GetArrayNames(const Collection& collection);
 
   /**
    * @brief Returns a QStringList of the component names for the given array name in the collection.
@@ -509,21 +509,21 @@ public:
    * @param collection
    * @param arrayName
    */
-  static QStringList GetComponentNames(VSFilterViewSettings::Collection collection, QString arrayName);
+  static QStringList GetComponentNames(const Collection& collection, const QString& arrayName);
 
   /**
    * @brief Returns the first valid point size in the collection.  Returns -1 if none of the settings render as points.
    * @param collection
    * @return
    */
-  static int GetPointSize(VSFilterViewSettings::Collection collection);
+  static int GetPointSize(const Collection& collection);
 
   /**
    * @brief Sets the point size for all items in the collection.
    * @param collection
    * @param size
    */
-  static void SetPointSize(VSFilterViewSettings::Collection collection, int size);
+  static void SetPointSize(const Collection& collection, int size);
 
   /**
    * @brief Returns whether or not items in the collection are rendering as points.
@@ -532,7 +532,7 @@ public:
    * @param collection
    * @return
    */
-  static Qt::CheckState IsRenderingPoints(VSFilterViewSettings::Collection collection);
+  static Qt::CheckState IsRenderingPoints(const Collection& collection);
 
   /**
    * @brief Returns whether or not items in the collection are rendering points as spheres.
@@ -541,14 +541,14 @@ public:
    * @param collection
    * @return
    */
-  static Qt::CheckState IsRenderingPointsAsSpheres(VSFilterViewSettings::Collection collection);
+  static Qt::CheckState IsRenderingPointsAsSpheres(const Collection& collection);
 
   /**
    * @brief Sets whether or not items in the collection should render as points as spheres.
    * @param collection
    * @param renderSpheres
    */
-  static void SetRenderPointsAsSpheres(VSFilterViewSettings::Collection collection, bool renderSpheres);
+  static void SetRenderPointsAsSpheres(const Collection& collection, bool renderSpheres);
 
   /**
    * @brief Returns whether or not the grid is visible for all items in the collection.
@@ -557,70 +557,70 @@ public:
    * @param collection
    * @return
    */
-  static Qt::CheckState IsGridVisible(VSFilterViewSettings::Collection collection);
+  static Qt::CheckState IsGridVisible(const Collection& collection);
 
   /**
    * @brief Sets whether or not the grid is visible for all items in the collection
    * @param collection
    * @param visible
    */
-  static void SetGridVisible(VSFilterViewSettings::Collection collection, bool visible);
+  static void SetGridVisible(const Collection& collection, bool visible);
 
   /**
    * @brief Returns true if the collection includes valid VSFilterViewSettings.  Returns false otherwise.
    * @param collection
    * @return
    */
-  static bool HasValidSettings(VSFilterViewSettings::Collection collection);
+  static bool HasValidSettings(const Collection& collection);
 
   /**
    * @brief Returns true if all valid items in the collection have the same active array name.  Returns false otherwise.
    * @param collection
    * @return
    */
-  static bool ActiveArrayNamesConsistent(VSFilterViewSettings::Collection collection);
+  static bool ActiveArrayNamesConsistent(const Collection& collection);
 
   /**
    * @brief Returns the active array name for the collection.  Returns a null QString if there are multiple values
    * @param collection
    * @return
    */
-  static QString GetActiveArrayName(VSFilterViewSettings::Collection collection);
+  static QString GetActiveArrayName(const Collection& collection);
 
   /**
    * @brief Sets the active array name for items in the collection.
    * @param collection
    * @param arrayName
    */
-  static void SetActiveArrayName(VSFilterViewSettings::Collection collection, QString arrayName);
+  static void SetActiveArrayName(const Collection& collection, const QString& arrayName);
 
   /**
    * @brief Returns the active component index for items in the collection.  If multiple indices are found, -2 is returned instead.
    * @param collection
    * @return
    */
-  static int GetActiveComponentIndex(VSFilterViewSettings::Collection collection);
+  static int GetActiveComponentIndex(const Collection& collection);
 
   /**
    * @brief Sets the active component index for items in the collection
    * @param collection
    * @param index
    */
-  static void SetActiveComponentIndex(VSFilterViewSettings::Collection collection, int index);
+  static void SetActiveComponentIndex(const Collection& collection, int index);
 
   /**
    * @brief Sets the subsampling for items in the collection
    * @param collection
    * @param index
    */
-  static void SetSubsampling(VSFilterViewSettings::Collection collection, int value);
+  static void SetSubsampling(const Collection& collection, int value);
 
   /**
    * @brief Returns the number of components for the given arrayName in the collection.
    * @param collection
    * @param arrayName
    */
-  static int GetNumberOfComponents(VSFilterViewSettings::Collection collection, QString arrayName);
+  static int GetNumberOfComponents(const Collection& collection, const QString& arrayName);
 
   /**
    * @brief Returns true if the given array for items in the collection are compatible
@@ -628,75 +628,75 @@ public:
    * @param arrayName
    * @return
    */
-  static bool CheckComponentNamesCompatible(VSFilterViewSettings::Collection collection, QString arrayName);
+  static bool CheckComponentNamesCompatible(const Collection& collection, const QString& arrayName);
 
   /**
    * @brief Returns the active component name as a combination of the array and component name.
    * @param collection
    * @return
    */
-  static QString GetActiveComponentName(VSFilterViewSettings::Collection collection);
+  static QString GetActiveComponentName(const Collection& collection);
 
   /**
    * @brief Returns the representation for items in the collection as an integer.  Returns -2 if there are multiple representations.
    * @param collection
    * @return
    */
-  static int GetRepresentationi(VSFilterViewSettings::Collection collection);
+  static int GetRepresentationi(const Collection& collection);
 
   /**
    * @brief Sets the representation for items in the collection
    * @param collection
    * @param rep
    */
-  static void SetRepresentation(VSFilterViewSettings::Collection collection, Representation rep);
+  static void SetRepresentation(const Collection& collection, Representation rep);
 
   /**
    * @brief Returns the first valid color for items in the collection.
    * @param collection
    * @return
    */
-  static QColor GetSolidColor(VSFilterViewSettings::Collection collection);
+  static QColor GetSolidColor(const Collection& collection);
 
   /**
    * @brief Sets the solid color to use for all items in the collection.
    * @param collection
    * @param color
    */
-  static void SetSolidColor(VSFilterViewSettings::Collection collection, QColor color);
+  static void SetSolidColor(const Collection& collection, const QColor& color);
 
   /**
    * @brief Returns the ActorType for all valid items in the collection.  Returns Invalid if multiple types are found.
    * @param collection
    * @return
    */
-  static ActorType GetActorType(VSFilterViewSettings::Collection collection);
+  static ActorType GetActorType(const Collection& collection);
 
   /**
    * @brief Returns the ColorMapping value for all valid items in the collection.  If multiple values are detected, return MultiValues.
    * @param collection
    * @return
    */
-  static ColorMapping GetColorMapping(VSFilterViewSettings::Collection collection);
+  static ColorMapping GetColorMapping(const Collection& collection);
 
   /**
    * @param Returns the ScalarBarSetting used by valid items in the collection.  If multiple values are detected, return MultiValues.
    * @param collection
    * @return
    */
-  static ScalarBarSetting GetScalarBarSettings(VSFilterViewSettings::Collection collection);
+  static ScalarBarSetting GetScalarBarSettings(const Collection& collection);
 
   /**
    * @brief Returns the alpha to display in the user interface for the collection.
    * @return
    */
-  static double GetAlpha(VSFilterViewSettings::Collection collection);
+  static double GetAlpha(const Collection& collection);
 
   /**
    * @brief Returns the subsampling to display in the user interface for the collection.
    * @return
    */
-  static double GetSubsampling(VSFilterViewSettings::Collection collection);
+  static double GetSubsampling(const Collection& collection);
 
 public slots:
   /**
@@ -725,7 +725,7 @@ public slots:
    * @brief Updates the active array name for this view
    * @param name
    */
-  void setActiveArrayName(QString name);
+  void setActiveArrayName(const QString& name);
 
   /**
    * @brief Updates the active component index for this view
@@ -772,7 +772,7 @@ public slots:
    * @brief Sets the color to use when there are no scalar values to map
    * @param color
    */
-  void setSolidColor(QColor color);
+  void setSolidColor(const QColor& color);
 
   /**
    * @brief Sets the actor property representation

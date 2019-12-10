@@ -66,7 +66,7 @@ public:
   /**
    * @brief Deconstructor
    */
-  virtual ~VSPipelineFilter() = default;
+  ~VSPipelineFilter() override = default;
 
   /**
    * @brief Create

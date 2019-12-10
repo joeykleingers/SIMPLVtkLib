@@ -293,7 +293,7 @@ bool VSController::saveAsDREAM3D(const QString& outputFilePath, VSAbstractFilter
         DataContainer::Pointer dataContainer = dcFilter->getWrappedDataContainer()->m_DataContainer;
         if(dataContainer != nullptr)
         {
-          double* pos = dcFilter->getTransform()->getLocalPosition();
+          std::array<double, 3> pos = dcFilter->getTransform()->getLocalPosition();
           ImageGeom::Pointer geom = dataContainer->getGeometryAs<ImageGeom>();
           geom->setOrigin(pos[0], pos[1], pos[2]);
           dca->addOrReplaceDataContainer(dataContainer);

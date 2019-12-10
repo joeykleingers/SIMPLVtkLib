@@ -35,6 +35,8 @@
 
 #include "VSAbstractFilter.h"
 
+#include <array>
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 #include <QtCore/QThread>
@@ -51,6 +53,8 @@
 #include "SIMPLVtkLib/Visualization/Controllers/VSLookupTableController.h"
 #include "SIMPLVtkLib/Visualization/VisualFilters/VSAbstractDataFilter.h"
 #include "SIMPLVtkLib/Visualization/VtkWidgets/VSAbstractWidget.h"
+
+using Array3Type = std::array<double, 3>;
 
 // -----------------------------------------------------------------------------
 //
@@ -385,11 +389,11 @@ QStringList VSAbstractFilter::getArrayNames()
   QStringList arrayNames;
 
   VTK_PTR(vtkDataSet) dataSet = getOutput();
-  if(getDataSetFilter())
+  if(nullptr != getDataSetFilter())
   {
     dataSet = getDataSetFilter()->getOutput();
   }
-  if(dataSet)
+  if(nullptr != dataSet)
   {
     if(isPointData())
     {
@@ -408,8 +412,44 @@ QStringList VSAbstractFilter::getArrayNames()
       }
     }
   }
-
   return arrayNames;
+}
+
+int32_t VSAbstractFilter::getArrayIndex(const QString& name)
+{
+  QStringList arrayNames;
+  int32_t index = -1;
+  VTK_PTR(vtkDataSet) dataSet = getOutput();
+  if(nullptr != getDataSetFilter())
+  {
+    dataSet = getDataSetFilter()->getOutput();
+  }
+  if(nullptr != dataSet)
+  {
+    vtkDataSetAttributes* dataSetAttributes = nullptr;
+    if(isPointData())
+    {
+      dataSetAttributes = dataSet->GetPointData();
+    }
+    else
+    {
+      dataSetAttributes = dataSet->GetCellData();
+    }
+    if(nullptr == dataSetAttributes)
+    {
+      return index;
+    }
+    int numPointArrays = dataSetAttributes->GetNumberOfArrays();
+    for(int i = 0; i < numPointArrays; i++)
+    {
+      QString arrayName(dataSetAttributes->GetArrayName(i));
+      if(arrayName == name)
+      {
+        return i;
+      }
+    }
+  }
+  return index;
 }
 
 // -----------------------------------------------------------------------------
@@ -897,9 +937,9 @@ void VSAbstractFilter::writeJson(QJsonObject& json)
   QJsonArray localScaleArray;
 
   VSTransform* transform = getTransform();
-  double* localPos = transform->getLocalPosition();
-  double* localRot = transform->getLocalRotation();
-  double* localScale = transform->getLocalScale();
+  Array3Type localPos = transform->getLocalPosition();
+  Array3Type localRot = transform->getLocalRotation();
+  Array3Type localScale = transform->getLocalScale();
 
   for(int i = 0; i < 3; i++)
   {
@@ -907,10 +947,6 @@ void VSAbstractFilter::writeJson(QJsonObject& json)
     localRotationArray.push_back(localRot[i]);
     localScaleArray.push_back(localScale[i]);
   }
-
-  delete[] localPos;
-  delete[] localRot;
-  delete[] localScale;
 
   transformObject["LocalPosition"] = localPositionArray;
   transformObject["LocalRotation"] = localRotationArray;
@@ -929,9 +965,9 @@ void VSAbstractFilter::readTransformJson(QJsonObject& json)
   QJsonArray localRotationArray = transformObject["LocalRotation"].toArray();
   QJsonArray localScaleArray = transformObject["LocalScale"].toArray();
 
-  double localPos[3];
-  double localRot[3];
-  double localScale[3];
+  Array3Type localPos;
+  Array3Type localRot;
+  Array3Type localScale;
 
   for(int i = 0; i < 3; i++)
   {
@@ -1189,5 +1225,3 @@ QJsonObject VSAbstractFilter::getLoadingObject() const
 {
   return m_LoadingObject;
 }
-
-

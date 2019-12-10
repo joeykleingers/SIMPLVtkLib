@@ -99,7 +99,7 @@ public:
     WrappedDataArrayPtrCollection m_PointData;
     QString m_Name;
     DataContainerShPtrType m_DataContainer = nullptr;
-    double m_Origin[3] = {0.0, 0.0, 0.0};
+    std::array<double, 3> m_Origin = {0.0, 0.0, 0.0};
     DataArrayImportSettings m_ImportCellArrays;
     DataArrayImportSettings m_ImportPointArrays;
   };

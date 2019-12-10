@@ -487,6 +487,7 @@ void VSLookupTableController::update()
   m_ColorTransferFunction->SetAboveRangeColor(nan);
   m_ColorTransferFunction->SetNanColor(nan);
   m_ColorTransferFunction->Build();
+  m_ColorTransferFunction->Modified();
 }
 
 // -----------------------------------------------------------------------------
