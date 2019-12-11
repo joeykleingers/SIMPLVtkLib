@@ -1534,6 +1534,10 @@ void VSFilterViewSettings::updateTransform()
     // Get transform vectors
     VSTransform* transform = m_Filter->getTransform();
     Array3Type transformPosition = transform->getPosition();
+    // Place the Actor so that the corner is at the most negative value (hopefully, 0,0,0).. but could be some other origin)
+    transformPosition[0] = transformPosition[0] + (extent[1] / 2.0);
+    transformPosition[1] = transformPosition[1] + (extent[3] / 2.0);
+    transformPosition[2] = transformPosition[2] + (extent[5] / 2.0);
     Array3Type transformRotation = transform->getRotation();
     Array3Type transformScale = transform->getScale();
 
